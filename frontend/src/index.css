@@ -8,21 +8,21 @@
    /* Osnovna paleta */
   --color-royal-hyacinth: #47466D;
   --color-cendre-blue:    #3D84A7;
-  --color-medium-turquoise: #46CDCF;
-  --color-waterwings:     #ABEDD8;
+  --color-medium-turquoise: #1AACAC;
+  --color-waterwings:     #91e9cd;
 
   /* Dashboard header (slika 1) */
   --gradient-dashboard: linear-gradient(
     135deg,
     var(--color-medium-turquoise) 0%,
-    var(--color-waterwings) 100%
+    var(--color-medium-turquoise) 100%
   );
 
   /* Primarni button gradijent (slika 2) */
   --gradient-primary-button: linear-gradient(
     90deg,
     var(--color-royal-hyacinth) 0%,
-    var(--color-medium-turquoise) 100%
+    var(--color-cendre-blue) 80%
   );
 
   /* Dodatne korisne varijable */

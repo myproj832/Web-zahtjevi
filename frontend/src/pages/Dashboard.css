@@ -1,22 +1,38 @@
-
-.wave-container {
-  position: relative;
+.dashboard-wrapper {
+  /* Putanja do tvoje slike */
+  background-image: url('../assets/backgroundImage.png');
+  background-size: cover;           
+  background-repeat: no-repeat;      
+  background-position: center;      
+  min-height: 100vh;              
   width: 100%;
-  margin-top: -2px;
+}
+.header {
+  position: relative;
   overflow: hidden;
+  width: 100%;
+  padding: 1rem 3rem;
+}
+/* .wave-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 250px; 
+  border-bottom-left-radius: 100px 10px;
   line-height: 0;
+  pointer-events: none;
 }
 
 .wave-svg {
-  position: relative;
   display: block;
-  width: calc(100% + 1.3px);
-  height: 120px;
-}
+  width: 100%;
+  height: 100%;
+} */
 
-/* Pomeri Card grid da se preklopi preko vala */
+
 .Dashboard__cards {
-  margin-top: -60px;
+  margin-top: -150px;
 }
 
 /* Stil kartica */
@@ -29,11 +45,96 @@
 
 .Dashboard__card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-     width: 50%;
-       height: auto;
-       display: block;
+  width: 50%;
+  height: auto;
+  display: block;
+  padding-bottom: 100px;
+  
 }
+.card-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  display: inline-block;
+}
+.loginButton {
+  background: var(--gradient-primary-button);
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-style: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.loginButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+@media (max-width: 767.98px) {
+     .Dashboard__cards {
+    margin-top: -80px !important;
+  }
+  .logo {
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .loginButton {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+   
+    position: relative; 
+     z-index: 10; 
+     margin-top: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .Dashboard__card {
+    padding: 2rem;           /* ranije je bilo 1.25rem (p-5) */
+  }
+  .card-icon {
+    font-size: 2rem;         /* povećaj ikonu */
+  }
+  .Dashboard__card .card-title {
+    font-size: 1rem;       /* veći naslov */
+  }
+  .Dashboard__card .card-text {
+    font-size: 0.8rem;       /* malo veći tekst */
+  }
+}
+
+/* ≥1400px (xxl) — još veći padding ako hoćeš */
+@media (min-width: 1400px) {
+  .Dashboard__card {
+    padding: 4rem;
+  }
+  .card-icon {
+    font-size: 3.5rem;
+  }
+  .Dashboard__card .card-title {
+    font-size: 1.75rem;
+  }
+  .Dashboard__card .card-text {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 576px) {
+  /* `.modal-fullscreen-sm-down` is the wrapper class RB adds */
+  .modal-fullscreen-sm-down .modal-content {
+    margin-top: 15rem;            /* push it below your header */
+    border-radius: 0.5rem;       /* keep those rounded corners */
+    max-height: calc(100% - 4rem);
+    width: 100%;
+  }
+}
+
