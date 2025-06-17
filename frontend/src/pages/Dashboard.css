@@ -1,0 +1,39 @@
+
+.wave-container {
+  position: relative;
+  width: 100%;
+  margin-top: -2px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave-svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 120px;
+}
+
+/* Pomeri Card grid da se preklopi preko vala */
+.Dashboard__cards {
+  margin-top: -60px;
+}
+
+/* Stil kartica */
+.Dashboard__card {
+  background: var(--color-bg);
+  box-shadow: var(--box-shadow);
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.Dashboard__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.logo {
+     width: 50%;
+       height: auto;
+       display: block;
+}
