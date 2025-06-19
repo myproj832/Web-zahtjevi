@@ -1,26 +1,18 @@
 {
-  "name": "getFile",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
-    "dotenv": "^8.2.0",
-    "easy-soap-request": "^3.5.0",
-    "express": "^4.17.1",
-    "js2xmlparser": "^5.0.0",
-    "nightmare": "^3.0.2",
-    "node-html-parser": "^3.3.0",
-    "oracledb": "^5.0.0",
-    "png-to-jpeg": "^1.0.1",
-    "qrcode": "^1.4.4",
-    "qrcode-generator": "^1.4.4",
-    "request": "^2.88.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "oracledb": "^6.8.0"
   }
 }
