@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: File Service API
+  version: 1.0.0
+paths:
+  /getFile:
+    post:
+      summary: Upload a file
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: string
+      parameters:
+        - in: header
+          name: key
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: typeFile
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: typeDoc
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: unitCode
+          required: true
+          schema:
+            type: number
+        - in: header
+          name: env
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: XML datoteka uspesno poslata
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: Neuspesno slanje XML datoteke
+                  message:
+                    type: string

@@ -1,0 +1,83 @@
+const express = require('express');
+const oracledb = require('oracledb');
+
+const app = express();
+const port = 6666;
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+
+
+// Konfiguracija povezivanja na bazu
+const dbConfig = {
+  user: 'efakture',
+  password: 'efakture',
+  connectString: '192.168.100.1:1521/finc',
+};
+// Endpoint za post metodu
+app.post('/getFile', (req, res) => {
+  const key = req.body.key;
+  const typeFile = req.body.typeFile;
+  const typeDoc = req.body.typeDoc;
+  const xmlContent = req.body.xmlContent;
+
+  res.setHeader('Content-Type', 'application/json'); 
+
+  // Ubaci xmlContent u bazu
+  insertXmlContent(key, typeFile, typeDoc, xmlContent, (success, error) => {
+  if (success) {
+	 
+    return res.json({ message: 'XML datoteka uspješno poslata' });
+  } else {
+	 
+    return res.status(500).json({ message: 'Neuspješno slanje XML datoteke', error });
+  }
+});
+});
+
+// Funkcija za ubacivanje xmlContent-a u bazu
+function insertXmlContent(key, typeFile,typeDoc,xmlContent, callback) {
+  oracledb.getConnection(dbConfig, (err, connection) => {
+    if (err) {
+      console.error('Greška pri povezivanju na bazu:', err);
+      return callback(false, err);
+    }
+
+    connection.execute(
+      'BEGIN erazmjena.insert_doc(:key,:typeFile,:typeDoc,:xmlContent, :v_out); END;',
+      {
+        key: key,
+		 typeFile: typeFile,
+		  typeDoc: typeDoc,
+        xmlContent: { val: xmlContent, type: oracledb.CLOB, dir: oracledb.BIND_IN },
+        v_out: { type: oracledb.STRING, dir: oracledb.BIND_OUT },
+      },
+      (err, result) => {
+        if (err) {
+  console.error('Greška pri izvršavanju upita:', err);
+  console.error('Detalji greške:', err.stack);
+  connection.close();
+  console.log('izasao:' );
+  return callback(false, err);
+}
+			const v_out = result.outBinds.v_out;
+			connection.close();
+			
+			if (v_out === 'OK') {
+			
+			  return callback(true,v_out);
+			} else {
+			
+			  return callback(false, v_out);
+			}
+      }
+    );
+  });
+}
+
+
+// Pokretanje servera
+app.listen(port, () => {
+  console.log(`Servis je pokrenut na portu ${port}`);
+});
+

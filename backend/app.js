@@ -1,23 +1,17 @@
 const express = require('express');
-const cors = require('cors');
+const bodyParser = require('body-parser');
+const loginRoute = require('./login');
+
 const app = express();
+const PORT = 3334
 
-// Middleware
-app.use(cors()); // Omogućava CORS (komunikaciju sa frontendom)
-app.use(express.json()); // Parsira JSON telo zahteva
+app.use(bodyParser.json());
+app.use('/api', loginRoute);
 
-// Osnovna test ruta
-app.get('/', (req, res) => {
-  res.send('Backend je aktivan!');
-});
 
-// Primer API ruta za dashboard (možeš razdvojiti kasnije u posebne fajlove)
-app.get('/api/dashboard', (req, res) => {
-  res.json({ message: 'Pozdrav sa backend dashboard rute!' });
-});
 
-// Pokretanje servera
-const PORT = 5000;
+
+
 app.listen(PORT, () => {
-  console.log(`Server je pokrenut na http://localhost:${PORT}`);
+  console.log(`API server radi na http://localhost:${PORT}`);
 });
