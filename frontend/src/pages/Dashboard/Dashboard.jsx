@@ -1,8 +1,8 @@
 import "./Dashboard.css";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 
-import logoSpecija from "../assets/logoSpecija0.png";
-import LoginModal from "../components/LoginModal";
+import logoSpecija from "../../assets/logoSpecija0.png";
+import LoginModal from "../../components/LoginModal";
 import { useState, useRef } from "react";
 
 const cards = [
@@ -40,6 +40,7 @@ const dashboardRef = useRef();
             src={logoSpecija}
             alt="Apoteka logo"
             className="logo mb-3 mb-md-0"
+            style={{ transform: 'scale(0.7)' }}
           />
           <Button
             type="button"

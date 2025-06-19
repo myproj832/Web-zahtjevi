@@ -1,6 +1,6 @@
 .dashboard-wrapper {
   /* Putanja do tvoje slike */
-  background-image: url('../assets/backgroundImage.png');
+  background-image: url('../../assets/backgroundImage.png');
   background-size: cover;           
   background-repeat: no-repeat;      
   background-position: center;      
