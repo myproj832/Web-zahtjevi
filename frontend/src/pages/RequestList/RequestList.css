@@ -1,0 +1,89 @@
+.background {
+    background-image: url('../../assets/backgroundImage.png');
+    background-size: cover;           
+    background-repeat: no-repeat;      
+    background-position: center;      
+    min-height: 100vh;              
+    width: 100%;
+  }
+
+  .button-group {
+    display: flex;
+    /* flex-wrap: wrap; */
+    gap: 0.5rem;
+  }  
+
+  .button {
+    background: var(--gradient-primary-button);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    font-style: bold;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    color: aliceblue;
+  }
+
+  .buttonx {
+    background: rgb(215, 105, 105);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    font-style: bold;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    color: aliceblue;
+  }
+
+  .buttoni {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    color: rgb(66, 66, 66);
+  }
+
+  @media (max-width: 600px) {
+    .button,
+    .buttonx,
+    .institution-btn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      width: 100%; /* dugme uzima ceo red */
+    }
+}
+
+.btn-pregled {
+    background-color: #b8cfd3;
+    color: rgb(72, 70, 70);
+    border: none;
+  }
+  
+  .btn-izmijeni {
+    background-color: #5e7385;
+    color: white;
+    border: none;
+  }
+  
+  .btn-obrisi {
+    background-color: #d87680;
+    color: white;
+    border: none;
+  }
+  
+  .badge-status-kreiran {
+    background-color: #b2d8b8;
+    color: rgb(88, 87, 87);
+  }
+  
+  .badge-status-na-cekanju {
+    background-color: #f4db91;
+    color: rgb(66, 65, 65);
+  }
+  
