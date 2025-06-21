@@ -3,6 +3,7 @@ import { useState } from 'react';
 import InstitutionModal from './components/InstitutionModal';
 import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import RequestList from './pages/RequestList/RequestList.jsx'; 
+import RequestForm from './pages/RequestForm/RequestForm.jsx';
 
 function App() {
   const [showInstitutionModal, setShowInstitutionModal] = useState(false);
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/requests" element={<RequestList />} />
+          <Route path="/form" element={<RequestForm />} />
         </Routes>
       </div>
     </Router>
