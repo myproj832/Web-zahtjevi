@@ -8,3 +8,35 @@
 2025-06-23 12:02:20 - Started 4724
 2025-06-23 12:03:41 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
 2025-06-23 12:03:41 - Started 10328
+2025-06-23 12:18:51 - Stopping webzah.exe
+2025-06-23 12:18:51 - ProcessKill 10328
+2025-06-23 12:18:52 - Found child process: 12032 Name: conhost.exe
+2025-06-23 12:18:52 - Found child process: 964 Name: node.exe
+2025-06-23 12:18:52 - Stopping process 12032
+2025-06-23 12:18:52 - Send SIGINT 12032
+2025-06-23 12:18:52 - SIGINT to 12032 failed - Killing as fallback
+2025-06-23 12:18:52 - Stopping process 964
+2025-06-23 12:18:52 - Send SIGINT 964
+2025-06-23 12:18:52 - SIGINT to 964 failed - Killing as fallback
+2025-06-23 12:18:52 - Stopping process 10328
+2025-06-23 12:18:52 - Send SIGINT 10328
+2025-06-23 12:18:52 - SIGINT to 10328 failed - Killing as fallback
+2025-06-23 12:18:52 - Finished webzah.exe
+2025-06-23 12:19:30 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 12:19:30 - Started 11440
+2025-06-23 12:23:49 - Stopping webzah.exe
+2025-06-23 12:23:49 - ProcessKill 11440
+2025-06-23 12:23:49 - Found child process: 11476 Name: conhost.exe
+2025-06-23 12:23:49 - Found child process: 1660 Name: node.exe
+2025-06-23 12:23:50 - Stopping process 11476
+2025-06-23 12:23:50 - Send SIGINT 11476
+2025-06-23 12:23:50 - SIGINT to 11476 failed - Killing as fallback
+2025-06-23 12:23:50 - Stopping process 1660
+2025-06-23 12:23:50 - Send SIGINT 1660
+2025-06-23 12:23:50 - SIGINT to 1660 failed - Killing as fallback
+2025-06-23 12:23:50 - Stopping process 11440
+2025-06-23 12:23:50 - Send SIGINT 11440
+2025-06-23 12:23:50 - SIGINT to 11440 failed - Killing as fallback
+2025-06-23 12:23:50 - Finished webzah.exe
+2025-06-23 12:23:51 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 12:23:51 - Started 5860

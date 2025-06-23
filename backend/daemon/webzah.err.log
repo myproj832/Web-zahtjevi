@@ -94,3 +94,25 @@ Options:
   -s, --stopparentfirst  Allow the script to exit using a shutdown message.
 
 C:\web_zahtjevi\backend\app.js does not exist or cannot be found.
+TypeError: Cannot destructure property 'token_app' of 'req.body' as it is undefined.
+    at C:\web_zahtjevi\backend\routes\login.js:9:11
+    at Layer.handleRequest (C:\web_zahtjevi\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\web_zahtjevi\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\web_zahtjevi\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\web_zahtjevi\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\web_zahtjevi\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\web_zahtjevi\backend\node_modules\router\index.js:295:15
+    at processParams (C:\web_zahtjevi\backend\node_modules\router\index.js:582:12)
+    at next (C:\web_zahtjevi\backend\node_modules\router\index.js:291:5)
+    at Function.handle (C:\web_zahtjevi\backend\node_modules\router\index.js:186:3)
+TypeError: Cannot destructure property 'token_app' of 'req.body' as it is undefined.
+    at C:\web_zahtjevi\backend\routes\login.js:9:11
+    at Layer.handleRequest (C:\web_zahtjevi\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\web_zahtjevi\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\web_zahtjevi\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\web_zahtjevi\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\web_zahtjevi\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\web_zahtjevi\backend\node_modules\router\index.js:295:15
+    at processParams (C:\web_zahtjevi\backend\node_modules\router\index.js:582:12)
+    at next (C:\web_zahtjevi\backend\node_modules\router\index.js:291:5)
+    at Function.handle (C:\web_zahtjevi\backend\node_modules\router\index.js:186:3)
