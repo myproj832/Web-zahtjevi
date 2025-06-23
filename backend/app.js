@@ -6,7 +6,7 @@ const app = express();
 const PORT = 3334
 
 app.use(bodyParser.json());
-app.use('/server', loginRoute);
+app.use('/api', loginRoute);
 
 
 

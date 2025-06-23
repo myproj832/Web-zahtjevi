@@ -1,0 +1,10 @@
+2025-06-23 11:53:32 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 11:53:32 - Started 2920
+2025-06-23 11:58:39 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 11:58:39 - Started 13264
+2025-06-23 11:58:51 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 11:58:51 - Started 12236
+2025-06-23 12:02:20 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 12:02:20 - Started 4724
+2025-06-23 12:03:41 - Starting C:\Program Files\nodejs\node.exe  --harmony --max_old_space_size=4096 C:\web_zahtjevi\backend\node_modules\node-windows\lib\wrapper.js --file C:\web_zahtjevi\backend\app.js --scriptoptions= --log "WebZah wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2025-06-23 12:03:41 - Started 10328
