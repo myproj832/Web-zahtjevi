@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./RequestForm.css";
 import { Form, Button, Row, Col, InputGroup } from "react-bootstrap";
 
@@ -8,6 +9,7 @@ function RequestForm() {
   const [obrazac, setObrazac] = useState("");
   const [tekstRecepta, setTekstRecepta] = useState("");
   const [napomena, setNapomena] = useState("");
+  const navigate = useNavigate();
 
   const grupe = [
     { id: "sve", naziv: "Sve grupe" },
@@ -37,7 +39,15 @@ function RequestForm() {
   return (
     <div className="background text-dark">
       <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
-        <h1>Request Form</h1>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h1 className="mb-1">Unos Zahtjeva</h1>
+          <Button
+            variant="outline-secondary"
+            onClick={() => navigate("/requests")}
+          >
+            Pregled zahtjeva
+          </Button>
+        </div>
         <Form>
           {/* Blok: Zdravstvena ustanova */}
           <h5 className="mt-4">Zdravstvena ustanova</h5>

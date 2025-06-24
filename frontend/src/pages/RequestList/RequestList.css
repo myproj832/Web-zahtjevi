@@ -84,3 +84,17 @@
   background-color: #f4db91;
   color: rgb(66, 65, 65);
 }
+
+.badge.bg-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-30 {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
