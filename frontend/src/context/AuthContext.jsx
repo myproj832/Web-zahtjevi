@@ -7,16 +7,82 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const tokenApp = '2bc17d80-55fb-49ec-ac94-534421cbeb35';
 
-  const [tokenKorisnik, setTokenKorisnik] = useState(null);
-  const [korisnickoIme, setKorisnickoIme] = useState(null);
-    const [korisnik, setKorisnik] = useState(null);            
-  const [institucije, setInstitucije] = useState([]);
+  // const [tokenKorisnik, setTokenKorisnik] = useState(null);
+  // const [korisnickoIme, setKorisnickoIme] = useState(null);
+  //   const [korisnik, setKorisnik] = useState(null);            
+  // const [institucije, setInstitucije] = useState([]);
 
 
-  const [tokenUser, setTokenUser] = useState(null);
-  const [izabranaInstitucija, setIzabranaInstitucija] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-   const [ipAddress, setIpAddress] = useState(null);
+  // const [tokenUser, setTokenUser] = useState(null);
+  // const [izabranaInstitucija, setIzabranaInstitucija] = useState(null);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  //  const [ipAddress, setIpAddress] = useState(null);
+   // Inicijalno čitamo iz sessionStorage (neći iz baze dok se ne loginuje)
+  const [tokenKorisnik, setTokenKorisnik] = useState(() =>
+    sessionStorage.getItem('tokenKorisnik')
+  );
+  const [korisnickoIme, setKorisnickoIme] = useState(() =>
+    sessionStorage.getItem('korisnickoIme')
+  );
+  const [korisnik, setKorisnik] = useState(() =>
+    sessionStorage.getItem('korisnik')
+  );
+  const [institucije, setInstitucije] = useState(() => {
+    const raw = sessionStorage.getItem('institucije');
+    return raw ? JSON.parse(raw) : [];
+  });
+  const [izabranaInstitucija, setIzabranaInstitucija] = useState(() => {
+    const raw = sessionStorage.getItem('izabranaInstitucija');
+    return raw ? JSON.parse(raw) : null;
+  });
+  const [tokenUser, setTokenUser] = useState(() =>
+    sessionStorage.getItem('tokenUser')
+  );
+
+  const isAuthenticated = Boolean(tokenUser);
+  const [ipAddress, setIpAddress] = useState(null);
+
+   // Čuvamo u sessionStorage svaki put kad se nešto menja
+  useEffect(() => {
+    tokenKorisnik
+      ? sessionStorage.setItem('tokenKorisnik', tokenKorisnik)
+      : sessionStorage.removeItem('tokenKorisnik');
+  }, [tokenKorisnik]);
+
+  useEffect(() => {
+    korisnickoIme
+      ? sessionStorage.setItem('korisnickoIme', korisnickoIme)
+      : sessionStorage.removeItem('korisnickoIme');
+  }, [korisnickoIme]);
+
+  useEffect(() => {
+    korisnik
+      ? sessionStorage.setItem('korisnik', korisnik)
+      : sessionStorage.removeItem('korisnik');
+  }, [korisnik]);
+
+  useEffect(() => {
+    if (institucije.length) {
+      sessionStorage.setItem('institucije', JSON.stringify(institucije));
+    } else {
+      sessionStorage.removeItem('institucije');
+    }
+  }, [institucije]);
+
+  useEffect(() => {
+    izabranaInstitucija
+      ? sessionStorage.setItem(
+          'izabranaInstitucija',
+          JSON.stringify(izabranaInstitucija)
+        )
+      : sessionStorage.removeItem('izabranaInstitucija');
+  }, [izabranaInstitucija]);
+
+  useEffect(() => {
+    tokenUser
+      ? sessionStorage.setItem('tokenUser', tokenUser)
+      : sessionStorage.removeItem('tokenUser');
+  }, [tokenUser]);
 
   // Fetch public IP address
   useEffect(() => {
@@ -84,7 +150,7 @@ if (out.error_u === 'OK') {
   }
  setTokenUser(out2.token_user);
  setIzabranaInstitucija(inst);
-  setIsAuthenticated(true);
+  // setIsAuthenticated(true);
   navigate('/requests');
 };
 
@@ -92,12 +158,13 @@ if (out.error_u === 'OK') {
 
 
  const logout = () => {
+   sessionStorage.clear();
     setTokenKorisnik(null);
     setTokenUser(null);
     setKorisnickoIme(null);
     setInstitucije([]);
     setIzabranaInstitucija(null);
-    setIsAuthenticated(false);
+    isAuthenticated(false);
     navigate('/');
   };
 
