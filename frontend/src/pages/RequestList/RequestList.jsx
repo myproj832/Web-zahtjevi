@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 function RequestList() {
   const navigate = useNavigate();
   const [selectedRowId, setSelectedRowId] = useState(null);
-
   // Dummy podaci
   const doctorId = 1; // Prijavljeni ljekar
 
@@ -15,11 +14,11 @@ function RequestList() {
       id: 1,
       datum: "24.05.2025 15:20",
       pacijent: "Marko Marković",
-      tipRecepta: "Blanko", // ili "Blanko forma"
+      tipRecepta: "Blanko",
       telefon: "38269344557",
       obrazac: "",
       lijek: "Andol",
-      sastav: ["Paracetamol 500mg", "3x dnevno", "Uzeti nakon obroka"], // koristi se samo ako je tipRecepta === "Blanko forma"
+      sastav: ["Paracetamol 500mg", "3x dnevno", "Uzeti nakon obroka"],
       ustanova: "Dom zdravlja Beograd",
       ljekarId: 1,
       ljekar: "Dr Ivana Ivković",
@@ -27,19 +26,18 @@ function RequestList() {
       datumStatusa: "20.06.2025",
       napomena: "Doziranje po potrebi",
       faksimil: "Dr. MN",
-      potpisFarmaceuta: "Petar Petrović",
+      farmaceut: "Petar Petrović",
       datumIzdavanja: "21.06.2025",
-      supstanca: "Acetilsalicilna kiselina",
     },
 
     {
       id: 2,
       datum: "31.05.2025 15:20",
       pacijent: "Ana Anić",
-      tipRecepta: "Obrazac lijeka", // ili "Blanko forma"
+      tipRecepta: "Obrazac lijeka",
       telefon: "38269344556",
       obrazac: "Blanko",
-      sastav: ["neki sastav 500mg", "3x dnevno", "Uzeti nakon obroka"], // koristi se samo ako je tipRecepta === "Blanko forma"
+      sastav: ["neki sastav 500mg", "3x dnevno", "Uzeti nakon obroka"],
       status: "Na čekanju",
       datumStatusa: "2025-05-25",
       ustanova: "KBC Zvezdara",
@@ -47,10 +45,9 @@ function RequestList() {
       ljekar: "Dr Milan Nikolić",
       napomena: "",
       faksimil: "Dr. MN",
-      potpisFarmaceuta: "Farm. Luka Ilić",
+      farmaceut: "Farm. Luka Ilić",
       datumIzdavanja: "05.06.2025",
       lijek: "Neki lijek",
-      supstanca: "Acetilsalicilna kiselina",
     },
   ];
 
@@ -62,7 +59,6 @@ function RequestList() {
     datumDo: "",
     pacijent: "",
     lijek: "",
-    sastav: "",
     status: "",
   });
 
@@ -71,26 +67,26 @@ function RequestList() {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const filteredRequests = requests.filter((r) => {
-    const datum = new Date(r.datum);
-    const od = filters.datumOd ? new Date(filters.datumOd) : null;
-    const doD = filters.datumDo ? new Date(filters.datumDo) : null;
+ const filteredRequests = requests.filter((r) => {
+  const datum = new Date(r.datum);
+  const od = filters.datumOd ? new Date(filters.datumOd) : null;
+  const doD = filters.datumDo ? new Date(filters.datumDo) : null;
 
-    return (
-      (!od || datum >= od) &&
-      (!doD || datum <= doD) &&
-      (r.pacijent + r.telefon)
-        .toLowerCase()
-        .includes(filters.pacijent.toLowerCase()) &&
-      r.lijek.toLowerCase().includes(filters.lijek.toLowerCase()) &&
-      (Array.isArray(r.sastav)
-        ? r.sastav.some((item) =>
-            item.toLowerCase().includes(filters.sastav.toLowerCase())
-          )
-        : r.sastav.toLowerCase().includes(filters.sastav.toLowerCase())) && // fallback za stare podatke
-      r.status.toLowerCase().includes(filters.status.toLowerCase())
-    );
-  });
+  const combinedPacijentTelefon = (r.pacijent + r.telefon).toLowerCase();
+  const combinedLijekSastav = (
+    r.lijek +
+    (Array.isArray(r.sastav) ? r.sastav.join(" ") : r.sastav)
+  ).toLowerCase();
+
+  return (
+    (!od || datum >= od) &&
+    (!doD || datum <= doD) &&
+    combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
+    combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
+    r.status.toLowerCase().includes(filters.status.toLowerCase())
+  );
+});
+
 
   const handleDelete = (id) => {
     const confirmed = window.confirm(
@@ -98,7 +94,7 @@ function RequestList() {
     );
     if (confirmed) {
       alert(`Status zahtjeva ${id} promijenjen u 'Pasivan'`);
-      // Ovdje bi se u pravoj aplikaciji slao PATCH/PUT zahtjev
+      // Ovdje bi se u aplikaciji slao PATCH/PUT zahtjev
     }
   };
 
@@ -134,7 +130,7 @@ function RequestList() {
             onChange={handleFilterChange}
           />
         </div>
-        <div className="col-md-2">
+        <div className="col-md-3">
           <label></label>
           <input
             type="text"
@@ -145,25 +141,14 @@ function RequestList() {
             onChange={handleFilterChange}
           />
         </div>
-        <div className="col-md-2">
+        <div className="col-md-3">
           <label></label>
           <input
             type="text"
             className="form-control"
-            placeholder="Lijek"
+            placeholder="Lijek / Supstanca"
             name="lijek"
             value={filters.lijek}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-md-2">
-          <label></label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Sastav"
-            name="sastav"
-            value={filters.sastav}
             onChange={handleFilterChange}
           />
         </div>
@@ -184,10 +169,34 @@ function RequestList() {
       {/*ikonice iznad tabele*/}
       <div className="d-none d-md-block">
         <div className="d-flex justify-content-end gap-4 p-2">
-          <button className="btn btn-sm btn-outline-primary btn-light btn-30">
+          <button
+            className="btn btn-sm btn-outline-primary btn-light btn-30"
+            onClick={() => {
+              const selectedRequest = filteredRequests.find(
+                (r) => r.id === selectedRowId
+              );
+              if (!selectedRequest) {
+                alert("Molimo selektujte red u tabeli.");
+                return;
+              }
+              navigate(`/requests/${selectedRequest.id}`);
+            }}
+          >
             <h5 className="p-0 m-0">🗎</h5>
           </button>
-          <button className="btn btn-sm btn-outline-warning btn-light btn-30">
+
+          <button className="btn btn-sm btn-outline-warning btn-light btn-30"
+          onClick={() => {
+              const selectedRequest = filteredRequests.find(
+                (r) => r.id === selectedRowId
+              );
+              if (!selectedRequest) {
+                alert("Molimo selektujte red u tabeli.");
+                return;
+              }
+              navigate(`/form`);
+            }}
+            >
             <h5 className="p-0 m-0">🖉</h5>
           </button>
           <button
@@ -210,7 +219,7 @@ function RequestList() {
                 alert(
                   `Zahtjev ID ${selectedRequest.id} je sada pasivan (soft delete)`
                 );
-                // Pozovi svoju logiku za soft delete ovde
+                // logika za soft delete ovde
               }
             }}
           >
@@ -233,8 +242,7 @@ function RequestList() {
               <th>Ustanova / Ljekar</th>
               <th>Status</th>
               <th>Napomena</th>
-              <th>Faksimil</th>
-              <th>Potpis farmaceuta</th>
+              <th>Farmaceut</th>
               <th>Datum izdavanja</th>
             </tr>
           </thead>
@@ -267,7 +275,7 @@ function RequestList() {
                         overflowY: "auto",
                       }}
                     >
-                      {Array.isArray(request.sastav) &&
+                      {/* {Array.isArray(request.sastav) &&
                         request.sastav.length > 0 && (
                           <div className="mt-2">
                             <strong>Sastav:</strong>
@@ -277,7 +285,7 @@ function RequestList() {
                               ))}
                             </ul>
                           </div>
-                        )}
+                        )} */}
                     </div>
                   </td>
 
@@ -301,8 +309,7 @@ function RequestList() {
                     </span>
                   </td>
                   <td>{request.napomena || "—"}</td>
-                  <td>{request.faksimil}</td>
-                  <td>{request.potpisFarmaceuta}</td>
+                  <td>{request.farmaceut}</td>
                   <td>{request.datumIzdavanja}</td>
                 </tr>
               </React.Fragment>
@@ -367,10 +374,7 @@ function RequestList() {
               <strong>Napomena:</strong> {request.napomena || "—"}
             </p>
             <p>
-              <strong>Faksimil:</strong> {request.faksimil}
-            </p>
-            <p>
-              <strong>Potpis farmaceuta:</strong> {request.potpisFarmaceuta}
+              <strong>Farmaceut:</strong> {request.farmaceut}
             </p>
             <p>
               <strong>Datum izdavanja lijeka:</strong> {request.datumIzdavanja}
