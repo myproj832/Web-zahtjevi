@@ -34,7 +34,35 @@ function RequestCard({ request }) {
             <p><strong>Napomena:</strong> {request.napomena || "—"}</p>
             <p><strong>Farmaceut:</strong> {request.farmaceut}</p>
             <p><strong>Datum izdavanja lijeka:</strong> {request.datumIzdavanja}</p>
+            <div className="button-group mt-3 d-flex flex-wrap gap-2">
+                <button className="btn btn-pregled btn-sm">Pregled</button>
+                {request.status === "Kreiran" && (
+                    <>
+                        <button className="btn btn-izmijeni btn-sm">Izmijeni</button>
+                        <button
+                            className="btn btn-obrisi btn-sm"
+                            onClick={() => {
+                                if (
+                                    window.confirm(
+                                        "Jeste li sigurni da želite da obrišete zahtjev?"
+                                    )
+                                ) {
+                                    // Simulacija promjene statusa
+                                    alert("Zahtjev je sada pasivan (soft delete)");
+                                }
+                            }}
+                        >
+                            Obriši
+                        </button>
+                    </>
+                )}
+                <button className="btn btn-outline-secondary btn-sm">
+                    Štampa
+                </button>
+            </div>
         </div>
+
+
     );
 }
 
