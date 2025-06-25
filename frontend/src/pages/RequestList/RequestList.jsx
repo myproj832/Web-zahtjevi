@@ -1,14 +1,25 @@
-import React, { useState } from "react";
-import { Table, Button } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import FilterForm from '../../components/RequestsList/FilterForm';
+import RequestTable from '../../components/RequestsList/RequestTable';
+import RequestCard from '../../components/RequestsList/RequestCard';
+import ActionButtons from '../../components/RequestsList/ActionButtons';
+import Header from "../../components/Header";
 import "./RequestList.css";
-import { useNavigate } from "react-router-dom";
 
 function RequestList() {
   const navigate = useNavigate();
   const [selectedRowId, setSelectedRowId] = useState(null);
-  // Dummy podaci
-  const doctorId = 1; // Prijavljeni ljekar
+  const [filters, setFilters] = useState({
+    datumOd: "",
+    datumDo: "",
+    pacijent: "",
+    lijek: "",
+    status: "",
+  });
 
+  // Dummy podaci - zameni sa stvarnim API pozivom ili podacima
   const allRequests = [
     {
       id: 1,
@@ -29,7 +40,6 @@ function RequestList() {
       farmaceut: "Petar Petrović",
       datumIzdavanja: "21.06.2025",
     },
-
     {
       id: 2,
       datum: "31.05.2025 15:20",
@@ -51,54 +61,46 @@ function RequestList() {
     },
   ];
 
-  // Prikaz samo zahtjeva koje je podnio prijavljeni ljekar
+  const doctorId = 1; // Prijavljeni ljekar
   const requests = allRequests.filter((r) => r.ljekarId === doctorId);
-
-  const [filters, setFilters] = useState({
-    datumOd: "",
-    datumDo: "",
-    pacijent: "",
-    lijek: "",
-    status: "",
-  });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
- const filteredRequests = requests.filter((r) => {
-  const datum = new Date(r.datum);
-  const od = filters.datumOd ? new Date(filters.datumOd) : null;
-  const doD = filters.datumDo ? new Date(filters.datumDo) : null;
+  const filteredRequests = requests.filter((r) => {
+    const datum = new Date(r.datum);
+    const od = filters.datumOd ? new Date(filters.datumOd) : null;
+    const doD = filters.datumDo ? new Date(filters.datumDo) : null;
 
-  const combinedPacijentTelefon = (r.pacijent + r.telefon).toLowerCase();
-  const combinedLijekSastav = (
-    r.lijek +
-    (Array.isArray(r.sastav) ? r.sastav.join(" ") : r.sastav)
-  ).toLowerCase();
+    const combinedPacijentTelefon = (r.pacijent + r.telefon).toLowerCase();
+    const combinedLijekSastav = (
+      r.lijek +
+      (Array.isArray(r.sastav) ? r.sastav.join(" ") : r.sastav)
+    ).toLowerCase();
 
-  return (
-    (!od || datum >= od) &&
-    (!doD || datum <= doD) &&
-    combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
-    combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
-    r.status.toLowerCase().includes(filters.status.toLowerCase())
-  );
-});
-
+    return (
+      (!od || datum >= od) &&
+      (!doD || datum <= doD) &&
+      combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
+      combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
+      r.status.toLowerCase().includes(filters.status.toLowerCase())
+    );
+  });
 
   const handleDelete = (id) => {
     const confirmed = window.confirm(
       "Jeste li sigurni da želite da izbrišete zahtjev?"
     );
     if (confirmed) {
-      alert(`Status zahtjeva ${id} promijenjen u 'Pasivan'`);
-      // Ovdje bi se u aplikaciji slao PATCH/PUT zahtjev
+      alert(`Zahtjev ID ${id} je sada pasivan.`);
     }
   };
 
   return (
+    <>
+    <Header />
     <div className="background p-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="mb-1" style={{ color: "#47466D" }}>
@@ -109,307 +111,26 @@ function RequestList() {
         </Button>
       </div>
 
-      <div className="row g-2 mb-4">
-        <div className="col-md-2">
-          <label>Datum od:</label>
-          <input
-            type="date"
-            className="form-control"
-            name="datumOd"
-            value={filters.datumOd}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-md-2">
-          <label>Datum do:</label>
-          <input
-            type="date"
-            className="form-control"
-            name="datumDo"
-            value={filters.datumDo}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-md-3">
-          <label></label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Pacijent / Telefon"
-            name="pacijent"
-            value={filters.pacijent}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-md-3">
-          <label></label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Lijek / Supstanca"
-            name="lijek"
-            value={filters.lijek}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-md-2">
-          <label></label>
-          <select
-            className="form-control"
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <option value="">Status</option>
-            <option value="Kreiran">Kreiran</option>
-            <option value="Na čekanju">Na čekanju</option>
-          </select>
-        </div>
-      </div>
-      {/*ikonice iznad tabele*/}
-      <div className="d-none d-md-block">
-        <div className="d-flex justify-content-end gap-4 p-2">
-          <button
-            className="btn btn-sm btn-outline-primary btn-light btn-30"
-            onClick={() => {
-              const selectedRequest = filteredRequests.find(
-                (r) => r.id === selectedRowId
-              );
-              if (!selectedRequest) {
-                alert("Molimo selektujte red u tabeli.");
-                return;
-              }
-              navigate(`/requests/${selectedRequest.id}`);
-            }}
-          >
-            <h5 className="p-0 m-0">🗎</h5>
-          </button>
+      <FilterForm filters={filters} handleFilterChange={handleFilterChange} />
 
-          <button className="btn btn-sm btn-outline-warning btn-light btn-30"
-          onClick={() => {
-              const selectedRequest = filteredRequests.find(
-                (r) => r.id === selectedRowId
-              );
-              if (!selectedRequest) {
-                alert("Molimo selektujte red u tabeli.");
-                return;
-              }
-              navigate(`/form`);
-            }}
-            >
-            <h5 className="p-0 m-0">🖉</h5>
-          </button>
-          <button
-            className="btn btn-sm btn-outline-danger btn-light btn-30"
-            onClick={() => {
-              const selectedRequest = filteredRequests.find(
-                (r) => r.id === selectedRowId
-              );
+      <ActionButtons
+        selectedRequest={filteredRequests.find((r) => r.id === selectedRowId)}
+        handleDelete={handleDelete}
+      />
 
-              if (!selectedRequest) {
-                alert("Molimo selektujte red u tabeli.");
-                return;
-              }
+      <RequestTable 
+        filteredRequests={filteredRequests} 
+        setSelectedRowId={setSelectedRowId} 
+        selectedRowId={selectedRowId}
+      />
 
-              if (
-                window.confirm(
-                  `Jeste li sigurni da želite da obrišete zahtjev za: ${selectedRequest.pacijent}?`
-                )
-              ) {
-                alert(
-                  `Zahtjev ID ${selectedRequest.id} je sada pasivan (soft delete)`
-                );
-                // logika za soft delete ovde
-              }
-            }}
-          >
-            <h5 className="p-0 m-0">🗑︎</h5>
-          </button>
-
-          <button className="btn btn-sm btn-outline-secondary btn-light btn-30">
-            <h5 className="p-0 m-0">🖶</h5>
-          </button>
-        </div>
-      </div>
-      <div className="d-none d-md-block">
-        <Table bordered hover responsive className="bg-white shadow-sm">
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Pacijent / Telefon</th>
-              <th>Tip recepta</th>
-              <th>Lijek / Sastav</th>
-              <th>Ustanova / Ljekar</th>
-              <th>Status</th>
-              <th>Napomena</th>
-              <th>Farmaceut</th>
-              <th>Datum izdavanja</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredRequests.map((request) => (
-              <React.Fragment key={request.id}>
-                <tr
-                  key={request.id}
-                  className={
-                    request.id === selectedRowId ? "table-primary" : ""
-                  }
-                  onClick={() => setSelectedRowId(request.id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{request.datum}</td>
-                  <td>
-                    <div>{request.pacijent}</div>
-                    <div>{request.telefon}</div>
-                  </td>
-                  <td>{request.tipRecepta}</td>
-                  <td>
-                    <div>
-                      <strong>Lijek:</strong> {request.lijek}
-                    </div>
-                    <div
-                      className="p-1 rounded"
-                      style={{
-                        maxHeight: "100px",
-                        overflowY: "auto",
-                      }}
-                    >
-                      {/* {Array.isArray(request.sastav) &&
-                        request.sastav.length > 0 && (
-                          <div className="mt-2">
-                            <strong>Sastav:</strong>
-                            <ul className="mb-0 ps-3">
-                              {request.sastav.map((item, idx) => (
-                                <li key={idx}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )} */}
-                    </div>
-                  </td>
-
-                  <td>
-                    <div>
-                      <strong>Ustanova:</strong> {request.ustanova}
-                    </div>
-                    <div>
-                      <strong>Ljekar:</strong> {request.ljekar}
-                    </div>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        request.status === "Kreiran"
-                          ? "badge-status-kreiran"
-                          : "badge-status-na-cekanju"
-                      }`}
-                    >
-                      {request.status}
-                    </span>
-                  </td>
-                  <td>{request.napomena || "—"}</td>
-                  <td>{request.farmaceut}</td>
-                  <td>{request.datumIzdavanja}</td>
-                </tr>
-              </React.Fragment>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-
-      {/* Mobile View - Kartice */}
       <div className="d-md-none">
         {filteredRequests.map((request) => (
-          <div
-            key={request.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "16px",
-              marginBottom: "16px",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-              background: "#ffffffe9",
-            }}
-          >
-            <p>
-              <strong>Datum podnošenja:</strong> {request.datum}
-            </p>
-            <p>
-              <strong>Pacijent:</strong> {request.pacijent}
-            </p>
-            <p>
-              <strong>Tip recepta:</strong> {request.tipRecepta}
-            </p>
-            <p>
-              <strong>Ustanova:</strong> {request.ustanova}
-            </p>
-            <p>
-              <strong>Ljekar:</strong> {request.ljekar}
-            </p>
-            <p>
-              <strong>Lijek:</strong> {request.lijek || "—"}
-            </p>
-            <p className="mt-2">
-              <strong>Sastav:</strong>
-              <ul className="mb-0 ps-3">
-                {request.sastav.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </p>
-            <p>
-              <strong>Status:</strong>{" "}
-              <span
-                className={`badge ${
-                  request.status === "Kreiran"
-                    ? "badge-status-kreiran"
-                    : "badge-status-na-cekanju"
-                }`}
-              >
-                {request.status}
-              </span>
-            </p>
-            <p>
-              <strong>Napomena:</strong> {request.napomena || "—"}
-            </p>
-            <p>
-              <strong>Farmaceut:</strong> {request.farmaceut}
-            </p>
-            <p>
-              <strong>Datum izdavanja lijeka:</strong> {request.datumIzdavanja}
-            </p>
-
-            <div className="button-group mt-3 d-flex flex-wrap gap-2">
-              <button className="btn btn-pregled btn-sm">Pregled</button>
-              {request.status === "Kreiran" && (
-                <>
-                  <button className="btn btn-izmijeni btn-sm">Izmijeni</button>
-                  <button
-                    className="btn btn-obrisi btn-sm"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Jeste li sigurni da želite da obrišete zahtjev?"
-                        )
-                      ) {
-                        // Simulacija promjene statusa
-                        alert("Zahtjev je sada pasivan (soft delete)");
-                      }
-                    }}
-                  >
-                    Obriši
-                  </button>
-                </>
-              )}
-              <button className="btn btn-outline-secondary btn-sm">
-                Štampa
-              </button>
-            </div>
-          </div>
+          <RequestCard key={request.id} request={request} />
         ))}
       </div>
     </div>
+    </>
   );
 }
 
