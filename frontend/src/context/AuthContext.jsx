@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
@@ -16,15 +16,23 @@ export const AuthProvider = ({ children }) => {
   const [tokenUser, setTokenUser] = useState(null);
   const [izabranaInstitucija, setIzabranaInstitucija] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+   const [ipAddress, setIpAddress] = useState(null);
 
- 
+  // Fetch public IP address
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => setIpAddress(data.ip))
+      .catch(err => console.error('Unable to fetch IP address', err));
+  }, []);
 
   // 1) Poziv prvog check_in servisa
   const login = async ({ username, password }) => {
+     const ip = ipAddress || '0.0.0.0';
     const res = await fetch('http://62.4.59.86:3334/api/check_in', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({  token_app: tokenApp, user_p: username, pass_p: password, ip_p: '192.168.56.589' }),
+      body: JSON.stringify({  token_app: tokenApp, user_p: username, pass_p: password, ip_p: ip }),
     });
 console.log('Login HTTP status:', res.status, 'ok?', res.ok);
      if (!res.ok) {

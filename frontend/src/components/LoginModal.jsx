@@ -12,7 +12,7 @@ function LoginModal({ show, onHide, container  }) {
     e.preventDefault();
     try {
       // prikupi IP sa window.location.host - kasnije 
-       await auth.login({ username, password, ip: "" });
+       await auth.login({ username, password });
        onHide();
 
     } catch (err) {
