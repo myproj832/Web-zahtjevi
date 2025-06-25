@@ -1,16 +1,24 @@
 // src/components/LoginModal.jsx
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function LoginModal({ show, onHide, container  }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const auth = useAuth();
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    // TODO: call your login API
-    console.log("Logging in:", { username, password });
-    onHide();
+    try {
+      // prikupi IP sa window.location.host - kasnije 
+       await auth.login({ username, password, ip: "" });
+       onHide();
+
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Prijava nije uspjela. Provjerite korisničko ime i lozinku.");
+    }
   };
 
   return (

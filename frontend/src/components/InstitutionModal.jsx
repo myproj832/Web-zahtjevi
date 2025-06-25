@@ -1,14 +1,15 @@
-import React from 'react';
-import { Modal} from 'react-bootstrap';
-import './InstitutionModal.css'; // Import your custom styles
+import React from "react";
+import { Modal } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext.jsx";
+import "./InstitutionModal.css"; // Import your custom styles
 
-export default function InstitutionModal({ show, onSelect, onHide, container }) {
-  const institutions = [
-    { label: 'DOM ZDRAVLJA', value: 'dom_zdravlja', variant: 'primary' },
-    { label: 'POLIKLINIKA', value: 'poliklinika', variant: 'info' },
-    { label: 'KLINIKA MED', value: 'klinika_med', variant: 'success' },
-  ];
-
+export default function InstitutionModal({
+  show,
+  onSelect,
+  onHide,
+  container,
+}) {
+  const { institucije, korisnik, selectInstitution } = useAuth();
   return (
     <Modal
       show={show}
@@ -20,18 +21,23 @@ export default function InstitutionModal({ show, onSelect, onHide, container }) 
     >
       <Modal.Body className="p-0">
         <div className="institution-modal-content">
-          <h2 className="institution-modal-title">MARKO MARKOVIĆ</h2>
-          <p className="institution-modal-subtitle">Ljekar</p>
-          <p className="institution-modal-subtitle">Izaberite zdravstvenu ustanovu:</p>
+          <h2 className="institution-modal-title">{korisnik}</h2>
+
+          <p className="institution-modal-subtitle">
+            Izaberite zdravstvenu ustanovu:
+          </p>
 
           <div className="institution-modal-buttons">
-            {institutions.map((inst) => (
+            {institucije.map((inst) => (
               <button
-                key={inst.value}
-                onClick={() => onSelect(inst.value)}
-                className={`institution-btn institution-btn--${inst.value}`}
+                key={inst.id_institution}
+                onClick={() => {
+                  selectInstitution(inst);
+                  onHide();
+                }}
+                className={`institution-btn institution-btn--${inst.id_institution}`}
               >
-                {inst.label}
+                {inst.name_unit}
               </button>
             ))}
           </div>

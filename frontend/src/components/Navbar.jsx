@@ -5,8 +5,8 @@ const Navbar = () => {
         <nav style={styles.nav}>
             
             <ul style={styles.navLinks}>
-                <li><a href="" style={styles.link}>Lista zahtjeva</a></li>
-                <li><a href="" style={styles.link}>Unos Zahtjeva</a></li>
+                <li><a href="/requests" style={styles.link}>Lista zahtjeva</a></li>
+                <li><a href="/form" style={styles.link}>Unos Zahtjeva</a></li>
                 
             </ul>
         </nav>

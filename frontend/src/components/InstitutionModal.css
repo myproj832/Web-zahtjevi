@@ -27,34 +27,13 @@
   gap: 1rem;
 }
 
-/* Shared button styles */
-.institution-btn {
-  padding: 0.75rem;
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.2s;
-}
+
 .institution-btn:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Gradients matching prototype */
-.institution-btn--dom_zdravlja {
-  background: linear-gradient(90deg, #607BFF 0%, #789CFF 100%);
-}
 
-.institution-btn--poliklinika {
-  background: linear-gradient(90deg, #1ECDC4 0%, #1ABAB0 100%);
-}
-
-.institution-btn--klinika_med {
-  background: linear-gradient(90deg, #1ABAB0 0%, #039ABF 100%);
-}
 
 .institution-modal-cancel {
   margin-top: 1.5rem;
@@ -68,3 +47,34 @@
 .institution-modal-cancel:hover {
   color: #0037cf;
 }
+
+/* Osnovni stil za sva “institution-btn” dugmad */
+ .institution-modal-buttons .institution-btn {
+  color: #fff;               
+  border: none;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+} */
+
+.institution-modal-buttons .institution-btn:hover {
+  opacity: 0.9;
+} 
+
+/* Svako 1., 4., 7., … dugme */
+ .institution-modal-buttons .institution-btn:nth-child(3n + 1) {
+  background-color: var(--color-royal-hyacinth);
+} 
+
+/* Svako 2., 5., 8., … dugme */
+ .institution-modal-buttons .institution-btn:nth-child(3n + 2) {
+  background-color: var(--color-cendre-blue);
+} 
+
+/* Svako 3., 6., 9., … dugme */
+.institution-modal-buttons .institution-btn:nth-child(3n + 3) {
+  background-color: var(--color-medium-turquoise);
+} 

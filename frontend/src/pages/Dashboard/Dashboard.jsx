@@ -28,7 +28,7 @@ const cards = [
   },
 ];
 
-function Dashboard() {
+function Dashboard({ openLogin }) {
   const [showLogin, setShowLogin] = useState(false);
 const dashboardRef = useRef();
   return (
@@ -44,7 +44,7 @@ const dashboardRef = useRef();
           />
           <Button
             type="button"
-            onClick={() => setShowLogin(true)}
+            onClick={openLogin}
             className="loginButton me-4 mb-3 text-nowrap"
           >
             Prijavi se
