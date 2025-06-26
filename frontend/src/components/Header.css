@@ -1,24 +1,35 @@
 
 .header-page {
-    
-   background: linear-gradient(
-    90deg,
-    #245d83 0%,
-    #25b4b4 50%,
-    #417ca3  100%
-  );
-   box-shadow:
+  background: #89b0cc !important;
+  background: linear-gradient(45deg, #d7f8dc 0%, #d9e7ff 100%)!important;
+ 
+   /* box-shadow:
    
     0 30px 60px -15px rgba(0, 0, 0, 0.25),
     
-    0 6px 8px -3px rgba(0, 0, 0, 0.12);
+    0 6px 8px -3px rgba(0, 0, 0, 0.12); */
   
-  border-radius: 0 0 2px 2px;
-  padding: 1rem 2rem;
+  border-radius: 0 0 3px 3px;
+  padding: 1rem;
 }
 
 .header-institution,
 .header-user {
+    display: inline-block;            
+  padding: 0.30rem 0.6rem;          
+  border-radius: 0.25rem;           
+  color: #fff;
+   background: linear-gradient(
+    90deg,
+    rgba(36, 93, 131, 0.8) 0%,
+    rgba(37, 180, 180, 0.8) 50%,
+    rgba(65, 124, 163, 0.8) 100%
+  );
+   box-shadow:
+   
+    0 30px 60px -15px rgba(0, 0, 0.25, 0.25),
+    
+    0 6px 8px -3px rgba(0, 0, 0.25, 0.12); 
   color: #fff; /* #47466D */
   font-size: 1rem;
   letter-spacing: 0.5px;
@@ -39,7 +50,7 @@
   margin-left: 1rem;
   padding: 0.25rem 0.75rem;
   border: 1px solid #205375;
-  background: #245d83;
+  background: var(--gradient-primary-button);
   color: #f4f6fa ;
   border-radius: 0.25rem;
   font-weight: 500;

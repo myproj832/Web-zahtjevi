@@ -9,7 +9,7 @@ export default function InstitutionModal({
   onHide,
   container,
 }) {
-  const { institucije, korisnik, selectInstitution } = useAuth();
+  const { institucije, korisnik, selectInstitution, logout } = useAuth();
   return (
     <Modal
       show={show}
@@ -30,19 +30,19 @@ export default function InstitutionModal({
           <div className="institution-modal-buttons">
             {institucije.map((inst) => (
               <button
-                key={inst.id_institution}
+                key={inst.id_unit}
                 onClick={() => {
                   selectInstitution(inst);
                   onHide();
                 }}
-                className={`institution-btn institution-btn--${inst.id_institution}`}
+                className={`institution-btn institution-btn--${inst.id_unit}`}
               >
                 {inst.name_unit}
               </button>
             ))}
           </div>
 
-          <button onClick={onHide} className="institution-modal-cancel">
+          <button  onClick={() => { logout(); onHide(); }} className="institution-modal-cancel">
             Odustani
           </button>
         </div>

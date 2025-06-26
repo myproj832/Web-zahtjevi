@@ -7,17 +7,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const tokenApp = '2bc17d80-55fb-49ec-ac94-534421cbeb35';
 
-  // const [tokenKorisnik, setTokenKorisnik] = useState(null);
-  // const [korisnickoIme, setKorisnickoIme] = useState(null);
-  //   const [korisnik, setKorisnik] = useState(null);            
-  // const [institucije, setInstitucije] = useState([]);
-
-
-  // const [tokenUser, setTokenUser] = useState(null);
-  // const [izabranaInstitucija, setIzabranaInstitucija] = useState(null);
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-  //  const [ipAddress, setIpAddress] = useState(null);
-   // Inicijalno čitamo iz sessionStorage (neći iz baze dok se ne loginuje)
   const [tokenKorisnik, setTokenKorisnik] = useState(() =>
     sessionStorage.getItem('tokenKorisnik')
   );
@@ -27,6 +16,10 @@ export const AuthProvider = ({ children }) => {
   const [korisnik, setKorisnik] = useState(() =>
     sessionStorage.getItem('korisnik')
   );
+  const [rola, setRola] = useState(() =>
+  sessionStorage.getItem('role')
+);
+
   const [institucije, setInstitucije] = useState(() => {
     const raw = sessionStorage.getItem('institucije');
     return raw ? JSON.parse(raw) : [];
@@ -38,6 +31,8 @@ export const AuthProvider = ({ children }) => {
   const [tokenUser, setTokenUser] = useState(() =>
     sessionStorage.getItem('tokenUser')
   );
+
+
 
   const isAuthenticated = Boolean(tokenUser);
   const [ipAddress, setIpAddress] = useState(null);
@@ -83,6 +78,16 @@ export const AuthProvider = ({ children }) => {
       ? sessionStorage.setItem('tokenUser', tokenUser)
       : sessionStorage.removeItem('tokenUser');
   }, [tokenUser]);
+
+ useEffect(() => {
+  if (rola) {
+    sessionStorage.setItem('rola', rola);
+  } else {
+    sessionStorage.removeItem('rola');
+  }
+}, [rola]);
+
+
 
   // Fetch public IP address
   useEffect(() => {
@@ -150,7 +155,7 @@ if (out.error_u === 'OK') {
   }
  setTokenUser(out2.token_user);
  setIzabranaInstitucija(inst);
-  // setIsAuthenticated(true);
+   setRola(out2.rola_u); 
   navigate('/requests');
 };
 
@@ -164,7 +169,7 @@ if (out.error_u === 'OK') {
     setKorisnickoIme(null);
     setInstitucije([]);
     setIzabranaInstitucija(null);
-    isAuthenticated(false);
+    
     navigate('/');
   };
 
@@ -179,6 +184,7 @@ if (out.error_u === 'OK') {
         tokenUser,
         izabranaInstitucija,
         isAuthenticated,
+        rola,
         login,
         selectInstitution,
         logout,
@@ -194,4 +200,5 @@ export const useAuth = () => {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
+
 
