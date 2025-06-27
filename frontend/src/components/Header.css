@@ -60,6 +60,7 @@
 .btn-logout:hover {
   background: #c7d6f3;
   color: var(--color-royal-hyacinth);
+  border: 1px solid #205375;
 }
 @media (max-width: 576px) {
   .header {
@@ -68,5 +69,6 @@
   .header-institution,
   .header-user {
     font-size: 0.85rem;
+    margin: 0 0.25rem;
   }
 }
