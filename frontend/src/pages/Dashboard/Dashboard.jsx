@@ -9,22 +9,22 @@ const cards = [
   {
     title: "Pravljenje lijekova",
     icon: "💊",
-    desc: "Pripremamo lijekove prema vašim receptima i potrebama.Pripremamo lijekove prema vašim receptima i potrebama.Pripremamo lijekove prema vašim receptima i potrebama.",
+    desc: "Naša apoteka priprema magistralne i galenske lijekove u skladu sa receptima i potrebama pacijenata. Svaki lijek se pravi pažljivo, prema standardima i uz kontrolu kvaliteta.",
   },
   {
     title: "Recepti od doktora",
     icon: "🩺",
-    desc: "Recepti direktno od vaših doktora, brzo i pouzdano.Recepti direktno od vaših doktora, brzo i pouzdanoRecepti direktno od vaših doktora, brzo i pouzdano.",
+    desc: "Omogućena je direktna razmjena elektronskih recepata sa ljekarima i zdravstvenim ustanovama radi brže i sigurnije obrade terapije bez potrebe za fizičkim dokumentima.",
   },
   {
-    title: "SMS obavijest",
+    title: "SMS obavještenja",
     icon: "📲",
-    desc: "Obavijestit ćemo vas kada je lijek spreman za preuzimanje.Obavijestit ćemo vas kada je lijek spreman za preuzimanje.",
+    desc: "Korisnici se putem SMS poruke pravovremeno obavještavaju o spremnosti terapije za preuzimanje, čime se unapređuje efikasnost i smanjuje vrijeme čekanja.",
   },
   {
     title: "Ostale zdravstvene ustanove",
     icon: "🏥",
-    desc: "Povezani smo s drugim zdravstvenim ustanovama.Povezani smo s drugim zdravstvenim ustanovama.Povezani smo s drugim zdravstvenim ustanovama.",
+    desc: "Apoteka je umrežena sa drugim zdravstvenim ustanovama radi efikasnije razmjene informacija i bržeg pružanja usluga pacijentima. Vaši podaci su sigurni i dostupni tamo gdje su potrebni.",
   },
 ];
 

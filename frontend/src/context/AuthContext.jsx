@@ -156,7 +156,11 @@ if (out.error_u === 'OK') {
  setTokenUser(out2.token_user);
  setIzabranaInstitucija(inst);
    setRola(out2.rola_u); 
-  navigate('/requests');
+ if (out2.rola_u === 'Admin') {
+   navigate('/admin');
+ } else {
+   navigate('/requests');
+ }
 };
 
 
