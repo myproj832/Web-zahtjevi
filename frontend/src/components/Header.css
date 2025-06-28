@@ -1,29 +1,24 @@
 
 .header-page {
-  background: #89b0cc !important;
-  background: linear-gradient(45deg, #d7f8dc 0%, #d9e7ff 100%)!important;
+  background: #ecfeff !important;
+  /* background: linear-gradient(45deg, #d7f8dc 0%, #d9e7ff 100%)!important; */
  
-   /* box-shadow:
-   
-    0 30px 60px -15px rgba(0, 0, 0, 0.25),
-    
-    0 6px 8px -3px rgba(0, 0, 0, 0.12); */
-  
   border-radius: 0 0 3px 3px;
   padding: 1rem;
 }
 
 .header-institution,
 .header-user {
-    display: inline-block;            
-  padding: 0.30rem 0.6rem;          
-  border-radius: 0.25rem;           
+    display: inline-flex;
+    align-items: center;            
+  padding: 0.30rem 0.8rem;          
+  border-radius: 0.35rem;           
   color: #fff;
    background: linear-gradient(
     90deg,
-    rgba(36, 93, 131, 0.8) 0%,
-    rgba(37, 180, 180, 0.8) 50%,
-    rgba(65, 124, 163, 0.8) 100%
+    rgba(36, 93, 131, 0.6) 0%,
+    rgba(37, 180, 180, 0.9) 50%,
+    rgba(65, 124, 163, 0.6) 100%
   );
    box-shadow:
    
@@ -38,6 +33,7 @@
 .header-institution {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
 .header-user {
@@ -45,10 +41,20 @@
   font-weight: 500;
 }
 
+.header-icon {
+  
+  width: 1.8rem;
+  height: 1.8rem;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+ 
+  color: #205375; /* Icon color */
+}
 
 .btn-logout {
   margin-left: 1rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.45rem 0.75rem;
   border: 1px solid #205375;
   background: var(--gradient-primary-button);
   color: #f4f6fa ;
