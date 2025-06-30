@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import RequestList from "./pages/RequestList/RequestList.jsx";
 import RequestForm from "./pages/RequestForm/RequestForm.jsx";
 import AdminPage from "./pages/Admin/AdminPage.jsx";
+import MedicalPrescription from "./pages/MedicalPrescription/MedicalPrescription.jsx";
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -69,6 +70,12 @@ function App() {
           path="/form"
           element={
             auth.isAuthenticated ? <RequestForm /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/med"
+          element={
+            auth.isAuthenticated ? <MedicalPrescription /> : <Navigate to="/" replace />
           }
         />
       </Routes>

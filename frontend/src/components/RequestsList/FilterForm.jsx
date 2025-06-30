@@ -1,9 +1,7 @@
-import React from 'react';
-
 function FilterForm({ filters, handleFilterChange }) {
   return (
     <div className="row g-2 mb-4">
-      <div className="col-md-2">
+      <div className="col-md-2 m-0">
         <label>Datum od:</label>
         <input
           type="date"
@@ -13,7 +11,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-2">
+      <div className="col-md-2 m-0">
         <label>Datum do:</label>
         <input
           type="date"
@@ -23,7 +21,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-3">
+      <div className="col-md-3 m-0">
         <label></label>
         <input
           type="text"
@@ -34,7 +32,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-3">
+      <div className="col-md-3 m-0">
         <label></label>
         <input
           type="text"
@@ -45,7 +43,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-2">
+      <div className="col-md-2 m-0">
         <label></label>
         <select
           className="form-control"
