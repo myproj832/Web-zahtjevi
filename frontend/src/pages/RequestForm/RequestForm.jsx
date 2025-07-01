@@ -37,6 +37,13 @@ function RequestForm() {
     city: "",
   });
 
+const isValidPhone = (phone) => {
+  if (!phone) return false;
+  const cleaned = phone.replace(/\D/g, ""); // izbaci sve osim brojeva
+  return cleaned.length >= 11; // npr. da ima bar 8 cifara
+};
+
+
   return (
     <>
       <Header />
@@ -85,8 +92,14 @@ function RequestForm() {
                   className="mt-4"
                   variant="primary"
                   onClick={() => {
+                     if (!isValidPhone(patientInfo.phone)) {
+                      alert(
+                        "Molimo unesite ispravan broj telefona (npr. +382 67 123 456)"
+                      );
+                      return;
+                    }
                     const newRequest = {
-                      /* id: Date.now(), */
+                      id: Date.now(),
                       datum: new Date().toLocaleString("sr-RS"),
                       pacijent: `${patientInfo.firstName} ${patientInfo.lastName}`,
                       telefon: patientInfo.phone,
