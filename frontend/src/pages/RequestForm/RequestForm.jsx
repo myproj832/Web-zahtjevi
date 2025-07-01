@@ -43,7 +43,7 @@ function RequestForm() {
       <div className="background text-dark position-relative">
         <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h1 className="mb-1">Pregled Zahtjeva</h1>
+            <h1 className="mb-1">Unos Zahtjeva</h1>
             <Button
               variant="outline-secondary"
               onClick={() => navigate("/requests")}
@@ -133,33 +133,9 @@ function RequestForm() {
                   }}
                 >
                   <Card.Body className="py-2">
-                    <Form.Group className="mb-1">
-                      <Form.Label className="mb-1">
-                        <strong>Broj potvrde</strong>
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        /* value={automatskiPodaci.brojPotvrde} */
-                        readOnly
-                        className="m-0 py-1"
-                        placeholder="208"
-                      />
-                    </Form.Group>
+                    
                     <Row className="mb-1">
-                      <Col md={6}>
-                        <Form.Group className="mb-1 mt-0">
-                          <Form.Label className="m-0 py-0">
-                            Broj radnog naloga
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.brojRadnogNaloga} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="19"
-                          />
-                        </Form.Group>
-                      </Col>
+                     
                       <Col md={6}>
                         <Form.Group className="mb-1">
                           <Form.Label className="m-0 py-0">

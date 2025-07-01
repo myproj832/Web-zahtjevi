@@ -19,7 +19,7 @@ function InstitutionDetails() {
         <Col sm={10}>
           <Form.Control
             readOnly
-            defaultValue="Milmedika Budva"
+            defaultValue="Ustanova 1"
             className="bg-#E8E8E8 border-2 p-1"
             disabled
             style={{"height":"30px"}}

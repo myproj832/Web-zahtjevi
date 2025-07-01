@@ -19,7 +19,7 @@ function PrescriptionCard({
     >
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-1 d-flex justify-content-between w-25">
-          <span className="fs-3 mb-3">*RP/</span>
+          {/* <span className="fs-3 mb-3">*RP/</span> */}
           {/* <span>#{index + 1}</span> */}
         </h5>
         {recepti.length > 1 && (
@@ -90,17 +90,22 @@ function PrescriptionCard({
           <Form.Group className="mt-2">
             <Form.Label>Grupa-indikacija</Form.Label>
             <Form.Select
+              className="text-capitalize"
               value={recept.grupa}
               onChange={(e) => {
                 const novi = [...recepti];
-                novi[index].grupa = e.target.value;
+                novi[index].grupa = e.target.value; // Ostaje originalna vrednost
                 novi[index].obrazac = "";
                 novi[index].odabraniObrazac = null;
                 setRecepti(novi);
               }}
             >
               {indikLijek?.map((ind) => (
-                <option key={ind.indikacije_id} value={ind.indikacije_name}>
+                <option
+                  key={ind.indikacije_id}
+                  value={ind.indikacije_name} // vrednost ostaje mala slova
+                  className="text-capitalize" // prikaz velikim početnim slovom
+                >
                   {ind.indikacije_name}
                 </option>
               ))}
@@ -111,20 +116,25 @@ function PrescriptionCard({
               <Form.Group className="mt-2">
                 <Form.Label>Magistralni lijek</Form.Label>
                 <Form.Select
+                  className="text-capitalize"
                   value={recept.obrazac}
                   onChange={(e) => {
                     const novi = [...recepti];
                     const odabrani = lijekNormativ.find(
                       (o) => o.lijek_name === e.target.value
                     );
-                    novi[index].obrazac = e.target.value;
+                    novi[index].obrazac = e.target.value; // mala slova u state
                     novi[index].odabraniObrazac = odabrani || null;
                     setRecepti(novi);
                   }}
                 >
                   <option value="">-- Izaberite obrazac --</option>
                   {lijekNormativ?.map((nor) => (
-                    <option key={nor.lijek_id} value={nor.lijek_name}>
+                    <option
+                      key={nor.lijek_id}
+                      value={nor.lijek_name}
+                      className="text-capitalize"
+                    >
                       {nor.lijek_name}
                     </option>
                   ))}
@@ -132,20 +142,22 @@ function PrescriptionCard({
               </Form.Group>
               {recept.odabraniObrazac && (
                 <>
-                  <Card.Subtitle className="my-2 mx-1 text-muted strong">
-                    Normativ:
+                  <Card.Subtitle className="my-2 mx-1 text-muted strong" style={{"color": "#000000", "fontSize": 32}}>
+                    *RP/
                   </Card.Subtitle>
                   <ul className="mb-0 p-1">
                     {recept.odabraniObrazac?.lijek_normativ?.map((s, i) => (
-                      <div key={i} className="mx-0 px-0">
-                        {s.redni_broj}. {s.normativ_name} - {s.normativ_kol}
+                      <div key={i} className="text-capitalize m-0 p-0">
+                        {s.normativ_name}
                       </div>
                     ))}
                   </ul>
-
-                  <br></br>
-                  <p className="p-1">{recept.odabraniObrazac.lijek_m_f}</p>
-                  <p className="p-1">{recept.odabraniObrazac.lijek_d_s}</p>
+                  <p className="mx-1 my-0 p-0">
+                    {recept.odabraniObrazac.lijek_m_f}
+                  </p>
+                  <p className="mx-1 my-0 p-0">
+                    {recept.odabraniObrazac.lijek_d_s}
+                  </p>
                 </>
               )}
             </Card.Body>

@@ -57,7 +57,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
         </Form.Label>
         <Col sm={9}>
           <Form.Control
-            className="p-1"
+            className="p-1 text-capitalize"
             value={patientInfo.firstName}
             onChange={(e) => handleChange("firstName", e.target.value)}
           />
@@ -71,7 +71,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
         </Form.Label>
         <Col sm={9}>
           <Form.Control
-            className="p-1"
+            className="p-1 text-capitalize"
             value={patientInfo.lastName}
             onChange={(e) => handleChange("lastName", e.target.value)}
           />
