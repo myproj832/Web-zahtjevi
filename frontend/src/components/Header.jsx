@@ -10,7 +10,7 @@ const Header = () => {
   const { izabranaInstitucija, rola, korisnik, logout } = useAuth();
 
   const iconMap = {
-    'ljekar': { src: iconDoctor, alt: 'Ljekar' },
+    'Ljekar': { src: iconDoctor, alt: 'Ljekar' },
     'Apotekar': { src: iconPharmacy, alt: 'Apotekar'}
   };
 
