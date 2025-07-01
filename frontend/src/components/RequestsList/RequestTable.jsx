@@ -9,7 +9,7 @@ function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
                         <th>Datum</th>
                         <th>Pacijent / Telefon</th>
                         <th>Tip recepta</th>
-                        <th>Lijek / Sastav</th>
+                        <th>Lijek</th>
                         <th>Ustanova / Ljekar</th>
                         <th>Status</th>
                         <th>Napomena</th>
@@ -28,13 +28,13 @@ function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
                         >
                             <td>{request.datum}</td>
                             <td>
-                                <div>{request.pacijent}</div>
+                                <div className="text-capitalize">{request.pacijent}</div>
                                 <div>{request.telefon}</div>
                             </td>
                             <td>{request.tipRecepta}</td>
                             <td>
-                                <div>
-                                    <strong>Lijek:</strong> {request.lijek}
+                                <div className="text-capitalize">
+                                    {request.lijek}
                                 </div>
                                 <div
                                     className="p-1 rounded"

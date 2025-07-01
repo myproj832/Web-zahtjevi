@@ -136,7 +136,7 @@ function RequestForm() {
                     
                     <Row className="mb-1">
                      
-                      <Col md={6}>
+                      <Col md={12}>
                         <Form.Group className="mb-1">
                           <Form.Label className="m-0 py-0">
                             Barkod zahtjeva

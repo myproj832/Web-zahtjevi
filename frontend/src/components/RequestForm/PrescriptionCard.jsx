@@ -94,23 +94,25 @@ function PrescriptionCard({
               value={recept.grupa}
               onChange={(e) => {
                 const novi = [...recepti];
-                novi[index].grupa = e.target.value; // Ostaje originalna vrednost
+                novi[index].grupa = e.target.value;
                 novi[index].obrazac = "";
                 novi[index].odabraniObrazac = null;
                 setRecepti(novi);
               }}
             >
+              <option value="">-- Izaberite grupu --</option>
               {indikLijek?.map((ind) => (
                 <option
                   key={ind.indikacije_id}
-                  value={ind.indikacije_name} // vrednost ostaje mala slova
-                  className="text-capitalize" // prikaz velikim početnim slovom
+                  value={ind.indikacije_name}
+                  className="text-capitalize"
                 >
                   {ind.indikacije_name}
                 </option>
               ))}
             </Form.Select>
           </Form.Group>
+
           <Card className="mt-3 mb-0 pt-0 pb-2">
             <Card.Body className="py-0">
               <Form.Group className="mt-2">
@@ -142,7 +144,10 @@ function PrescriptionCard({
               </Form.Group>
               {recept.odabraniObrazac && (
                 <>
-                  <Card.Subtitle className="my-2 mx-1 text-muted strong" style={{"color": "#000000", "fontSize": 32}}>
+                  <Card.Subtitle
+                    className="my-2 mx-1 text-muted strong"
+                    style={{ color: "#000000", fontSize: 32 }}
+                  >
                     *RP/
                   </Card.Subtitle>
                   <ul className="mb-0 p-1">
