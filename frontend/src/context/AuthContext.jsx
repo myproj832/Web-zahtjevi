@@ -236,6 +236,11 @@ if (out.error_u === 'OK') {
  if (!out2 || !out2.token_user) {
     throw new Error('check_in_2 failed: nema token_user');
   }
+
+   const allowed = out2.allowed_signs_u || '';
+  sessionStorage.setItem('allowedSigns', allowed);
+  window.dispatchEvent(new Event('allowedSignsUpdated')); 
+  
  setTokenUser(out2.token_user);
  setIzabranaInstitucija(inst);
   setAddressInstitution(inst.address_institution);
