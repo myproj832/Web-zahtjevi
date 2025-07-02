@@ -133,7 +133,7 @@ const logout = useCallback(() => {
   const resetTimers = useCallback(() => {
     clearTimeout(warningTimerRef.current);
     clearInterval(countdownIntervalRef.current);
-    warningTimerRef.current = setTimeout(showWarning, (1 * 60 - 30) * 1000);
+    warningTimerRef.current = setTimeout(showWarning, (60 * 60 - 30) * 1000);
   }, [showWarning]);
 
   // Clear warning/session messages and restart
