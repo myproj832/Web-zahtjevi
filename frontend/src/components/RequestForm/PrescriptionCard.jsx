@@ -5,6 +5,7 @@ function PrescriptionCard({
   index,
   recepti,
   setRecepti,
+  indikacije,
   indikLijek,
   lijekNormativ,
 }) {
@@ -101,7 +102,7 @@ function PrescriptionCard({
               }}
             >
               <option value="">-- Izaberite grupu --</option>
-              {indikLijek?.map((ind) => (
+              {indikacije?.map((ind) => (
                 <option
                   key={ind.indikacije_id}
                   value={ind.indikacije_name}
@@ -117,52 +118,84 @@ function PrescriptionCard({
             <Card.Body className="py-0">
               <Form.Group className="mt-2">
                 <Form.Label>Magistralni lijek</Form.Label>
-                <Form.Select
-                  className="text-capitalize"
-                  value={recept.obrazac}
-                  onChange={(e) => {
-                    const novi = [...recepti];
-                    const odabrani = lijekNormativ.find(
-                      (o) => o.lijek_name === e.target.value
-                    );
-                    novi[index].obrazac = e.target.value; // mala slova u state
-                    novi[index].odabraniObrazac = odabrani || null;
-                    setRecepti(novi);
-                  }}
-                >
-                  <option value="">-- Izaberite obrazac --</option>
-                  {lijekNormativ?.map((nor) => (
-                    <option
-                      key={nor.lijek_id}
-                      value={nor.lijek_name}
+
+                {/* Filtrirani lijekovi na osnovu izabrane grupe */}
+                {(() => {
+                  const filtriraniLijekovi = !recept.grupa
+                    ? lijekNormativ
+                    : lijekNormativ.filter((ln) =>
+                        indikLijek
+                          .filter((il) => il.indikacije_name === recept.grupa)
+                          .some(
+                            (il) => Number(il.lijek_id) === Number(ln.lijek_id)
+                          )
+                      );
+
+                  return (
+                    <Form.Select
                       className="text-capitalize"
+                      value={recept.obrazac}
+                      onChange={(e) => {
+                        const novi = [...recepti];
+                        const odabrani = lijekNormativ.find(
+                          (o) =>
+                            o.lijek_id ===
+                            filtriraniLijekovi.find(
+                              (f) => f.lijek_name === e.target.value
+                            )?.lijek_id
+                        );
+
+                        novi[index].obrazac = e.target.value;
+                        novi[index].odabraniObrazac = odabrani || null;
+
+                        if (odabrani) {
+                          const normativi = odabrani.lijek_normativ
+                            .map((n) => n.normativ_name)
+                            .join("\n");
+                          const tekst = `${normativi}\n${odabrani.lijek_m_f}\n${odabrani.lijek_d_s}`;
+                          novi[index].tekstObrasca = tekst;
+                        } else {
+                          novi[index].tekstObrasca = "";
+                        }
+
+                        setRecepti(novi);
+                      }}
                     >
-                      {nor.lijek_name}
-                    </option>
-                  ))}
-                </Form.Select>
+                      <option value="">-- Izaberite obrazac --</option>
+                      {filtriraniLijekovi.map((nor) => (
+                        <option
+                          key={nor.lijek_id}
+                          value={nor.lijek_name}
+                          className="text-capitalize"
+                        >
+                          {nor.lijek_name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  );
+                })()}
               </Form.Group>
+
               {recept.odabraniObrazac && (
                 <>
                   <Card.Subtitle
                     className="my-2 mx-1 text-muted strong"
-                    style={{ color: "#000000", fontSize: 32 }}
+                    style={{ color: "#000000", fontSize: 26 }}
                   >
                     *RP/
                   </Card.Subtitle>
-                  <ul className="mb-0 p-1">
-                    {recept.odabraniObrazac?.lijek_normativ?.map((s, i) => (
-                      <div key={i} className="text-capitalize m-0 p-0">
-                        {s.normativ_name}
-                      </div>
-                    ))}
-                  </ul>
-                  <p className="mx-1 my-0 p-0">
-                    {recept.odabraniObrazac.lijek_m_f}
-                  </p>
-                  <p className="mx-1 my-0 p-0">
-                    {recept.odabraniObrazac.lijek_d_s}
-                  </p>
+                  <Form.Group className="mt-3">
+                    <Form.Control
+                      as="textarea"
+                      rows={6}
+                      value={recept.tekstObrasca || ""}
+                      onChange={(e) => {
+                        const novi = [...recepti];
+                        novi[index].tekstObrasca = e.target.value;
+                        setRecepti(novi);
+                      }}
+                    />
+                  </Form.Group>
                 </>
               )}
             </Card.Body>
@@ -170,9 +203,9 @@ function PrescriptionCard({
         </>
       )}
 
-      {/* Prvi red: Neobnovljiv + Količina */}
-      <Row className="align-items-end mt-2 py-0">
-        <Col md={3}>
+      <Row className="align-items-start mt-4">
+        {/* Leva kolona: radio dugmad */}
+        <Col md={2}>
           <Form.Check
             type="radio"
             name={`vrstaRecepta-${index}`}
@@ -181,31 +214,13 @@ function PrescriptionCard({
             onChange={() => {
               const novi = [...recepti];
               novi[index].vrstaRecepta = "neobn";
+              novi[index].brojPonavljanja = "";
+              novi[index].vremenskiPeriod = "";
               setRecepti(novi);
             }}
-            className="py-0"
+            className="mb-2"
           />
-        </Col>
-        <Col md={3}>
-          <Form.Group>
-            <Form.Label className="py-0 my-0">Količina</Form.Label>
-            <Form.Control
-              type="text"
-              value={recept.kolicina}
-              onChange={(e) => {
-                const novi = [...recepti];
-                novi[index].kolicina = e.target.value;
-                setRecepti(novi);
-              }}
-              className="py-1"
-            />
-          </Form.Group>
-        </Col>
-      </Row>
 
-      {/* Drugi red: Obnovljiv + Količina + dodatna polja (ako je selektovan) */}
-      <Row className="align-items-end mt-0 py-0">
-        <Col md={3}>
           <Form.Check
             type="radio"
             name={`vrstaRecepta-${index}`}
@@ -216,59 +231,97 @@ function PrescriptionCard({
               novi[index].vrstaRecepta = "obn";
               setRecepti(novi);
             }}
-            className="pb-1"
           />
         </Col>
-        <Col md={3}>
-          <Form.Group>
-            <Form.Label className="py-0 my-0">Količina</Form.Label>
-            <Form.Control
-              type="text"
-              /* value={recept.kolicina} */
-              /* onChange={(e) => {
-          const novi = [...recepti];
-          novi[index].kolicina = e.target.value;
-          setRecepti(novi);
-        }} */
-              className="py-1"
-            />
-          </Form.Group>
-        </Col>
 
-        {recept.vrstaRecepta === "obn" && (
-          <>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label className="py-0 my-0">Broj ponavljanja</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={recept.brojPonavljanja}
-                  onChange={(e) => {
-                    const novi = [...recepti];
-                    novi[index].brojPonavljanja = e.target.value;
-                    setRecepti(novi);
-                  }}
-                  className="py-1"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label className="py-0 my-0">Period liječenja</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={recept.vremenskiPeriod}
-                  onChange={(e) => {
-                    const novi = [...recepti];
-                    novi[index].vremenskiPeriod = e.target.value;
-                    setRecepti(novi);
-                  }}
-                  className="py-1"
-                />
-              </Form.Group>
-            </Col>
-          </>
-        )}
+        {/* Desna kolona: polja u zavisnosti od izbora */}
+        <Col md={10}>
+          <Row className="align-items-center">
+            {recept.vrstaRecepta === "neobn" && (
+              <>
+                <Row>
+                  <Col md={3}>
+                    <Form.Group className="d-flex align-items-center gap-2">
+                      <Form.Label className="py-0 my-0 mx-0">Količina</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={recept.kolicina}
+                        onChange={(e) => {
+                          const novi = [...recepti];
+                          novi[index].kolicina = e.target.value;
+                          setRecepti(novi);
+                        }}
+                        className="py-0"
+                        style={{ width: "50px" }} // ili koliko ti odgovara
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row style={{"color": "transparent"}}>nesto</Row>
+              </>
+            )}
+
+            {recept.vrstaRecepta === "obn" && (
+              <>
+                <Row style={{"color": "transparent"}}>nesto</Row>
+                <Row>
+                  <Col md={3}>
+                    <Form.Group className="d-flex align-items-center gap-2">
+                      <Form.Label style={{ width: "60px" }} className="py-0 my-0">Količina</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={recept.kolicina}
+                        onChange={(e) => {
+                          const novi = [...recepti];
+                          novi[index].kolicina = e.target.value;
+                          setRecepti(novi);
+                        }}
+                        className="py-0"
+                        style={{ width: "50px" }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={5}>
+                    <Form.Group className="d-flex align-items-center gap-2">
+                      <Form.Label style={{ width: "120px" }} className="py-0 my-0">
+                        Broj ponavljanja
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={recept.brojPonavljanja}
+                        onChange={(e) => {
+                          const novi = [...recepti];
+                          novi[index].brojPonavljanja = e.target.value;
+                          setRecepti(novi);
+                        }}
+                        className="py-0"
+                        style={{ width: "50px" }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="d-flex align-items-center gap-2">
+                      <Form.Label style={{ width: "140px" }} className="py-0 my-0">
+                        Period liječenja
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={recept.vremenskiPeriod}
+                        onChange={(e) => {
+                          const novi = [...recepti];
+                          novi[index].vremenskiPeriod = e.target.value;
+                          setRecepti(novi);
+                        }}
+                        className="py-0"
+                        style={{ width: "50px" }}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </Row>
+        </Col>
       </Row>
 
       {/* Napomena */}

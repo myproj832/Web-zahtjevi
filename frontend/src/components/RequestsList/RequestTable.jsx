@@ -1,20 +1,21 @@
 import { Table } from "react-bootstrap";
 
-function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
+function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId, rola }) {
     return (
         <div className="d-none d-md-block">
             <Table bordered hover responsive className="bg-white shadow-sm">
                 <thead>
                     <tr>
                         <th>Datum</th>
-                        <th>Pacijent / Telefon</th>
-                        <th>Tip recepta</th>
-                        <th>Lijek</th>
-                        <th>Ustanova / Ljekar</th>
-                        <th>Status</th>
-                        <th>Napomena</th>
-                        <th>Farmaceut</th>
                         <th>Datum izdavanja</th>
+                        <th>Pacijent / Telefon</th>
+                        <th>Magistralni lijek</th>
+                        <th>Izdao recept</th> {/*Podnosilac zahtjeva - Ustanova / rola(ljekar)*/}
+                        <th>Prijem recepta</th> {/*Prijem/Odobravanje zahtjeva - Farmaceut / Prijem*/}
+                        <th>Isporuka recepta</th> {/*Isporuka zahtjeva - Apoteka*/}
+                        <th>Napomena</th>
+                        <th>Rola</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
 
@@ -27,12 +28,14 @@ function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
                             style={{ cursor: "pointer" }}
                         >
                             <td>{request.datum}</td>
+                            <td>{request.datumIzdavanja}</td>
                             <td>
                                 <div className="text-capitalize">{request.pacijent}</div>
                                 <div>{request.telefon}</div>
                             </td>
-                            <td>{request.tipRecepta}</td>
+                            {/* <td></td> */}
                             <td>
+                                <div><strong>Tip: </strong>{request.tipRecepta}</div>
                                 <div className="text-capitalize">
                                     {request.lijek}
                                 </div>
@@ -54,6 +57,10 @@ function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
                                     <strong>Ljekar:</strong> {request.ljekar}
                                 </div>
                             </td>
+                            <td>{request.farmaceut}</td>
+                            <td>Specija</td>
+                            <td>{request.napomena || "—"}</td>
+                            <td>{rola || "—"}</td>
                             <td>
                                 <span
                                     className={`badge ${request.status === "Kreiran"
@@ -64,9 +71,6 @@ function RequestTable({ filteredRequests, setSelectedRowId, selectedRowId }) {
                                     {request.status}
                                 </span>
                             </td>
-                            <td>{request.napomena || "—"}</td>
-                            <td>{request.farmaceut}</td>
-                            <td>{request.datumIzdavanja}</td>
                         </tr>
                     ))}
                 </tbody>

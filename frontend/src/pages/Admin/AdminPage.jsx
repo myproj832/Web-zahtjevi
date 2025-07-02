@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import Header from '../../components/Header'; // Dodao import za Header komponentu
 
 import DodajDoktora   from './DodajDoktora.jsx';
 import DodajUstanovu  from './DodajUstanovu.jsx';
@@ -145,74 +146,13 @@ const AdminPage = () => {
           flex-direction: column;
         }
 
-        /* Header */
-        .header {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px) saturate(180%);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-          padding: 0 32px;
-          height: 64px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+        /* Header fiksiran na vrhu */
+        .header-container {
           position: fixed;
-          top: 0; left: 0; right: 0;
+          top: 0;
+          left: 0;
+          right: 0;
           z-index: 1000;
-        }
-        .header-left  { display: flex; align-items: center; flex: 1; }
-        .logo         { display: flex; align-items: center; gap: 12px;
-                        font-size: 20px; font-weight: 700; color: #1a1d29; }
-        .logo-icon    { width: 32px; height: 32px; border-radius: 8px;
-                        display: flex; align-items: center; justify-content: center;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; font-size: 16px; }
-        .header-right { display: flex; align-items: center; gap: 16px; }
-
-        /* Search */
-        .search-bar   { position: relative; width: 320px; }
-        .search-input {
-          width: 100%; height: 36px; padding: 0 12px 0 36px;
-          border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 18px;
-          background: #f8fafc; font-size: 14px; outline: none;
-          transition: all 0.2s ease;
-        }
-        .search-input:focus {
-          border-color: #3b82f6; background: white;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .search-icon  {
-          position: absolute; left: 12px; top: 50%;
-          transform: translateY(-50%); color: #9ca3af; font-size: 14px;
-        }
-
-        /* Header icons */
-        .notifications, .sidebar-toggle, .logout-btn {
-          width: 36px; height: 36px; border-radius: 18px;
-          display: flex; align-items: center; justify-content: center;
-          border: 1px solid rgba(0,0,0,0.08); background: white;
-          cursor: pointer; transition: all 0.2s ease;
-        }
-        .notifications:hover, .sidebar-toggle:hover {
-          background: #f8fafc; transform: scale(1.05);
-        }
-        .notification-badge {
-          position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
-          background: #ef4444; border-radius: 8px; border: 2px solid white;
-          font-size: 10px; color: white; display: flex;
-          align-items: center; justify-content: center; font-weight: 600;
-        }
-        .time-display {
-          background: linear-gradient(135deg, #1a1d29 0%, #2d3748 100%);
-          color: white; padding: 8px 16px; border-radius: 18px;
-          font-size: 13px; font-weight: 600;
-          font-family: 'SF Mono', Monaco, monospace; letter-spacing: 0.5px;
-        }
-        .logout-btn    {
-          border: 1px solid rgba(239, 68, 68, 0.2);
-          background: rgba(239, 68, 68, 0.1); color: #ef4444;
-        }
-        .logout-btn:hover {
-          background: #ef4444; color: white; transform: scale(1.05);
         }
 
         /* Sidebar */
@@ -261,10 +201,36 @@ const AdminPage = () => {
           background: rgba(255,255,255,0.2); color: white;
         }
 
-        /* Main Content */
+        /* Sidebar toggle dugme u sidebar-u */
+        .sidebar-toggle {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 32px;
+          height: 32px;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          z-index: 1001;
+          font-size: 14px;
+          color: #6b7280;
+        }
+
+        .sidebar-toggle:hover {
+          background: #e2e8f0;
+          color: #374151;
+          transform: scale(1.05);
+        }
+
+        /* Main Content - povećan top padding */
         .main-content {
           margin-left: ${sidebarCollapsed ? '72px' : '240px'};
-          padding: 88px 32px 32px;
+          padding: 100px 32px 32px; /* Povećao sa 88px na 100px */
           transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
           min-height: 100vh;
         }
@@ -365,66 +331,32 @@ const AdminPage = () => {
         /* Responsive */
         @media (max-width: 1024px) {
           .content-layout { grid-template-columns: 1fr; }
-          .search-bar     { width: 240px; }
         }
         @media (max-width: 768px) {
           .sidebar { transform: translateX(${sidebarCollapsed ? '-100%' : '0'});
                      width: 240px; }
           .main-content { margin-left: 0; padding: 88px 16px 32px; }
-          .header { padding: 0 16px; }
-          .search-bar { display: none; }
           .stats-grid { grid-template-columns: repeat(2,1fr); gap: 16px; }
           .quick-actions-grid { grid-template-columns: 1fr; }
         }
       `}</style>
 
-      {/* Header */}
-      <header className="header">
-        <div className="header-left">
-          <div className="logo">
-            <div className="logo-icon">🏥</div>
-            Cosmetics
-          </div>
-        </div>
-
-        <div className="header-right">
-          <div className="notifications">
-            🔔
-            <div className="notification-badge">3</div>
-          </div>
-
-          <div className="time-display">
-            {currentTime.toLocaleTimeString('sr-RS', {
-              hour12: false,
-              hour: '2-digit', minute: '2-digit', second: '2-digit',
-            })}
-          </div>
-
-          <div
-            className="logout-btn"
-            title="Odjavi se"
-            onClick={() => {
-              // if (window.confirm('Da li ste sigurni da se želite odjaviti?')) 
-                {
-                // alert('Odjavljujete se...');
-                logout(); navigate('/');
-              }
-            }}
-          >
-            🚪
-          </div>
-
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            {sidebarCollapsed ? '→' : '←'}
-          </button>
-        </div>
-      </header>
+      {/* Header fiksiran na vrhu */}
+      <div className="header-container">
+        <Header />
+      </div>
 
       {/* Sidebar */}
       <nav className="sidebar">
+        {/* Sidebar toggle dugme u sidebar-u */}
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          title={sidebarCollapsed ? 'Proširi sidebar' : 'Suzi sidebar'}
+        >
+          {sidebarCollapsed ? '→' : '←'}
+        </button>
+
         <div className="sidebar-content">
           <div className="sidebar-section">
             <div className="sidebar-label">Administrator</div>

@@ -3,23 +3,38 @@ import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 
 const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
+  // Funkcija za generisanje passworda 5 slova + 3 broja
+  function generateRandomPassword() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+    let lettersPart = '';
+    let digitsPart = '';
+    for (let i = 0; i < 5; i++) {
+      lettersPart += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+    for (let i = 0; i < 3; i++) {
+      digitsPart += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+    return lettersPart + digitsPart;
+  }
+
   const [formData, setFormData] = useState({
     imePrezime: doktor?.imePrezime || `${doktor?.ime || ''} ${doktor?.prezime || ''}`.trim(),
     brojLicence: doktor?.brojLicence || '',
     specijalizacija: doktor?.specijalizacija || 'Opšta medicina',
     adresa: doktor?.adresa || '',
     ustanove: doktor?.ustanove || [],
-    brojTelefona: doktor?.brojTelefona || '', // Sada čuva kompletan međunarodni broj
+    brojTelefona: doktor?.brojTelefona || '',
     email: doktor?.email || '',
     napomena: doktor?.napomena || '',
     login: doktor?.login || '',
-    password: doktor?.password || ''
+    password: doktor?.password || generateRandomPassword()
   });
 
   const [errors, setErrors] = useState({});
   const [selectedUstanova, setSelectedUstanova] = useState('');
 
-  // Handle browser back button
+  // Browser back button
   useEffect(() => {
     const handlePopState = (event) => {
       event.preventDefault();
@@ -27,8 +42,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
     };
 
     window.addEventListener('popstate', handlePopState);
-    
-    // Push a new state when component mounts
     window.history.pushState(null, '', window.location.href);
 
     return () => {
@@ -36,7 +49,7 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
     };
   }, [onBack]);
 
-  // Lista ustanova iz AdminUstanove.jsx
+  // Lista ustanova
   const dostupneUstanove = [
     'Dom zdravlja Podgorica',
     'Klinički centar Crne Gore',
@@ -53,8 +66,7 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
       ...prev,
       [field]: value
     }));
-    
-    // Ukloni grešku kada korisnik počne da kuca
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -63,13 +75,12 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
     }
   };
 
-  // Posebna funkcija za phone input
   const handlePhoneChange = (value) => {
     setFormData(prev => ({
       ...prev,
       brojTelefona: value || ''
     }));
-    
+
     if (errors.brojTelefona) {
       setErrors(prev => ({
         ...prev,
@@ -97,7 +108,7 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.imePrezime.trim()) newErrors.imePrezime = 'Ime i prezime je obavezno';
     if (!formData.brojLicence.trim()) newErrors.brojLicence = 'Broj licence je obavezan';
     if (!formData.specijalizacija.trim()) newErrors.specijalizacija = 'Specijalizacija je obavezna';
@@ -105,12 +116,11 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
     if (!formData.login.trim()) newErrors.login = 'Login je obavezan';
     if (!formData.password.trim()) newErrors.password = 'Password je obavezan';
     if (formData.ustanove.length === 0) newErrors.ustanove = 'Najmanje jedna ustanova je obavezna';
-    
-    // Email validacija
+
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email nije valjan';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -123,6 +133,20 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
 
   const handleCancel = () => {
     onBack();
+  };
+
+  // Dugme za generisanje nove lozinke
+  const handleGeneratePassword = () => {
+    setFormData(prev => ({
+      ...prev,
+      password: generateRandomPassword()
+    }));
+    if (errors.password) {
+      setErrors(prev => ({
+        ...prev,
+        password: ''
+      }));
+    }
   };
 
   if (!doktor) {
@@ -148,7 +172,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           padding: 0;
           box-sizing: border-box;
         }
-
         .admin-dashboard {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
@@ -156,8 +179,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           display: flex;
           flex-direction: column;
         }
-
-        /* Header */
         .header {
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(20px) saturate(180%);
@@ -173,14 +194,12 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           right: 0;
           z-index: 1000;
         }
-
         .header-left {
           display: flex;
           align-items: center;
           gap: 0;
           flex: 1;
         }
-
         .logo {
           display: flex;
           align-items: center;
@@ -190,7 +209,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           color: #1a1d29;
           letter-spacing: -0.5px;
         }
-
         .logo-icon {
           width: 32px;
           height: 32px;
@@ -202,13 +220,11 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           color: white;
           font-size: 16px;
         }
-
         .header-right {
           display: flex;
           align-items: center;
           gap: 16px;
         }
-
         .back-button {
           background: #3b82f6;
           color: white;
@@ -223,20 +239,16 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           align-items: center;
           gap: 8px;
         }
-
         .back-button:hover {
           background: #2563eb;
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
-
         .header-title {
           font-size: 18px;
           font-weight: 600;
           color: #1a1d29;
         }
-
-        /* Main Content */
         .main-content {
           margin-top: 64px;
           padding: 32px;
@@ -245,7 +257,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           margin-right: auto;
           width: 100%;
         }
-
         .form-card {
           background: rgba(255, 255, 255, 0.95);
           border: 1px solid rgba(0, 0, 0, 0.06);
@@ -254,14 +265,12 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
           backdrop-filter: blur(10px);
         }
-
         .form-header {
           text-align: center;
           padding-bottom: 24px;
           border-bottom: 1px solid rgba(0, 0, 0, 0.06);
           margin-bottom: 32px;
         }
-
         .form-title {
           font-size: 24px;
           font-weight: 700;
@@ -269,29 +278,24 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           margin-bottom: 8px;
           letter-spacing: -0.5px;
         }
-
         .form-subtitle {
           font-size: 14px;
           color: #3b82f6;
           font-weight: 600;
         }
-
         .form-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 24px;
         }
-
         .form-section {
           background: #f8fafc;
           border-radius: 12px;
           padding: 20px;
         }
-
         .form-section-full {
           grid-column: 1 / -1;
         }
-
         .section-title {
           font-size: 16px;
           font-weight: 600;
@@ -301,15 +305,12 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           align-items: center;
           gap: 8px;
         }
-
         .form-group {
           margin-bottom: 16px;
         }
-
         .form-group:last-child {
           margin-bottom: 0;
         }
-
         .form-label {
           font-weight: 500;
           color: #374151;
@@ -317,7 +318,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           margin-bottom: 6px;
           display: block;
         }
-
         .form-control {
           width: 100%;
           border: 1px solid rgba(0, 0, 0, 0.08);
@@ -327,33 +327,27 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           font-size: 14px;
           background: white;
         }
-
         .form-control:focus {
           border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           outline: none;
         }
-
         .form-control.error {
           border-color: #ef4444;
           box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
-
         .error-message {
           color: #ef4444;
           font-size: 12px;
           margin-top: 4px;
           font-weight: 500;
         }
-
-        /* Ustanove select */
         .ustanove-select-container {
           display: flex;
           align-items: center;
           gap: 8px;
           margin-bottom: 12px;
         }
-
         .ustanove-select {
           flex: 1;
           border: 1px solid rgba(0, 0, 0, 0.08);
@@ -362,7 +356,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           font-size: 14px;
           background: white;
         }
-
         .add-ustanova-btn {
           background: #10b981;
           border: none;
@@ -378,23 +371,19 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           transition: all 0.2s ease;
           font-weight: 600;
         }
-
         .add-ustanova-btn:hover {
           background: #059669;
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
-
         .add-ustanova-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
           transform: none;
         }
-
         .ustanove-list {
           margin-top: 12px;
         }
-
         .ustanova-item {
           display: flex;
           align-items: center;
@@ -406,7 +395,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           margin-bottom: 8px;
           font-size: 13px;
         }
-
         .button-remove {
           background: #ef4444;
           color: white;
@@ -418,13 +406,10 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           font-weight: 600;
           transition: all 0.2s ease;
         }
-
         .button-remove:hover {
           background: #dc2626;
           transform: scale(1.05);
         }
-
-        /* Action Buttons */
         .action-buttons {
           display: flex;
           justify-content: flex-end;
@@ -433,7 +418,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           padding-top: 24px;
           border-top: 1px solid rgba(0, 0, 0, 0.06);
         }
-
         .button {
           border: none;
           border-radius: 8px;
@@ -446,34 +430,27 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           align-items: center;
           gap: 8px;
         }
-
         .button-success {
           background: #10b981;
           color: white;
         }
-
         .button-success:hover {
           background: #059669;
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
-
         .button-cancel {
           background: #6b7280;
           color: white;
         }
-
         .button-cancel:hover {
           background: #4b5563;
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
         }
-
-        /* Phone Input Styling */
         .PhoneInput {
           display: flex;
         }
-
         .PhoneInputInput {
           flex: 1;
           border: 1px solid rgba(0, 0, 0, 0.08);
@@ -483,13 +460,11 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           transition: border-color 0.2s, box-shadow 0.2s;
           background: white;
         }
-
         .PhoneInputInput:focus {
           border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           outline: none;
         }
-
         .PhoneInputCountrySelect {
           border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 8px;
@@ -498,19 +473,15 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           background: white;
           font-size: 14px;
         }
-
         .PhoneInputCountrySelect:focus {
           border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           outline: none;
         }
-
         .PhoneInputCountryIcon {
           width: 1.5em;
           height: 1em;
         }
-
-        /* Empty state */
         .empty-state {
           color: #6b7280;
           font-style: italic;
@@ -521,49 +492,64 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
           border: 1px dashed rgba(0, 0, 0, 0.1);
           border-radius: 8px;
         }
-
-        /* Responsive */
+        .password-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .password-generate-btn {
+          background: #e5e7eb;
+          border: none;
+          color: #444;
+          border-radius: 6px;
+          padding: 7px 10px;
+          cursor: pointer;
+          font-size: 17px;
+          transition: background 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: 24px;
+        }
+        .password-generate-btn:hover {
+          background: #d1d5db;
+        }
         @media (max-width: 768px) {
           .header {
             padding: 0 16px;
           }
-          
           .main-content {
             padding: 16px;
             margin-top: 64px;
           }
-          
           .form-card {
             padding: 20px;
           }
-          
           .form-grid {
             grid-template-columns: 1fr;
             gap: 16px;
           }
-          
           .form-title {
             font-size: 20px;
           }
-          
           .action-buttons {
             flex-direction: column;
             gap: 8px;
           }
-          
           .button {
             width: 100%;
             justify-content: center;
           }
-
           .ustanove-select-container {
             flex-direction: column;
             gap: 8px;
           }
-
           .add-ustanova-btn {
             width: 100%;
             height: 40px;
+          }
+          .password-group .password-generate-btn {
+            margin-top: 0;
           }
         }
       `}</style>
@@ -576,7 +562,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
             Cosmetics
           </div>
         </div>
-        
         <div className="header-right">
           <button className="back-button" onClick={onBack}>
             <span>←</span>
@@ -609,7 +594,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 <span>👤</span>
                 Lični podaci
               </div>
-              
               <div className="form-group">
                 <label className="form-label">Ime i prezime *</label>
                 <input
@@ -621,7 +605,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 />
                 {errors.imePrezime && <div className="error-message">{errors.imePrezime}</div>}
               </div>
-
               <div className="form-group">
                 <label className="form-label">Broj licence *</label>
                 <input
@@ -633,7 +616,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 />
                 {errors.brojLicence && <div className="error-message">{errors.brojLicence}</div>}
               </div>
-
               <div className="form-group">
                 <label className="form-label">Specijalizacija *</label>
                 <input
@@ -653,7 +635,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 <span>📞</span>
                 Kontakt
               </div>
-
               <div className="form-group">
                 <label className="form-label">Broj telefona</label>
                 <PhoneInput
@@ -666,7 +647,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 />
                 {errors.brojTelefona && <div className="error-message">{errors.brojTelefona}</div>}
               </div>
-
               <div className="form-group">
                 <label className="form-label">Email adresa *</label>
                 <input
@@ -678,7 +658,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 />
                 {errors.email && <div className="error-message">{errors.email}</div>}
               </div>
-
               <div className="form-group">
                 <label className="form-label">Adresa</label>
                 <input
@@ -697,9 +676,7 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 <span>🏥</span>
                 Ustanove
               </div>
-
               {errors.ustanove && <div className="error-message">{errors.ustanove}</div>}
-
               <div className="ustanove-select-container">
                 <select
                   className="ustanove-select"
@@ -724,7 +701,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                   +
                 </button>
               </div>
-
               <div className="ustanove-list">
                 {formData.ustanove.map((ustanova, index) => (
                   <div key={index} className="ustanova-item">
@@ -752,7 +728,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 <span>📝</span>
                 Napomena
               </div>
-
               <div className="form-group">
                 <label className="form-label">Dodatne informacije</label>
                 <textarea
@@ -772,7 +747,6 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                 <span>🔐</span>
                 Pristupni podaci
               </div>
-
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
                 <div className="form-group">
                   <label className="form-label">Korisničko ime *</label>
@@ -785,22 +759,31 @@ const IzmjenaDoktora = ({ doktor, onBack, onSave, fromPregled = false }) => {
                   />
                   {errors.login && <div className="error-message">{errors.login}</div>}
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Lozinka *</label>
-                  <input
-                    type="text"
-                    className={`form-control ${errors.password ? 'error' : ''}`}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder="Lozinka"
-                  />
-                  {errors.password && <div className="error-message">{errors.password}</div>}
+                <div className="form-group password-group">
+                  <div style={{flex: 1}}>
+                    <label className="form-label">Lozinka *</label>
+                    <input
+                      type="text" // VIDLJIVA LOZINKA
+                      className={`form-control ${errors.password ? 'error' : ''}`}
+                      value={formData.password}
+                      readOnly // ne može ručno da se mijenja
+                      placeholder="Lozinka"
+                      style={{fontFamily: 'monospace', background: '#f3f4f6'}}
+                    />
+                    {errors.password && <div className="error-message">{errors.password}</div>}
+                  </div>
+                  <button
+                    type="button"
+                    className="password-generate-btn"
+                    title="Generiši novu lozinku"
+                    onClick={handleGeneratePassword}
+                  >
+                    &#x21bb;
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-
           {/* Action Buttons */}
           <div className="action-buttons">
             <button className="button button-success" onClick={handleSave}>
