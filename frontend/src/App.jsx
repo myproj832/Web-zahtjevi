@@ -11,6 +11,7 @@ import { useAuth } from './context/AuthContext.jsx';
 /* ───────  Modali  ─────── */
 import InstitutionModal from './components/InstitutionModal.jsx';
 import LoginModal       from './components/LoginModal.jsx';
+import SessionMessages from './components/Messages/SessionMessage.jsx';
 
 /* ───────  “Obične” stranice  ─────── */
 import Dashboard           from './pages/Dashboard/Dashboard.jsx';
@@ -88,6 +89,8 @@ function App() {
         onHide={() => setShowInstitutionModal(false)}
         container={containerRef.current}
       />
+
+      <SessionMessages />
 
       {/* ───────  Rute  ─────── */}
       <Routes>

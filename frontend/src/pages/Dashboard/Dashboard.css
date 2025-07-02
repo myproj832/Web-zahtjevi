@@ -65,8 +65,11 @@
 
 /* Header */
 .hero-header {
-  position: relative;
-  z-index: 10;
+   position: fixed;       /* take it out of the normal flow */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;          /* sit above everything else */
   padding: 20px 0;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);

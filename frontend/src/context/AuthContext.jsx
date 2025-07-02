@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
@@ -6,6 +6,11 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const tokenApp = '2bc17d80-55fb-49ec-ac94-534421cbeb35';
+
+  const [warningMessage, setWarningMessage] = useState('');
+  const [sessionMessage, setSessionMessage] = useState('');
+  const warningTimerRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
 
   const [tokenKorisnik, setTokenKorisnik] = useState(() =>
     sessionStorage.getItem('tokenKorisnik')
@@ -87,8 +92,6 @@ export const AuthProvider = ({ children }) => {
   }
 }, [rola]);
 
-
-
   // Fetch public IP address
   useEffect(() => {
     fetch('https://api.ipify.org?format=json')
@@ -96,6 +99,63 @@ export const AuthProvider = ({ children }) => {
       .then(data => setIpAddress(data.ip))
       .catch(err => console.error('Unable to fetch IP address', err));
   }, []);
+
+const logout = useCallback(() => {
+    sessionStorage.clear();
+    setWarningMessage('');
+    setTokenKorisnik(null);
+    setTokenUser(null);
+    setKorisnickoIme(null);
+    setInstitucije([]);
+    setIzabranaInstitucija(null);
+    navigate('/');
+ }, [navigate]);
+
+  // Show 30s warning and countdown
+  const showWarning = useCallback(() => {
+    let seconds = 30;
+    setWarningMessage(`Upozorenje: sesija ističe za ${seconds} sekundi`);
+
+    countdownIntervalRef.current = setInterval(() => {
+      seconds -= 1;
+      if (seconds > 0) {
+        setWarningMessage(`Upozorenje: sesija ističe za ${seconds} sekundi`);
+      } else {
+        clearInterval(countdownIntervalRef.current);
+        setWarningMessage('');
+        setSessionMessage('Vaša sesija je istekla, molimo prijavite se ponovo.');
+        logout();
+      }
+    }, 1000);
+  }, [logout]);
+
+  // Reset timers to schedule warning 30s before 30min
+  const resetTimers = useCallback(() => {
+    clearTimeout(warningTimerRef.current);
+    clearInterval(countdownIntervalRef.current);
+    warningTimerRef.current = setTimeout(showWarning, (1 * 60 - 30) * 1000);
+  }, [showWarning]);
+
+  // Clear warning/session messages and restart
+  const clearSessionMessage = useCallback(() => {
+    setWarningMessage('');
+    setSessionMessage('');
+    resetTimers();
+  }, [resetTimers]);
+
+  // Start/reset on user activity
+  useEffect(() => {
+    resetTimers();
+    const events = ['click','keydown','mousemove','scroll','touchstart'];
+    const onActivity = () => clearSessionMessage();
+    events.forEach(e => window.addEventListener(e, onActivity));
+    return () => {
+      clearTimeout(warningTimerRef.current);
+      clearInterval(countdownIntervalRef.current);
+      events.forEach(e => window.removeEventListener(e, onActivity));
+    };
+  }, [resetTimers, clearSessionMessage]);
+
 
   // 1) Poziv prvog check_in servisa
   const login = async ({ username, password }) => {
@@ -166,16 +226,7 @@ if (out.error_u === 'OK') {
 
 
 
- const logout = () => {
-   sessionStorage.clear();
-    setTokenKorisnik(null);
-    setTokenUser(null);
-    setKorisnickoIme(null);
-    setInstitucije([]);
-    setIzabranaInstitucija(null);
-    
-    navigate('/');
-  };
+ 
 
   return (
     <AuthContext.Provider
@@ -189,6 +240,9 @@ if (out.error_u === 'OK') {
         izabranaInstitucija,
         isAuthenticated,
         rola,
+         warningMessage,
+        sessionMessage,
+        clearSessionMessage,
         login,
         selectInstitution,
         logout,

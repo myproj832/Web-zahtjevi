@@ -1,12 +1,20 @@
 // src/components/LoginModal.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext.jsx";
+import ErrorMessages from "./Messages/ErrorMessage.jsx";
 
 function LoginModal({ show, onHide, container  }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
   const auth = useAuth();
+
+  // Clear errors when modal opens
+  useEffect(() => {
+    if (show) setErrorMessages([]);
+  }, [show]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -17,7 +25,12 @@ function LoginModal({ show, onHide, container  }) {
 
     } catch (err) {
       console.error("Login failed:", err);
-      alert("Prijava nije uspjela. Provjerite korisničko ime i lozinku.");
+      // Prikazujemo custom error za 401
+      if (err.message.includes('401') || err.message.toLowerCase().includes('invalid')) {
+        setErrorMessages(["Pogrešno korisničko ime ili lozinka."]);
+      } else {
+        setErrorMessages([`Prijava nije uspjela: ${err.message}`]);
+      }
     }
   };
 
@@ -30,10 +43,30 @@ function LoginModal({ show, onHide, container  }) {
       centered
       backdropClassName="login-modal-backdrop"
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Prijava</Modal.Title>
-      </Modal.Header>
+    <Modal.Header
+  className="position-relative d-flex align-items-center justify-content-center"
+>
+ 
+  <Modal.Title className="mb-0">
+    Prijava
+  </Modal.Title>
+
+  
+  <button
+    type="button"
+    className="btn-close position-absolute top-50 end-0 translate-middle-y me-3"
+    aria-label="Close"
+    onClick={onHide}     // proslijeđuje se iz propsa LoginModal-a
+  />
+</Modal.Header>
       <Modal.Body>
+         <ErrorMessages
+          messages={errorMessages}
+          variant="danger"
+           onDismiss={idx =>
+   setErrorMessages(prev => prev.filter((_, i) => i !== idx))
+ }
+        />
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-5" controlId="loginUsername">
             <Form.Control
@@ -68,5 +101,12 @@ function LoginModal({ show, onHide, container  }) {
     </Modal>
   );
 }
+
+LoginModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  container: PropTypes.any
+};
+
 
 export default LoginModal;

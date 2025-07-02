@@ -6,25 +6,27 @@ import DodajDoktora   from './DodajDoktora.jsx';
 import DodajUstanovu  from './DodajUstanovu.jsx';
 import AdminIzvjestaj from './AdminIzvjestaj.jsx';
 
+
 const AdminPage = () => {
   /* ──────────────────────────────────────────────────────────── */
   /*  1)   Provjera autentifikacije + debug poruka               */
   /* ──────────────────────────────────────────────────────────── */
-  const auth     = useAuth();
+   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  console.log('🔧 AdminPage mount → auth =', auth);
+  // console.log('🔧 AdminPage mount → auth =', auth);
 
-  if (!auth?.isAuthenticated) {
-    return <div style={{ padding: '2rem' }}>⏳ Učitavanje podataka...</div>;
-  }
-  if (auth.rola !== 'Admin') {
-    return (
-      <div style={{ padding: '2rem', color: 'red' }}>
-        ⛔ Nemate administratorski pristup.
-      </div>
-    );
-  }
+  // if (!auth?.isAuthenticated) {
+  //   return <div style={{ padding: '2rem' }}>⏳ Učitavanje podataka...</div>;
+  // }
+  // if (auth.rola !== 'Admin') {
+  //   return (
+  //     <div style={{ padding: '2rem', color: 'red' }}>
+  //       ⛔ Nemate administratorski pristup.
+  //     </div>
+  //   );
+  // }
+  
 
   /* ──────────────────────────────────────────────────────────── */
   /*  2)   State + demo podaci                                   */
@@ -132,7 +134,7 @@ const AdminPage = () => {
   /* ──────────────────────────────────────────────────────────── */
   return (
     <div className="admin-dashboard">
-      <style jsx>{`
+      <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .admin-dashboard {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont,
@@ -402,9 +404,10 @@ const AdminPage = () => {
             className="logout-btn"
             title="Odjavi se"
             onClick={() => {
-              if (window.confirm('Da li ste sigurni da se želite odjaviti?')) {
-                alert('Odjavljujete se...');
-                // auth.logout(); navigate('/');
+              // if (window.confirm('Da li ste sigurni da se želite odjaviti?')) 
+                {
+                // alert('Odjavljujete se...');
+                logout(); navigate('/');
               }
             }}
           >
