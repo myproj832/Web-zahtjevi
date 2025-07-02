@@ -9,9 +9,10 @@ const ADMIN_UNIT_NAME = 'Administracija sistema';   // promijeni po potrebi
 // const ADMIN_UNIT_ID   = 999;                     // primjer ako radiš po ID-u
 
 export default function InstitutionModal({ show, onHide, container }) {
-  const { institucije, korisnik, selectInstitution, logout } = useAuth();
+  const { institucije, korisnik, selectInstitution, logout, isAdmin} = useAuth();
   const navigate = useNavigate();
 
+ 
   /* Klik na dugme ustanove */
   const handleChoose = (inst) => {
     console.log('👉 Odabrana ustanova:', inst);
@@ -50,9 +51,11 @@ export default function InstitutionModal({ show, onHide, container }) {
         <div className="institution-modal-content">
           <h2 className="institution-modal-title">{korisnik}</h2>
 
-          <p className="institution-modal-subtitle">
-            Izaberite zdravstvenu ustanovu:
-          </p>
+          {!isAdmin && (
+            <p className="institution-modal-subtitle">
+              Izaberite zdravstvenu ustanovu:
+            </p>
+          )}
 
           <div className="institution-modal-buttons">
             {institucije.map((inst) => (

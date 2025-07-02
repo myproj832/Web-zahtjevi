@@ -1,7 +1,7 @@
-
+/* 
 .header-page {
   background: #ecfeff !important;
-  /* background: linear-gradient(45deg, #d7f8dc 0%, #d9e7ff 100%)!important; */
+  
  
   border-radius: 0 0 3px 3px;
   padding: 1rem;
@@ -25,7 +25,7 @@
     0 30px 60px -15px rgba(0, 0, 0.25, 0.25),
     
     0 6px 8px -3px rgba(0, 0, 0.25, 0.12); 
-  color: #fff; /* #47466D */
+  color: #fff;
   font-size: 1rem;
   letter-spacing: 0.5px;
 }
@@ -49,7 +49,7 @@
   margin-right: 0.5rem;
   border-radius: 50%;
  
-  color: #205375; /* Icon color */
+  color: #205375;
 }
 
 .btn-logout {
@@ -77,4 +77,83 @@
     font-size: 0.85rem;
     margin: 0 0.25rem;
   }
+} */
+.header-page {
+  background: #b1d9e0;
+  border-radius: 0 0 3px 3px;
+  box-shadow: #205375 0px 0px 10px 0px;
+  padding: 0.4rem;
+}
+
+.header-institution-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.institution-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+.institution-details {
+  font-size: 0.85rem;
+  color: #333;
+  margin-left: 28px;
+}
+.institution-details span {
+  display: block;
+}
+
+.header-user-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  margin-right: 1rem;
+}
+.user-name {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+.user-specialization {
+  font-size: 0.85rem;
+ margin-left: 2rem;
+ 
+  color: #555;
+  text-transform: capitalize;
+}
+
+.header-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border-radius: 30%;
+ 
+  background-color: #205375;
+}
+
+.btn-logout {
+  margin-left: 1rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #205375;
+  background: var(--gradient-primary-button);
+  color: #f4f6fa;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-logout:hover {
+  background: #c7d6f3;
+  color: var(--color-royal-hyacinth);
+  border: 1px solid #205375;
+}
+
+@media (max-width: 576px) {
+  .header-page { padding: 10px 24px; }
+  .institution-details,
+  .user-specialization { font-size: 0.75rem; }
+  .header-icon { width: 20px; height: 20px; }
 }

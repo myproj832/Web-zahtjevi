@@ -22,8 +22,16 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.getItem('korisnik')
   );
   const [rola, setRola] = useState(() =>
-  sessionStorage.getItem('role')
+  sessionStorage.getItem('rola')
 );
+
+  const [specialization, setSpecialization] = useState(
+   () => sessionStorage.getItem('specialization') || ''
+ );
+
+  const [addressInstitution, setAddressInstitution] = useState('');
+  const [cityInstitution, setCityInstitution] = useState('');
+  const [phoneInstitution, setPhoneInstitution] = useState('');
 
   const [institucije, setInstitucije] = useState(() => {
     const raw = sessionStorage.getItem('institucije');
@@ -92,6 +100,14 @@ export const AuthProvider = ({ children }) => {
   }
 }, [rola]);
 
+ useEffect(() => {
+   if (specialization) {
+     sessionStorage.setItem('specialization', specialization);
+   } else {
+     sessionStorage.removeItem('specialization');
+   }
+ }, [specialization]);
+
   // Fetch public IP address
   useEffect(() => {
     fetch('https://api.ipify.org?format=json')
@@ -108,6 +124,9 @@ const logout = useCallback(() => {
     setKorisnickoIme(null);
     setInstitucije([]);
     setIzabranaInstitucija(null);
+     setAddressInstitution('');
+    setCityInstitution('');
+    setPhoneInstitution('');
     navigate('/');
  }, [navigate]);
 
@@ -181,8 +200,12 @@ if (out.error_u === 'OK') {
   setKorisnickoIme(out.username_u);
 
   setKorisnik(out.name_u);
-  
+  setRola(out.rola_u);
+   setSpecialization(out.specialization_u || '');
   setInstitucije(out.institutions_u || []);
+  //  setAddressInstitution(inst.address_institution || '');
+  //   setCityInstitution(inst.city_institution || '');
+  //   setPhoneInstitution(inst.phone_institution || '');
   return true;
 } else {
   throw new Error(out.error_u);
@@ -215,6 +238,10 @@ if (out.error_u === 'OK') {
   }
  setTokenUser(out2.token_user);
  setIzabranaInstitucija(inst);
+  setAddressInstitution(inst.address_institution);
+   setCityInstitution(   inst.city_institution);
+   setPhoneInstitution(  inst.phone_institution);
+  
    setRola(out2.rola_u); 
  if (out2.rola_u === 'Admin') {
    navigate('/admin');
@@ -223,7 +250,9 @@ if (out.error_u === 'OK') {
  }
 };
 
-
+const isAdmin = rola === 'Admin';
+  const isDoctor = rola === 'Ljekar';
+  const isPharmacist = rola === 'Apotekar';
 
 
  
@@ -235,11 +264,18 @@ if (out.error_u === 'OK') {
         tokenKorisnik,
         korisnickoIme,
        korisnik,
+        specialization,
         institucije,
         tokenUser,
         izabranaInstitucija,
+         addressInstitution,
+        cityInstitution,
+        phoneInstitution,
         isAuthenticated,
         rola,
+        isAdmin,
+        isDoctor,
+        isPharmacist,
          warningMessage,
         sessionMessage,
         clearSessionMessage,

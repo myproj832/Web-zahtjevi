@@ -7,7 +7,16 @@ import iconDoctor from '../assets/Icons/icon-doctor.png';
 import iconPharmacy from '../assets/Icons/iconPharmacy.jpg';
 
 const Header = () => {
-  const { izabranaInstitucija, rola, korisnik, logout } = useAuth();
+   const {
+    izabranaInstitucija,
+    addressInstitution,
+    cityInstitution,
+    phoneInstitution,
+    rola,
+    korisnik,
+    specialization,
+    logout,
+  } = useAuth();
 
   const iconMap = {
     'Ljekar': { src: iconDoctor, alt: 'Ljekar' },
@@ -16,40 +25,61 @@ const Header = () => {
 
   const userIcon = iconMap[rola];
 
-    return (
+     return (
     <header className="header-page d-flex justify-content-between align-items-center px-3">
-       <div className="header-institution d-inline-flex align-items-center">
-         <img
-          src={iconInstitution}
-          alt="Ustanova"
-          className="header-icon institution-icon"
-        />
-        {izabranaInstitucija
-          ? izabranaInstitucija.name_unit
-          : 'Ustanova'}
-      </div>
-       <div className="d-flex align-items-center">
-        <div className="header-user d-inline-flex align-items-center">
-          {userIcon && (
-            <img
-              src={userIcon.src}
-              alt={userIcon.alt}
-              className="header-icon doctor-icon"
-            />
-          )}
-          {rola ? `${rola}: ` : ''}{korisnik || 'Korisnik'}
+      {/* Ustanova */}
+      <div className="header-institution-block">
+        <div className="institution-top d-flex align-items-center">
+          <img
+            src={iconInstitution}
+            alt="Ustanova"
+            className="header-icon institution-icon"
+          />
+          <span className="institution-name">
+            {(izabranaInstitucija?.name_institution || 'Ustanova').toUpperCase()}
+          </span>
         </div>
+        {izabranaInstitucija && (
+          <div className="institution-details">
+            <span><strong>Adresa:</strong> {izabranaInstitucija.address_institution}, {izabranaInstitucija.city_institution}</span>
+            <span><strong>Tel:</strong> {izabranaInstitucija.phone_institution}</span>
+            {izabranaInstitucija.email_institution && (
+              <span><strong>Email:</strong> {izabranaInstitucija.email_institution}</span>
+            )}
+          </div>
+        )}
+      </div>
 
-        <button
-          className="btn btn-logout btn-sm"
-          onClick={logout}
-        >
+      {/* Korisnik */}
+       <div className="d-flex align-items-center">
+        <div className="header-user-block">
+          <div className="d-inline-flex align-items-center">
+            {userIcon && (
+              <img
+                src={userIcon.src}
+                alt={userIcon.alt}
+                className="header-icon doctor-icon"
+              />
+            )}
+            <span className="user-name">
+              {/* {rola === 'Ljekar' ? 'Dr. ' : ''}{korisnik} */}
+              {korisnik}
+            </span>
+          </div>
+          {rola === 'Ljekar' && specialization && (
+            <span className="user-specialization">
+              {specialization}
+            </span>
+          )}
+        </div>
+        <button className="btn btn-logout btn-sm ml-3" onClick={logout}>
           Odjavi se
         </button>
       </div>
     </header>
   );
 };
+
 
 
 export default Header;
