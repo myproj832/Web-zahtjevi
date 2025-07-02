@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDataContext } from "../../context/DataContext";
 import { Card, Form, Button, Row, Col } from "react-bootstrap";
-import InstitutionDetails from "../../components/RequestForm/InstitutionDetails";
+/* import InstitutionDetails from "../../components/RequestForm/InstitutionDetails"; */
 import PatientInfo from "../../components/RequestForm/PatientInfo";
 import DiagnosisBlock from "../../components/RequestForm/DiagnosisBlock";
 import PrescriptionCard from "../../components/RequestForm/PrescriptionCard";
@@ -13,7 +13,7 @@ import "./RequestForm.css";
 
 function RequestForm() {
   const navigate = useNavigate();
-  const { indikLijek, lijekNormativ, gradovi, pacijenti, loading } = useDataContext();
+  const { indikacije, indikLijek, lijekNormativ, gradovi, pacijenti, loading } = useDataContext();
   const [recepti, setRecepti] = useState([
     {
       tipRecepta: "obrazac",
@@ -24,7 +24,7 @@ function RequestForm() {
       brojPonavljanja: "",
       vremenskiPeriod: "",
       napomena: "",
-      grupa: "sve",
+      grupa: "",
     },
   ]);
   const [isSaved, setIsSaved] = useState(false);
@@ -55,12 +55,12 @@ const isValidPhone = (phone) => {
               variant="outline-secondary"
               onClick={() => navigate("/requests")}
             >
-              Pregled zahtjeva
+              Lista zahtjeva
             </Button>
           </div>
 
           <Form>
-            <InstitutionDetails />
+            {/* <InstitutionDetails /> */}
             <PatientInfo
               patientInfo={patientInfo}
               setPatientInfo={setPatientInfo}
@@ -77,6 +77,7 @@ const isValidPhone = (phone) => {
                 recepti={recepti}
                 setRecepti={setRecepti}
                 indikLijek={indikLijek}
+                indikacije={indikacije}
                 lijekNormativ={lijekNormativ}
               />
             ))}

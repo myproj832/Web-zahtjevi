@@ -31,27 +31,18 @@ const DodajDoktora = ({ onBack, onSave }) => {
   // Browser back dugme funkcionalnost
   useEffect(() => {
     const handlePopState = (event) => {
-      // Ako je otvoren cancel modal, zatvaramo ga prvo
       if (showCancelAlert) {
         setShowCancelAlert(false);
-        // Sprečavamo da se ide dalje nazad
         window.history.pushState(null, '', window.location.href);
         return;
       }
-      
-      // Ako nema otvorenih modala, pozivamo onBack funkciju
       if (onBack) {
         onBack();
       }
     };
 
-    // Dodajemo trenutnu stranicu u history kada se komponenta mount-uje
     window.history.pushState(null, '', window.location.href);
-    
-    // Dodajemo event listener za popstate
     window.addEventListener('popstate', handlePopState);
-    
-    // Cleanup funkcija
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
@@ -78,15 +69,22 @@ const DodajDoktora = ({ onBack, onSave }) => {
         password: generateRandomPassword()
       }));
     }
+    // eslint-disable-next-line
   }, [formData.email]);
 
+  // GENERISANJE LOZINKE: 5 slova + 3 broja, total 8 karaktera
   const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let password = '';
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+    let lettersPart = '';
+    let digitsPart = '';
+    for (let i = 0; i < 5; i++) {
+      lettersPart += letters.charAt(Math.floor(Math.random() * letters.length));
     }
-    return password;
+    for (let i = 0; i < 3; i++) {
+      digitsPart += digits.charAt(Math.floor(Math.random() * digits.length));
+    }
+    return lettersPart + digitsPart;
   };
 
   const handleInputChange = (field, value) => {
@@ -94,7 +92,7 @@ const DodajDoktora = ({ onBack, onSave }) => {
       ...prev,
       [field]: value
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -108,7 +106,7 @@ const DodajDoktora = ({ onBack, onSave }) => {
       ...prev,
       brojTelefona: value || ''
     }));
-    
+
     if (errors.brojTelefona) {
       setErrors(prev => ({
         ...prev,
@@ -136,21 +134,21 @@ const DodajDoktora = ({ onBack, onSave }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.imePrezime.trim()) newErrors.imePrezime = 'Ime i prezime je obavezno';
     if (!formData.brojLicence.trim()) newErrors.brojLicence = 'Broj licence je obavezan';
     if (!formData.specijalizacija.trim()) newErrors.specijalizacija = 'Specijalizacija je obavezna';
     if (!formData.email.trim()) newErrors.email = 'Email je obavezan';
     if (formData.ustanove.length === 0) newErrors.ustanove = 'Najmanje jedna ustanova je obavezna';
-    
+
     if (formData.email && !formData.email.includes('@')) {
       newErrors.email = 'Email mora sadržavati @ znak';
     }
-    
+
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email nije valjan';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -167,7 +165,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
 
   const handleCancel = () => {
     setShowCancelAlert(true);
-    // Dodajemo novi state u history za modal
     window.history.pushState({ modal: 'cancel' }, '', window.location.href);
   };
 
@@ -178,7 +175,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
 
   const cancelCancel = () => {
     setShowCancelAlert(false);
-    // Vraćamo se na prethodnu stranicu u history
     window.history.back();
   };
 
@@ -190,7 +186,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           padding: 0;
           box-sizing: border-box;
         }
-
         .admin-dashboard {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
@@ -198,8 +193,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           display: flex;
           flex-direction: column;
         }
-
-        /* Header */
         .header {
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(20px) saturate(180%);
@@ -215,14 +208,12 @@ const DodajDoktora = ({ onBack, onSave }) => {
           right: 0;
           z-index: 1000;
         }
-
         .header-left {
           display: flex;
           align-items: center;
           gap: 0;
           flex: 1;
         }
-
         .logo {
           display: flex;
           align-items: center;
@@ -232,7 +223,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           color: #1a1d29;
           letter-spacing: -0.5px;
         }
-
         .logo-icon {
           width: 32px;
           height: 32px;
@@ -244,13 +234,11 @@ const DodajDoktora = ({ onBack, onSave }) => {
           color: white;
           font-size: 16px;
         }
-
         .header-right {
           display: flex;
           align-items: center;
           gap: 16px;
         }
-
         .time-display {
           background: linear-gradient(135deg, #1a1d29 0%, #2d3748 100%);
           color: white;
@@ -261,7 +249,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           font-family: 'SF Mono', Monaco, monospace;
           letter-spacing: 0.5px;
         }
-
         .back-btn {
           background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
           color: white;
@@ -276,13 +263,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           align-items: center;
           gap: 6px;
         }
-
         .back-btn:hover {
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
         }
-
-        /* Main Content */
         .main-content {
           padding: 88px 32px 32px;
           min-height: 100vh;
@@ -290,12 +274,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           margin: 0 auto;
           width: 100%;
         }
-
         .page-header {
           margin-bottom: 32px;
           text-align: center;
         }
-
         .page-title {
           font-size: 32px;
           font-weight: 700;
@@ -303,14 +285,11 @@ const DodajDoktora = ({ onBack, onSave }) => {
           margin-bottom: 8px;
           letter-spacing: -1px;
         }
-
         .page-subtitle {
           font-size: 16px;
           color: #6b7280;
           font-weight: 400;
         }
-
-        /* Form Card */
         .form-card {
           background: rgba(255, 255, 255, 0.95);
           border: 1px solid rgba(0, 0, 0, 0.06);
@@ -319,30 +298,25 @@ const DodajDoktora = ({ onBack, onSave }) => {
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           backdrop-filter: blur(10px);
         }
-
         .form-content {
           padding: 32px;
         }
-
         .form-grid {
           display: grid;
           grid-template-columns: 400px 1fr;
           gap: 32px;
           margin-bottom: 32px;
         }
-
         .form-left {
           display: flex;
           flex-direction: column;
           gap: 24px;
         }
-
         .form-right {
           display: flex;
           flex-direction: column;
           gap: 24px;
         }
-
         .form-section {
           background: rgba(248, 250, 252, 0.8);
           border: 1px solid rgba(0, 0, 0, 0.06);
@@ -350,11 +324,9 @@ const DodajDoktora = ({ onBack, onSave }) => {
           padding: 20px;
           backdrop-filter: blur(5px);
         }
-
         .form-section.compact {
           padding: 16px;
         }
-
         .section-header {
           display: flex;
           align-items: center;
@@ -363,7 +335,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           padding-bottom: 10px;
           border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
-
         .section-icon {
           width: 28px;
           height: 28px;
@@ -375,21 +346,17 @@ const DodajDoktora = ({ onBack, onSave }) => {
           font-size: 14px;
           color: white;
         }
-
         .section-title {
           font-size: 14px;
           font-weight: 600;
           color: #1a1d29;
         }
-
         .form-group {
           margin-bottom: 16px;
         }
-
         .form-group.compact {
           margin-bottom: 12px;
         }
-
         .form-label {
           font-size: 12px;
           font-weight: 600;
@@ -399,11 +366,9 @@ const DodajDoktora = ({ onBack, onSave }) => {
           letter-spacing: 0.5px;
           display: block;
         }
-
         .required {
           color: #ef4444;
         }
-
         .form-control, .form-select, .form-textarea {
           width: 100%;
           height: 36px;
@@ -414,38 +379,32 @@ const DodajDoktora = ({ onBack, onSave }) => {
           background: white;
           transition: all 0.2s ease;
         }
-
         .form-textarea {
           height: auto;
           padding: 10px;
           resize: vertical;
           min-height: 70px;
         }
-
         .form-control:focus, .form-select:focus, .form-textarea:focus {
           outline: none;
           border-color: #3b82f6;
           box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
-
         .form-control.error, .form-select.error, .form-textarea.error {
           border-color: #ef4444;
           box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
         }
-
         .form-control.auto-filled {
           background: #ecfdf5;
           border-color: #10b981;
           color: #065f46;
         }
-
         .error-message {
           color: #ef4444;
           font-size: 11px;
           margin-top: 3px;
           font-weight: 500;
         }
-
         .auto-filled-label {
           background: #ecfdf5;
           color: #059669;
@@ -458,18 +417,14 @@ const DodajDoktora = ({ onBack, onSave }) => {
           align-items: center;
           gap: 6px;
         }
-
-        /* Ustanove Section */
         .ustanove-selector {
           display: flex;
           gap: 8px;
           margin-bottom: 12px;
         }
-
         .ustanove-select {
           flex: 1;
         }
-
         .add-btn {
           background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
@@ -485,22 +440,18 @@ const DodajDoktora = ({ onBack, onSave }) => {
           font-size: 16px;
           font-weight: 600;
         }
-
         .add-btn:hover:not(:disabled) {
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
-
         .add-btn:disabled {
           opacity: 0.4;
           cursor: not-allowed;
         }
-
         .ustanove-list {
           max-height: 160px;
           overflow-y: auto;
         }
-
         .ustanova-item {
           display: flex;
           align-items: center;
@@ -512,12 +463,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           margin-bottom: 6px;
           font-size: 13px;
         }
-
         .ustanova-name {
           color: #1a1d29;
           font-weight: 500;
         }
-
         .remove-btn {
           background: #fef2f2;
           color: #dc2626;
@@ -532,12 +481,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           transition: all 0.2s ease;
           font-size: 10px;
         }
-
         .remove-btn:hover {
           background: #dc2626;
           color: white;
         }
-
         .ustanove-placeholder {
           text-align: center;
           padding: 16px;
@@ -547,13 +494,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           border-radius: 6px;
           font-size: 12px;
         }
-
-        /* Phone Input Styling */
         .PhoneInput {
           display: flex;
           gap: 6px;
         }
-
         .PhoneInputCountrySelect {
           border: 1px solid rgba(0, 0, 0, 0.08);
           border-radius: 8px;
@@ -562,13 +506,11 @@ const DodajDoktora = ({ onBack, onSave }) => {
           font-size: 13px;
           height: 36px;
         }
-
         .PhoneInputCountrySelect:focus {
           outline: none;
           border-color: #3b82f6;
           box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
-
         .PhoneInputInput {
           flex: 1;
           border: 1px solid rgba(0, 0, 0, 0.08);
@@ -578,14 +520,11 @@ const DodajDoktora = ({ onBack, onSave }) => {
           background: white;
           height: 36px;
         }
-
         .PhoneInputInput:focus {
           outline: none;
           border-color: #3b82f6;
           box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
-
-        /* Action Buttons */
         .action-buttons {
           display: flex;
           gap: 16px;
@@ -595,7 +534,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           background: rgba(248, 250, 252, 0.8);
           backdrop-filter: blur(5px);
         }
-
         .btn-primary {
           background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
@@ -610,12 +548,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           align-items: center;
           gap: 8px;
         }
-
         .btn-primary:hover {
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
-
         .btn-secondary {
           background: rgba(248, 250, 252, 0.9);
           color: #6b7280;
@@ -631,13 +567,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           gap: 8px;
           backdrop-filter: blur(5px);
         }
-
         .btn-secondary:hover {
           background: rgba(241, 245, 249, 0.9);
           color: #374151;
         }
-
-        /* Modal */
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -651,7 +584,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           justify-content: center;
           z-index: 2000;
         }
-
         .modal-content {
           background: white;
           border-radius: 16px;
@@ -660,7 +592,6 @@ const DodajDoktora = ({ onBack, onSave }) => {
           width: 90%;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-
         .modal-title {
           font-size: 20px;
           font-weight: 700;
@@ -668,20 +599,17 @@ const DodajDoktora = ({ onBack, onSave }) => {
           margin-bottom: 12px;
           text-align: center;
         }
-
         .modal-message {
           color: #6b7280;
           margin-bottom: 24px;
           text-align: center;
           line-height: 1.5;
         }
-
         .modal-buttons {
           display: flex;
           gap: 12px;
           justify-content: center;
         }
-
         .modal-btn-danger {
           background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           color: white;
@@ -692,12 +620,10 @@ const DodajDoktora = ({ onBack, onSave }) => {
           cursor: pointer;
           transition: all 0.2s ease;
         }
-
         .modal-btn-danger:hover {
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
-
         .modal-btn-cancel {
           background: #f8fafc;
           color: #6b7280;
@@ -708,37 +634,29 @@ const DodajDoktora = ({ onBack, onSave }) => {
           cursor: pointer;
           transition: all 0.2s ease;
         }
-
         .modal-btn-cancel:hover {
           background: #f1f5f9;
           color: #374151;
         }
-
-        /* Responsive */
         @media (max-width: 768px) {
           .main-content {
             padding: 88px 16px 32px;
           }
-          
           .header {
             padding: 0 16px;
           }
-          
           .form-grid {
             grid-template-columns: 1fr;
             gap: 20px;
           }
-          
           .ustanove-selector {
             flex-direction: column;
             gap: 8px;
           }
-          
           .action-buttons {
             flex-direction: column;
             padding: 20px 16px;
           }
-          
           .PhoneInput {
             flex-direction: column;
             gap: 8px;
@@ -748,23 +666,11 @@ const DodajDoktora = ({ onBack, onSave }) => {
 
       {/* Header */}
       <header className="header">
-        <div className="header-left">
-          <div className="logo">
-            <div className="logo-icon">🏥</div>
-            Cosmetics
-          </div>
-        </div>
-        
+
+
         <div className="header-right">
-          <div className="time-display">
-            {currentTime.toLocaleTimeString('sr-RS', { 
-              hour12: false,
-              hour: '2-digit', 
-              minute: '2-digit',
-              second: '2-digit'
-            })}
-          </div>
           
+
           <button className="back-btn" onClick={handleCancel}>
             ← Nazad
           </button>
@@ -791,7 +697,7 @@ const DodajDoktora = ({ onBack, onSave }) => {
                     <div className="section-icon">👤</div>
                     <div className="section-title">Lični podaci</div>
                   </div>
-                  
+
                   <div className="form-group compact">
                     <label className="form-label">
                       Ime i prezime <span className="required">*</span>

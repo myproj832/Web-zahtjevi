@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import FilterForm from "../../components/RequestsList/FilterForm";
@@ -6,10 +6,12 @@ import RequestTable from "../../components/RequestsList/RequestTable";
 import RequestCard from "../../components/RequestsList/RequestCard";
 import ActionButtons from "../../components/RequestsList/ActionButtons";
 import Header from "../../components/Header";
+import { useAuth } from "../../context/AuthContext";
 import "./RequestList.css";
 
 function RequestList() {
   const navigate = useNavigate();
+  const { rola } = useAuth();
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [filters, setFilters] = useState({
     datumOd: "",
@@ -17,7 +19,10 @@ function RequestList() {
     pacijent: "",
     lijek: "",
     status: "",
+    rola: "",
   });
+
+  const isAdmin = rola === "admin";
 
   const doctorId = 1; // Prijavljeni ljekar
   /* const requests = allRequests.filter((r) => r.ljekarId === doctorId); */
@@ -44,7 +49,8 @@ function RequestList() {
       (!doD || datum <= doD) &&
       combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
       combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
-      r.status.toLowerCase().includes(filters.status.toLowerCase())
+      r.status.toLowerCase().includes(filters.status.toLowerCase()) &&
+      (!filters.rola || r.rola?.toLowerCase() === filters.rola.toLowerCase())
     );
   });
 
@@ -73,7 +79,11 @@ function RequestList() {
           </Button>
         </div>
 
-        <FilterForm filters={filters} handleFilterChange={handleFilterChange} />
+        <FilterForm
+          filters={filters}
+          handleFilterChange={handleFilterChange}
+          isAdmin={isAdmin}
+        />
 
         <ActionButtons
           selectedRequest={filteredRequests.find((r) => r.id === selectedRowId)}
@@ -84,6 +94,7 @@ function RequestList() {
           filteredRequests={filteredRequests}
           setSelectedRowId={setSelectedRowId}
           selectedRowId={selectedRowId}
+          rola={rola}
         />
 
         <div className="d-md-none">

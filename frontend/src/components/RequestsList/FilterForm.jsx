@@ -1,4 +1,5 @@
-function FilterForm({ filters, handleFilterChange }) {
+function FilterForm({ filters, handleFilterChange, isAdmin }) {
+
   return (
     <div className="row g-2 mb-4">
       <div className="col-md-2 m-0">
@@ -21,7 +22,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-3 m-0">
+      <div className="col-md-2 m-0">
         <label></label>
         <input
           type="text"
@@ -32,7 +33,7 @@ function FilterForm({ filters, handleFilterChange }) {
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-3 m-0">
+      <div className="col-md-2 m-0">
         <label></label>
         <input
           type="text"
@@ -54,6 +55,22 @@ function FilterForm({ filters, handleFilterChange }) {
           <option value="">Status</option>
           <option value="Kreiran">Kreiran</option>
           <option value="Na čekanju">Na čekanju</option>
+        </select>
+      </div>
+      <div className="col-md-2 m-0">
+        <label>Rola:</label>
+        <select
+          disabled={!isAdmin}
+          className="form-control"
+          name="Rola"
+          value={filters.rola}
+          onChange={handleFilterChange}
+        >
+          {/* <option value="">Rola</option> */}
+          <option value="Ljekar">Ljekar</option>
+          <option value="Apotekar">Apotekar</option>
+          <option value="Admin">Admin</option>
+          <option value="Ustanova">Ustanova</option>
         </select>
       </div>
     </div>
