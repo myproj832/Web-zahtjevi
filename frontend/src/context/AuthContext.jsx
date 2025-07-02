@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const tokenApp = '2bc17d80-55fb-49ec-ac94-534421cbeb35';
+
+   const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
 
   const [warningMessage, setWarningMessage] = useState('');
   const [sessionMessage, setSessionMessage] = useState('');
@@ -203,9 +206,6 @@ if (out.error_u === 'OK') {
   setRola(out.rola_u);
    setSpecialization(out.specialization_u || '');
   setInstitucije(out.institutions_u || []);
-  //  setAddressInstitution(inst.address_institution || '');
-  //   setCityInstitution(inst.city_institution || '');
-  //   setPhoneInstitution(inst.phone_institution || '');
   return true;
 } else {
   throw new Error(out.error_u);
@@ -249,6 +249,16 @@ if (out.error_u === 'OK') {
    navigate('/requests');
  }
 };
+
+   useEffect(() => {
+    const prev = prevPathRef.current;
+    const curr = location.pathname;
+    // detektujemo ulazak na login ("/") iz neke druge rute
+    if (prev !== curr && curr === '/') {
+      logout();
+    }
+    prevPathRef.current = curr;
+  }, [location.pathname, logout]);
 
 const isAdmin = rola === 'Admin';
   const isDoctor = rola === 'Ljekar';
