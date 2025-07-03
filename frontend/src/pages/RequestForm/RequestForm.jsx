@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useDataContext } from "../../context/DataContext";
-import { Card, Form, Button, Row, Col } from "react-bootstrap";
-/* import InstitutionDetails from "../../components/RequestForm/InstitutionDetails"; */
+import { Form, Button } from "react-bootstrap";
 import PatientInfo from "../../components/RequestForm/PatientInfo";
 import DiagnosisBlock from "../../components/RequestForm/DiagnosisBlock";
 import PrescriptionCard from "../../components/RequestForm/PrescriptionCard";
@@ -13,22 +13,33 @@ import "./RequestForm.css";
 
 function RequestForm() {
   const navigate = useNavigate();
-  const { indikacije, indikLijek, lijekNormativ, gradovi, pacijenti, loading } = useDataContext();
+  const {
+    indikacije,
+    indikLijek,
+    lijekNormativ,
+    gradovi,
+    pacijenti,
+    submitZahtjev,
+    loading,
+  } = useDataContext();
+  const { tokenApp, korisnickoIme, tokenUser } = useAuth();
   const [recepti, setRecepti] = useState([
     {
       tipRecepta: "obrazac",
       tekstRecepta: "",
-      odabraniObrazac: null,
+      odabraniObrazac: "",
       vrstaRecepta: "neobn",
       kolicina: "",
       brojPonavljanja: "",
       vremenskiPeriod: "",
       napomena: "",
       grupa: "",
+      obrazac: "",
+      odabrani: "",
     },
   ]);
-  const [isSaved, setIsSaved] = useState(false);
-  const [formDisabled, setFormDisabled] = useState(false);
+  const [dijagnoza, setDijagnoza] = useState("");
+  const [files, setFiles] = useState([]);
   const [patientInfo, setPatientInfo] = useState({
     phone: "",
     firstName: "",
@@ -37,12 +48,11 @@ function RequestForm() {
     city: "",
   });
 
-const isValidPhone = (phone) => {
-  if (!phone) return false;
-  const cleaned = phone.replace(/\D/g, ""); // izbaci sve osim brojeva
-  return cleaned.length >= 11; // npr. da ima bar 8 cifara
-};
-
+  const isValidPhone = (phone) => {
+    if (!phone) return false;
+    const cleaned = phone.replace(/\D/g, ""); // izbaci sve osim brojeva
+    return cleaned.length >= 11 && cleaned.length <= 12;
+  };
 
   return (
     <>
@@ -50,7 +60,7 @@ const isValidPhone = (phone) => {
       <div className="background text-dark position-relative">
         <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h1 className="mb-1">Unos Zahtjeva</h1>
+            <h1 className="mb-1">Unos zahtjeva</h1>
             <Button
               variant="outline-secondary"
               onClick={() => navigate("/requests")}
@@ -67,7 +77,7 @@ const isValidPhone = (phone) => {
               pacijenti={pacijenti}
               gradovi={gradovi}
             />
-            <DiagnosisBlock />
+            <DiagnosisBlock onChangeDijagnoza={setDijagnoza} />
 
             {recepti.map((recept, index) => (
               <PrescriptionCard
@@ -82,188 +92,37 @@ const isValidPhone = (phone) => {
               />
             ))}
 
-            {!isSaved ? (
-              <>
-                <AddPrescriptionButton
-                  setRecepti={setRecepti}
-                  recepti={recepti}
-                />
-                <FileUpload />
-                <Button
-                  className="mt-4"
-                  variant="primary"
-                  onClick={() => {
-                     if (!isValidPhone(patientInfo.phone)) {
-                      alert(
-                        "Molimo unesite ispravan broj telefona (npr. +382 67 123 456)"
-                      );
-                      return;
-                    }
-                    const newRequest = {
-                      id: Date.now(),
-                      datum: new Date().toLocaleString("sr-RS"),
-                      pacijent: `${patientInfo.firstName} ${patientInfo.lastName}`,
-                      telefon: patientInfo.phone,
-                      grad: patientInfo.city,
-                      lijek: "progesteron krem 10mg-0.25ml 15ml",
-                      tipRecepta: "Obrazac lijeka",
-                      obrazac: recepti[0].odabraniObrazac?.naziv || "",
-                      sastav: ["progesteron 10mg/0.25ml", "excipiens ad 15ml"],
-                      ustanova: "Milmedika Podgorica",
-                      ljekarId: 1,
-                      ljekar: "Dr Ivana Ivković",
-                      status: "Kreiran",
-                      datumStatusa: new Date().toISOString().split("T")[0],
-                      napomena: recepti[0].napomena,
-                      faksimil: "Dr. MN",
-                      farmaceut: "Ivana Juric",
-                      datumIzdavanja: new Date()
-                        .toLocaleString("sr-RS")
-                        .split("T")[0],
-                    };
+            <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
+            <FileUpload setFiles={setFiles} />
+            <Button
+              className="mt-4"
+              variant="primary"
+              onClick={async () => {
+                if (!isValidPhone(patientInfo.phone)) {
+                  alert("Molimo unesite ispravan broj telefona");
+                  return;
+                }
 
-                    const existing =
-                      JSON.parse(localStorage.getItem("requests")) || [];
-                    localStorage.setItem(
-                      "requests",
-                      JSON.stringify([...existing, newRequest])
-                    );
+                try {
+                  const result = await submitZahtjev({
+                    patientInfo,
+                    dijagnoza,
+                    recepti,
+                    files,
+                    tokenApp,
+                    korisnickoIme,
+                    tokenUser,
+                  });
 
-                    setIsSaved(true);
-                    setFormDisabled(true);
-                  }}
-                >
-                  Snimi zahtjev
-                </Button>
-              </>
-            ) : (
-              <>
-                <Card
-                  className="shadow-sm border rounded-3 p-0"
-                  style={{
-                    backgroundColor: "rgba(187, 221, 222, 0.58)",
-                    borderRadius: "1rem",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <Card.Body className="py-2">
-                    
-                    <Row className="mb-1">
-                     
-                      <Col md={12}>
-                        <Form.Group className="mb-1">
-                          <Form.Label className="m-0 py-0">
-                            Barkod zahtjeva
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.barkod} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="1100026789015"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row className="mb-1">
-                      <Col md={6}>
-                        <Form.Group className="mb-1">
-                          <Form.Label className="m-0 py-0">
-                            Datum propisivanja lijeka
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.datumPropisivanja} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="29.06.2025"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-1">
-                          <Form.Label className="m-0 py-0">
-                            Potpis i Faksimil ljekara
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.faksimil} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="Ivana Ivkovic"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row className="mb-1">
-                      <Col md={6}>
-                        <Form.Group className="mb-1">
-                          <Form.Label className="m-0 py-0">
-                            Email ljekara
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.emailLjekara} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="email@gmail.com"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-1">
-                          <Form.Label className="m-0 py-0">
-                            Telefon ljekara
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            /* value={automatskiPodaci.telefonLjekara} */
-                            readOnly
-                            className="m-0 py-1"
-                            placeholder="+382 68 532 888"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    {/* <Form.Group className="mb-0">
-                      <Form.Label>Status lijeka</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={automatskiPodaci.statusLijeka}
-                        readOnly
-                      />
-                    </Form.Group> */}
-                  </Card.Body>
-                </Card>
-
-                <div className="d-flex gap-2 mt-4">
-                  <Button
-                    variant="secondary"
-                    onClick={() => setFormDisabled(false)}
-                  >
-                    Izmijeni
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => {
-                      const existing =
-                        JSON.parse(localStorage.getItem("requests")) || [];
-                      const updated = existing.filter(
-                        (r) => r.lijek !== recepti[0].tekstRecepta
-                      );
-                      localStorage.setItem("requests", JSON.stringify(updated));
-                      setIsSaved(false);
-                      setFormDisabled(false);
-                    }}
-                  >
-                    Izbriši
-                  </Button>
-                  <Button variant="outline-dark" onClick={() => window.print()}>
-                    Štampaj
-                  </Button>
-                </div>
-              </>
-            )}
+                  console.log("Uspješno snimljeno:", result);
+                  navigate("/requests");
+                } catch (err) {
+                  alert("Greška pri snimanju zahtjeva");
+                }
+              }}
+            >
+              Snimi zahtjev
+            </Button>
           </Form>
         </div>
       </div>

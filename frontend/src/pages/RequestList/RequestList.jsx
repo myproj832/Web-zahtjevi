@@ -7,11 +7,13 @@ import RequestCard from "../../components/RequestsList/RequestCard";
 import ActionButtons from "../../components/RequestsList/ActionButtons";
 import Header from "../../components/Header";
 import { useAuth } from "../../context/AuthContext";
+import { useDataContext } from "../../context/DataContext";
 import "./RequestList.css";
 
 function RequestList() {
   const navigate = useNavigate();
   const { rola } = useAuth();
+  const { listaZahtjeva } = useDataContext();
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [filters, setFilters] = useState({
     datumOd: "",
@@ -24,10 +26,9 @@ function RequestList() {
 
   const isAdmin = rola === "admin";
 
-  const doctorId = 1; // Prijavljeni ljekar
   /* const requests = allRequests.filter((r) => r.ljekarId === doctorId); */
-  const all = JSON.parse(localStorage.getItem("requests")) || [];
-  const requests = all.filter((r) => r.ljekarId === doctorId);
+  /* const all = JSON.parse(localStorage.getItem("requests")) || []; */
+  const requests = listaZahtjeva?.P_OUT_JSON || [];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -35,22 +36,24 @@ function RequestList() {
   };
 
   const filteredRequests = requests.filter((r) => {
-    const datum = new Date(r.datum);
+    const datum = new Date(r.dat_prijema);
     const od = filters.datumOd ? new Date(filters.datumOd) : null;
     const doD = filters.datumDo ? new Date(filters.datumDo) : null;
 
-    const combinedPacijentTelefon = (r.pacijent + r.telefon).toLowerCase();
-    const combinedLijekSastav = (
-      r.lijek + (Array.isArray(r.sastav) ? r.sastav.join(" ") : r.sastav)
-    ).toLowerCase();
+    const combinedPacijentTelefon =
+      `${r.pacijent_ime} ${r.pacijent_prezime}`.toLowerCase();
+    const combinedLijekSastav = r.rp
+      ?.map((el) => el.naziv || el.rp_blanko || el.rp_obrazac)
+      .join(" ")
+      .toLowerCase();
 
     return (
       (!od || datum >= od) &&
       (!doD || datum <= doD) &&
       combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
       combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
-      r.status.toLowerCase().includes(filters.status.toLowerCase()) &&
-      (!filters.rola || r.rola?.toLowerCase() === filters.rola.toLowerCase())
+      r.status.toString().includes(filters.status.toLowerCase()) &&
+      (!filters.rola || rola.toLowerCase() === filters.rola.toLowerCase())
     );
   });
 
@@ -91,6 +94,7 @@ function RequestList() {
         />
 
         <RequestTable
+          listaZahtjeva={listaZahtjeva}
           filteredRequests={filteredRequests}
           setSelectedRowId={setSelectedRowId}
           selectedRowId={selectedRowId}
@@ -98,8 +102,13 @@ function RequestList() {
         />
 
         <div className="d-md-none">
-          {filteredRequests.map((request) => (
-            <RequestCard key={request.id} request={request} />
+          {filteredRequests.map((req) => (
+            <RequestCard
+              key={req.id_zah}
+              request={req}
+              rola={rola}
+              onSelect={setSelectedRowId}
+            />
           ))}
         </div>
       </div>

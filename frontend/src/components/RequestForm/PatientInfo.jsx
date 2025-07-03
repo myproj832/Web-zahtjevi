@@ -26,13 +26,14 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
     // Pronađi pacijenta po broju telefona
     const matched = pacijenti?.find((p) => p.phoneNo === value);
     if (matched) {
-      setPatientInfo({
+      setPatientInfo((prev) => ({
+        ...prev,
         phone: matched.phoneNo,
         firstName: matched.name,
         lastName: matched.surname,
         birthDate: matched.dateOfBirth,
-        city: "", // ili matched.city ako postoji
-      });
+        city: matched.city || "", // ovo će postaviti grad ako postoji
+      }));
     }
   };
 
@@ -49,7 +50,12 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
       {/* Telefonski broj */}
       <Form.Group as={Row}>
-        <Form.Label column sm={3} className="m-0 py-1">
+        <Form.Label
+          column
+          sm={3}
+          className="m-0 pt-3"
+          style={{ textTransform: "none" }}
+        >
           Telefon<span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Col sm={9}>
@@ -58,8 +64,8 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             country={"me"}
             value={patientInfo.phone}
             onChange={handlePhoneChange}
-            inputStyle={{ width: "100%" }}
-            masks={{ me: ".. ... ..." }}
+            /* inputStyle={{ width: "100%" }} */
+            masks={{ me: ".. ... ...." }}
             inputProps={{
               onKeyDown: (e) => handleKeyDown(e, firstNameRef),
             }}
@@ -69,7 +75,12 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
       {/* Ime */}
       <Form.Group as={Row}>
-        <Form.Label column sm={3} className="m-0 py-1">
+        <Form.Label
+          column
+          sm={3}
+          className="m-0 py-1"
+          style={{ textTransform: "none" }}
+        >
           Ime<span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Col sm={9}>
@@ -85,7 +96,12 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
       {/* Prezime */}
       <Form.Group as={Row}>
-        <Form.Label column sm={3} className="m-0 py-1">
+        <Form.Label
+          column
+          sm={3}
+          className="m-0 py-1"
+          style={{ textTransform: "none" }}
+        >
           Prezime<span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Col sm={9}>
@@ -101,7 +117,12 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
       {/* Datum rođenja */}
       <Form.Group as={Row}>
-        <Form.Label column sm={3} className="m-0 py-1">
+        <Form.Label
+          column
+          sm={3}
+          className="m-0 py-1"
+          style={{ textTransform: "none" }}
+        >
           Datum rođenja<span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Col sm={9}>
@@ -118,7 +139,12 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
       {/* Grad */}
       <Form.Group as={Row}>
-        <Form.Label column sm={3} className="m-0 py-1">
+        <Form.Label
+          column
+          sm={3}
+          className="m-0 py-1"
+          style={{ textTransform: "none" }}
+        >
           Grad za preuzimanje lijeka
         </Form.Label>
         <Col>
@@ -131,7 +157,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
           >
             <option value="">Izaberi grad</option>
             {gradovi?.map((grad) => (
-              <option key={grad.code} value={grad.name}>
+              <option key={grad.code} value={grad.code}>
                 {grad.name}
               </option>
             ))}

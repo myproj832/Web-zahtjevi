@@ -70,7 +70,7 @@ function PrescriptionCard({
       {/* Tekst recepta za blanko formu */}
       {recept.tipRecepta === "blanko" && (
         <Form.Group className="mt-2">
-          <Form.Label>Recept (max 4000 karaktera)</Form.Label>
+          <Form.Label style={{textTransform: "none"}}>Recept (max 4000 karaktera)</Form.Label>
           <Form.Control
             as="textarea"
             rows={4}
@@ -89,7 +89,7 @@ function PrescriptionCard({
       {recept.tipRecepta === "obrazac" && (
         <>
           <Form.Group className="mt-2">
-            <Form.Label>Grupa-indikacija</Form.Label>
+            <Form.Label style={{textTransform: "none"}}>Grupa-indikacija</Form.Label>
             <Form.Select
               className="text-capitalize"
               value={recept.grupa}
@@ -117,7 +117,7 @@ function PrescriptionCard({
           <Card className="mt-3 mb-0 pt-0 pb-2">
             <Card.Body className="py-0">
               <Form.Group className="mt-2">
-                <Form.Label>Magistralni lijek</Form.Label>
+                <Form.Label style={{textTransform: "none"}}>Magistralni lijek</Form.Label>
 
                 {/* Filtrirani lijekovi na osnovu izabrane grupe */}
                 {(() => {
@@ -137,6 +137,20 @@ function PrescriptionCard({
                       value={recept.obrazac}
                       onChange={(e) => {
                         const novi = [...recepti];
+
+                        const filtriraniLijekovi = !recept.grupa
+                          ? lijekNormativ
+                          : lijekNormativ.filter((ln) =>
+                              indikLijek
+                                .filter(
+                                  (il) => il.indikacije_name === recept.grupa
+                                )
+                                .some(
+                                  (il) =>
+                                    Number(il.lijek_id) === Number(ln.lijek_id)
+                                )
+                            );
+
                         const odabrani = lijekNormativ.find(
                           (o) =>
                             o.lijek_id ===
@@ -147,30 +161,49 @@ function PrescriptionCard({
 
                         novi[index].obrazac = e.target.value;
                         novi[index].odabraniObrazac = odabrani || null;
+                        novi[index].odabrani = odabrani || null; // <-- dodano za r_art_id i r_art_naziv
 
                         if (odabrani) {
                           const normativi = odabrani.lijek_normativ
                             .map((n) => n.normativ_name)
                             .join("\n");
                           const tekst = `${normativi}\n${odabrani.lijek_m_f}\n${odabrani.lijek_d_s}`;
+
                           novi[index].tekstObrasca = tekst;
+                          novi[index].tekstRecepta = tekst; // <-- dodano da se popuni tekstRecepta
                         } else {
                           novi[index].tekstObrasca = "";
+                          novi[index].tekstRecepta = ""; // <-- dodano za brisanje kad nema odabira
                         }
 
                         setRecepti(novi);
                       }}
                     >
                       <option value="">-- Izaberite obrazac --</option>
-                      {filtriraniLijekovi.map((nor) => (
-                        <option
-                          key={nor.lijek_id}
-                          value={nor.lijek_name}
-                          className="text-capitalize"
-                        >
-                          {nor.lijek_name}
-                        </option>
-                      ))}
+                      {(() => {
+                        const filtriraniLijekovi = !recept.grupa
+                          ? lijekNormativ
+                          : lijekNormativ.filter((ln) =>
+                              indikLijek
+                                .filter(
+                                  (il) => il.indikacije_name === recept.grupa
+                                )
+                                .some(
+                                  (il) =>
+                                    Number(il.lijek_id) === Number(ln.lijek_id)
+                                )
+                            );
+
+                        return filtriraniLijekovi.map((nor) => (
+                          <option
+                            key={nor.lijek_id}
+                            value={nor.lijek_name}
+                            className="text-capitalize"
+                          >
+                            {nor.lijek_name}
+                          </option>
+                        ));
+                      })()}
                     </Form.Select>
                   );
                 })()}
@@ -242,7 +275,9 @@ function PrescriptionCard({
                 <Row>
                   <Col md={3}>
                     <Form.Group className="d-flex align-items-center gap-2">
-                      <Form.Label className="py-0 my-0 mx-0">Količina</Form.Label>
+                      <Form.Label className="py-0 my-0 mx-0" style={{ textTransform: "none" }}>
+                        Količina
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={recept.kolicina}
@@ -257,17 +292,22 @@ function PrescriptionCard({
                     </Form.Group>
                   </Col>
                 </Row>
-                <Row style={{"color": "transparent"}}>nesto</Row>
+                <Row style={{ color: "transparent" }}>nesto</Row>
               </>
             )}
 
             {recept.vrstaRecepta === "obn" && (
               <>
-                <Row style={{"color": "transparent"}}>nesto</Row>
+                <Row style={{ color: "transparent" }}>nesto</Row>
                 <Row>
                   <Col md={3}>
                     <Form.Group className="d-flex align-items-center gap-2">
-                      <Form.Label style={{ width: "60px" }} className="py-0 my-0">Količina</Form.Label>
+                      <Form.Label
+                        style={{ width: "60px", textTransform: "none" }}
+                        className="py-0 my-0"
+                      >
+                        Količina
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={recept.kolicina}
@@ -283,7 +323,10 @@ function PrescriptionCard({
                   </Col>
                   <Col md={5}>
                     <Form.Group className="d-flex align-items-center gap-2">
-                      <Form.Label style={{ width: "120px" }} className="py-0 my-0">
+                      <Form.Label
+                        style={{ width: "120px", textTransform: "none" }}
+                        className="py-0 my-0"
+                      >
                         Broj ponavljanja
                       </Form.Label>
                       <Form.Control
@@ -301,7 +344,10 @@ function PrescriptionCard({
                   </Col>
                   <Col md={4}>
                     <Form.Group className="d-flex align-items-center gap-2">
-                      <Form.Label style={{ width: "140px" }} className="py-0 my-0">
+                      <Form.Label
+                        style={{ width: "140px", textTransform: "none" }}
+                        className="py-0 my-0"
+                      >
                         Period liječenja
                       </Form.Label>
                       <Form.Control
@@ -326,7 +372,7 @@ function PrescriptionCard({
 
       {/* Napomena */}
       <Form.Group className="mt-4">
-        <Form.Label>Napomena (max 4000 karaktera)</Form.Label>
+        <Form.Label style={{textTransform: "none"}}>Napomena (max 4000 karaktera)</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
