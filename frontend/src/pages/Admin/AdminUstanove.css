@@ -36,19 +36,19 @@
   --blue-header-2: #1976D2;
 }
 
-/* Admin Doktori Page Layout */
-.admin-doktori-page {
+/* Admin Ustanove Page Layout */
+.admin-ustanove-page {
   min-height: 100vh;
   position: relative;
 }
 
-.admin-doktori-page.background {
+.admin-ustanove-page.background {
   background: #89b0cc;
   background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
 }
 
 /* Fixed Header */
-.admin-doktori-page .header-page {
+.admin-ustanove-page .header-page {
   position: fixed;
   top: 0;
   left: 0;
@@ -57,7 +57,7 @@
 }
 
 /* Fixed Sidebar */
-.admin-doktori-page .sidebar {
+.admin-ustanove-page .sidebar {
   position: fixed;
   top: 80px;
   left: 0;
@@ -66,7 +66,7 @@
 }
 
 /* Main Content Area */
-.admin-doktori-main-content {
+.admin-ustanove-main-content {
   margin-left: 280px;
   margin-top: 80px;
   padding: 2rem 2rem 2rem 1rem;
@@ -76,7 +76,7 @@
 
 /* When sidebar is collapsed */
 @media (min-width: 768px) {
-  .sidebar.collapsed ~ .admin-doktori-main-content {
+  .sidebar.collapsed ~ .admin-ustanove-main-content {
     margin-left: 70px;
   }
 }
@@ -176,7 +176,7 @@
   transform: translateY(-1px);
 }
 
-/* Add Doctor Card */
+/* Add Institution Card */
 .admin-add-card {
   height: fit-content;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -245,7 +245,8 @@
 .table-header .header-col-6,
 .table-header .header-col-7,
 .table-header .header-col-8,
-.table-header .header-col-9 { 
+.table-header .header-col-9,
+.table-header .header-col-10 { 
   background-color: var(--color-medium-turquoise); 
 }
 
@@ -259,7 +260,8 @@
 .table tbody .data-col-6,
 .table tbody .data-col-7,
 .table tbody .data-col-8,
-.table tbody .data-col-9 { 
+.table tbody .data-col-9,
+.table tbody .data-col-10 { 
   background-color: transparent; 
 }
 
@@ -324,20 +326,6 @@
   color: rgb(66, 65, 65);
 }
 
-.badge.bg-info {
-  background-color: var(--color-cendre-blue) !important;
-}
-
-.badge-status-aktivan {
-  background-color: #b2d8b8;
-  color: rgb(88, 87, 87);
-}
-
-.badge-status-pasiviziran {
-  background-color: #f4db91;
-  color: rgb(66, 65, 65);
-}
-
 /* Scrollbar Styling */
 .admin-table-container::-webkit-scrollbar {
   width: 8px;
@@ -360,7 +348,7 @@
 
 /* Responsive Design */
 @media (max-width: 991.98px) {
-  .admin-doktori-main-content {
+  .admin-ustanove-main-content {
     margin-left: 0;
     margin-top: 80px;
     padding: 1.5rem 1.5rem 1.5rem 1rem;
@@ -368,7 +356,7 @@
 }
 
 @media (max-width: 767.98px) {
-  .admin-doktori-main-content {
+  .admin-ustanove-main-content {
     margin-top: 80px;
     padding: 1rem;
   }
@@ -404,7 +392,7 @@
   /* Table responsive adjustments */
   .table {
     font-size: 0.85rem;
-    min-width: 1000px;
+    min-width: 1200px;
   }
   
   .table td,
@@ -418,7 +406,7 @@
 }
 
 @media (max-width: 575.98px) {
-  .admin-doktori-main-content {
+  .admin-ustanove-main-content {
     padding: 0.75rem;
   }
   
@@ -433,7 +421,7 @@
   /* Make table more mobile friendly */
   .table {
     font-size: 0.8rem;
-    min-width: 900px;
+    min-width: 1100px;
   }
   
   .admin-table-container {
@@ -443,7 +431,7 @@
 
 /* Tablet specific adjustments */
 @media (min-width: 768px) and (max-width: 991.98px) {
-  .admin-doktori-main-content {
+  .admin-ustanove-main-content {
     margin-left: 240px;
   }
 }
@@ -459,7 +447,7 @@
 
 /* Print styles */
 @media print {
-  .admin-doktori-page {
+  .admin-ustanove-page {
     background: white !important;
   }
   

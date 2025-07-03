@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './DodajUstanovu.css';
+import './IzmijeniUstanovu.css';
 
-const DodajUstanovu = () => {
+const IzmijeniUstanovu = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedUstanova, setSavedUstanova] = useState(null);
@@ -35,6 +36,27 @@ const DodajUstanovu = () => {
     'Dr. Stefan Milanović',
     'Dr. Milica Stanković'
   ];
+
+  // Load existing institution data on component mount
+  useEffect(() => {
+    // Mock data - replace with actual API call
+    const mockInstitutionData = {
+      id: id,
+      nazivUstanove: 'Dom zdravlja Bijelo Polje',
+      nazivPoslovneJedinice: 'Opšta medicina',
+      adresaPoslovneJedinice: 'Miloja Pavićevića 1',
+      komitent: 'Fond zdravstvenog osiguranja',
+      brojTelefonaPoslovnice: '+382 50 234 567',
+      imeKontaktOsobe: 'Dragana',
+      prezimeKontaktOsobe: 'Vukčević',
+      telefonKontaktOsobe: '+382 69 890 123',
+      napomena: 'Glavna ustanova u Bijelom Polju',
+      doktori: ['Dr. Marko Petrović', 'Dr. Ana Jovanović']
+    };
+    
+    setFormData(mockInstitutionData);
+    setSelectedDoktori(mockInstitutionData.doktori);
+  }, [id]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -142,7 +164,7 @@ const DodajUstanovu = () => {
   const availableDoktori = dostupniDoktori.filter(doktor => !selectedDoktori.includes(doktor));
 
   return (
-    <div className="dodaj-ustanovu-page background">
+    <div className="izmijeni-ustanovu-page background">
       <div className="container py-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8">
@@ -157,8 +179,8 @@ const DodajUstanovu = () => {
             {/* Main Card */}
             <div className="card main-card compact">
               <div className="card-header text-center">
-                <h3 className="card-title mb-1">Nova Ustanova</h3>
-                <p className="card-subtitle">Unesite podatke o novoj zdravstvenoj ustanovi</p>
+                <h3 className="card-title mb-1">Izmijeni Ustanovu</h3>
+                <p className="card-subtitle">Uredite podatke o zdravstvenoj ustanovi</p>
               </div>
               
               <div className="card-body">
@@ -374,7 +396,7 @@ const DodajUstanovu = () => {
               {/* Footer Buttons */}
               <div className="card-footer text-center compact">
                 <button className="btn btn-success compact me-3" onClick={handleSacuvaj}>
-                  ✓ Sačuvaj ustanovu
+                  ✓ Sačuvaj izmjene
                 </button>
                 <button className="btn btn-secondary compact" onClick={handleOtkazi}>
                   ✕ Otkaži
@@ -392,10 +414,10 @@ const DodajUstanovu = () => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header bg-success text-white">
-                  <h5 className="modal-title">✓ Uspešno sačuvano</h5>
+                  <h5 className="modal-title">✓ Uspešno ažurirano</h5>
                 </div>
                 <div className="modal-body text-center">
-                  <p className="mb-3">Ustanova je uspešno dodana u sistem!</p>
+                  <p className="mb-3">Podaci ustanove su uspešno ažurirani!</p>
                   <div className="saved-info">
                     <p><strong>Ustanova:</strong> {savedUstanova?.nazivUstanove}</p>
                     <p><strong>Sa poslovnom jedinicom:</strong> {savedUstanova?.nazivPoslovneJedinice}</p>
@@ -424,8 +446,8 @@ const DodajUstanovu = () => {
                   <h5 className="modal-title">⚠️ Potvrda otkazivanja</h5>
                 </div>
                 <div className="modal-body text-center">
-                  <p className="mb-3">Da li ste sigurni da želite da otkažete?</p>
-                  <p className="text-muted small">Svi uneseni podaci će biti izgubljeni.</p>
+                  <p className="mb-3">Da li ste sigurni da želite da otkažete izmjene?</p>
+                  <p className="text-muted small">Sve nesačuvane promjene će biti izgubljene.</p>
                 </div>
                 <div className="modal-footer justify-content-center">
                   <button 
@@ -453,4 +475,4 @@ const DodajUstanovu = () => {
   );
 };
 
-export default DodajUstanovu;
+export default IzmijeniUstanovu;

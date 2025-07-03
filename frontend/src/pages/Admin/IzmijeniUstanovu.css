@@ -1,0 +1,657 @@
+/* Import your root variables */
+:root {
+  font-family: 'PT sans', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+  /* Osnovna paleta */
+  --color-royal-hyacinth: #47466D;
+  --color-cendre-blue: #3D84A7;
+  --color-medium-turquoise: #1AACAC;
+  --color-waterwings: #91e9cd;
+  
+  /* Dashboard header */
+  --gradient-dashboard: linear-gradient(
+    135deg,
+    var(--color-medium-turquoise) 0%,
+    var(--color-medium-turquoise) 100%
+  );
+  
+  /* Primarni button gradijent */
+  --gradient-primary-button: linear-gradient(
+    90deg,
+    var(--color-royal-hyacinth) 0%,
+    var(--color-cendre-blue) 80%
+  );
+  
+  /* Dodatne korisne varijable */
+  --color-bg: #FFFFFF;
+  --color-text: #0D274D;
+  --box-shadow: 0 4px 12px rgba(6, 96, 100, 0.2);
+}
+
+/* Page Layout */
+.izmijeni-ustanovu-page {
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+.izmijeni-ustanovu-page.background {
+  background: #89b0cc;
+  background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
+}
+
+/* Back Button */
+.back-button {
+  color: var(--color-royal-hyacinth);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.5rem 0;
+}
+
+.back-button:hover {
+  color: var(--color-cendre-blue);
+  text-decoration: none;
+}
+
+/* Main Card */
+.main-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: blur(10px);
+}
+
+.main-card.compact {
+  border-radius: 1rem;
+}
+
+.main-card .card-header {
+  background: var(--gradient-dashboard);
+  color: white;
+  border-bottom: none;
+  border-radius: 1rem 1rem 0 0 !important;
+  padding: 1.5rem 1rem;
+}
+
+.main-card .card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.main-card .card-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Form Sections */
+.form-section {
+  background: rgba(248, 249, 250, 0.7);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  height: 100%;
+}
+
+.form-section.compact {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.contact-section {
+  /* Contact section styling */
+  min-height: auto;
+}
+
+.napomena-section {
+  padding: 1rem;
+  background: rgba(248, 249, 250, 0.7);
+  border-radius: 0.75rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header.compact {
+  margin-bottom: 1rem;
+}
+
+.section-number {
+  background: var(--gradient-primary-button);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.section-number.compact {
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.section-header h6 {
+  margin: 0;
+  color: var(--color-royal-hyacinth);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Form Controls */
+.form-label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.form-label.compact {
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-label.required::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+.form-control,
+.form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-control.compact,
+.form-select.compact {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-medium-turquoise);
+  box-shadow: 0 0 0 0.2rem rgba(26, 172, 172, 0.15);
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc3545;
+}
+
+.form-control:disabled {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+/* Phone Input Styling */
+.phone-input-wrapper {
+  width: 100%;
+}
+
+.phone-container {
+  width: 100% !important;
+}
+
+.phone-input-field {
+  width: 100% !important;
+  border-radius: 0.5rem !important;
+  border: 2px solid #e9ecef !important;
+  padding: 0.5rem 0.75rem 0.5rem 48px !important;
+  font-size: 0.9rem !important;
+  background: white !important;
+}
+
+.phone-input-field.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.phone-input-field:focus {
+  border-color: var(--color-medium-turquoise) !important;
+  box-shadow: 0 0 0 0.2rem rgba(26, 172, 172, 0.15) !important;
+}
+
+.phone-button {
+  border-radius: 0.5rem 0 0 0.5rem !important;
+  border: 2px solid #e9ecef !important;
+  border-right: none !important;
+  background: white !important;
+}
+
+/* Dropdown for Doktori */
+.dropdown-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.dropdown-button {
+  width: 100%;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.dropdown-button:hover {
+  border-color: var(--color-medium-turquoise);
+  background: white;
+}
+
+.dropdown-plus {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color-medium-turquoise);
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item-custom {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+  background-color: #f8f9fa;
+}
+
+/* Selected Doktori */
+.selected-doktori {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.selected-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.selected-item:last-child {
+  margin-bottom: 0;
+}
+
+.remove-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  min-width: auto;
+}
+
+.remove-button:hover {
+  background: #c82333;
+}
+
+/* Form Text */
+.form-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.form-text.compact {
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.success-text {
+  color: #198754 !important;
+  font-weight: 500;
+}
+
+.success-text.compact {
+  font-size: 0.8rem;
+}
+
+/* Textarea */
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+textarea.form-control.compact {
+  min-height: 80px;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn.compact {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+}
+
+.btn-success {
+  background: linear-gradient(90deg, #198754 0%, #20c997 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  border: none;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+  background: #5c636a;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc3545;
+  border: none;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+/* Card Footer */
+.card-footer {
+  background: rgba(248, 249, 250, 0.5);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 1rem 1rem;
+  padding: 1rem;
+}
+
+.card-footer.compact {
+  padding: 1rem;
+}
+
+/* Modal Styling */
+.modal-content {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header.bg-success {
+  border-radius: 1rem 1rem 0 0;
+}
+
+.modal-header.bg-warning {
+  border-radius: 1rem 1rem 0 0;
+}
+
+.saved-info {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.saved-info p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+/* Validation */
+.invalid-feedback {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Scrollbars */
+.selected-doktori::-webkit-scrollbar,
+.dropdown-menu-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selected-doktori::-webkit-scrollbar-track,
+.dropdown-menu-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.selected-doktori::-webkit-scrollbar-thumb,
+.dropdown-menu-custom::-webkit-scrollbar-thumb {
+  background: var(--color-medium-turquoise);
+  border-radius: 3px;
+}
+
+/* React Phone Input Override */
+.react-tel-input .form-control {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem !important;
+  border: 2px solid #e9ecef !important;
+  padding: 0.5rem 0.75rem 0.5rem 48px !important;
+  font-size: 0.9rem !important;
+}
+
+.react-tel-input .flag-dropdown {
+  border-radius: 0.5rem 0 0 0.5rem !important;
+  border: 2px solid #e9ecef !important;
+  border-right: none !important;
+  background: white !important;
+}
+
+.react-tel-input .selected-flag {
+  border-radius: 0.5rem 0 0 0.5rem !important;
+  background: white !important;
+}
+
+.react-tel-input .flag-dropdown:hover {
+  background: white !important;
+}
+
+.react-tel-input .country-list {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+/* Select styling */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}
+
+.form-select:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231AACAC' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+}
+
+.form-select.compact {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .izmijeni-ustanovu-page {
+    padding: 0.5rem 0;
+  }
+  
+  .main-card .card-header {
+    padding: 1rem 0.75rem;
+  }
+  
+  .main-card .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .form-section.compact {
+    padding: 0.75rem;
+  }
+  
+  .btn.compact {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .card-footer.compact {
+    padding: 0.75rem;
+  }
+  
+  .section-number.compact {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+  
+  .form-label.compact {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  .main-card .card-header {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .main-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .card-footer.compact .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+  
+  .card-footer.compact .me-3 {
+    margin-right: 0 !important;
+  }
+  
+  .form-section.compact {
+    padding: 0.5rem;
+  }
+  
+  /* Stack sections vertically on mobile */
+  .col-md-6,
+  .col-md-4 {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Focus states for accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.dropdown-button:focus {
+  outline: 2px solid var(--color-waterwings);
+  outline-offset: 2px;
+}
+
+/* Animation for dropdown */
+.dropdown-menu-custom {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Better spacing for compact layout */
+.main-card.compact .card-body {
+  padding: 1rem;
+}
+
+.main-card.compact .card-body .row {
+  margin: 0 -0.5rem;
+}
+
+.main-card.compact .card-body .row > * {
+  padding: 0 0.5rem;
+}
+
+/* Improved button spacing in modal */
+.modal-footer .btn.compact {
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  margin: 0 0.25rem;
+}
+
+/* Click outside to close dropdown */
+.dropdown-container.open .dropdown-menu-custom {
+  display: block;
+}

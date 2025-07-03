@@ -13,7 +13,7 @@ import InstitutionModal from './components/InstitutionModal.jsx';
 import LoginModal       from './components/LoginModal.jsx';
 import SessionMessages from './components/Messages/SessionMessage.jsx';
 
-/* ───────  “Obične” stranice  ─────── */
+/* ───────  "Obične" stranice  ─────── */
 import Dashboard           from './pages/Dashboard/Dashboard.jsx';
 import RequestList         from './pages/RequestList/RequestList.jsx';
 import RequestForm         from './pages/RequestForm/RequestForm.jsx';
@@ -21,11 +21,12 @@ import MedicalPrescription from './pages/MedicalPrescription/MedicalPrescription
 
 /* ───────  ADMIN stranice  ─────── */
 import AdminPage       from './pages/Admin/AdminPage.jsx';
-import AdminZahtjevi   from './pages/Admin/AdminZahtjevi.jsx';
 import AdminDoktori    from './pages/Admin/AdminDoktori.jsx';
 import AdminUstanove   from './pages/Admin/AdminUstanove.jsx';
+import DodajDoktora    from './pages/Admin/DodajDoktora.jsx';
 import DodajUstanovu   from './pages/Admin/DodajUstanovu.jsx';
-import AdminIzvjestaj  from './pages/Admin/AdminIzvjestaj.jsx';
+import IzmijeniDoktora from './pages/Admin/IzmijeniDoktora.jsx';
+import IzmijeniUstanovu from './pages/Admin/IzmijeniUstanovu.jsx';
 
 function App() {
   const [showLoginModal, setShowLoginModal]             = useState(false);
@@ -48,7 +49,7 @@ function App() {
 
   /*─────────────────────────────────────────────────────────
     2)  Kada se rola postavi na "Admin", a korisnik je
-        još uvijek na početnoj (“/”) → automatski ga preusmjeri
+        još uvijek na početnoj ("/") → automatski ga preusmjeri
         na admin panel.
   ─────────────────────────────────────────────────────────*/
   useEffect(() => {
@@ -99,28 +100,29 @@ function App() {
           element={<Dashboard openLogin={() => setShowLoginModal(true)} />}
         />
 
-        <Route path="/form" element={requireLogin(RequestForm)} />
-        <Route path="/med"  element={requireLogin(MedicalPrescription)} />
-
+        <Route path="/form"     element={requireLogin(RequestForm)} />
+        <Route path="/med"      element={requireLogin(MedicalPrescription)} />
+        
         {/* Ako je admin, preusmjeri /requests na admin verziju liste */}
         <Route
           path="/requests"
           element={
             auth.isAuthenticated
               ? auth.rola === 'Admin'
-                ? <Navigate to="/AdminZahtjevi" replace />
+                ? <Navigate to="/AdminPage" replace />
                 : <RequestList />
               : <Navigate to="/" replace />
           }
         />
 
-        {/* ───────  ADMIN  ─────── */}
-        <Route path="/AdminPage"           element={requireAdmin(AdminPage)} />
-        <Route path="/AdminZahtjevi"       element={requireAdmin(AdminZahtjevi)} />
-        <Route path="/AdminDoktori"        element={requireAdmin(AdminDoktori)} />
-        <Route path="/AdminUstanove"       element={requireAdmin(AdminUstanove)} />
-        <Route path="/AdminIzvjestaj"      element={requireAdmin(AdminIzvjestaj)} />
-        <Route path="/AdminUstanove/Dodaj" element={requireAdmin(DodajUstanovu)} />
+        {/* ───────  ADMIN RUTE  ─────── */}
+        <Route path="/AdminPage"              element={requireAdmin(AdminPage)} />
+        <Route path="/AdminDoktori"           element={requireAdmin(AdminDoktori)} />
+        <Route path="/AdminUstanove"          element={requireAdmin(AdminUstanove)} />
+        <Route path="/DodajDoktora"           element={requireAdmin(DodajDoktora)} />
+        <Route path="/DodajUstanovu"          element={requireAdmin(DodajUstanovu)} />
+        <Route path="/IzmijeniDoktora/:id"    element={requireAdmin(IzmijeniDoktora)} />
+        <Route path="/IzmijeniUstanovu/:id"   element={requireAdmin(IzmijeniUstanovu)} />
 
         {/* Fallback → sve nepoznato vodi na početnu  */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './DodajDoktora.css';
+import './IzmijeniDoktora.css';
 
-const DodajDoktora = () => {
+const IzmijeniDoktora = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedDoctor, setSavedDoctor] = useState(null);
+  const [originalEmail, setOriginalEmail] = useState('');
   
   const [formData, setFormData] = useState({
     imeIPrezime: '',
@@ -37,6 +39,28 @@ const DodajDoktora = () => {
     'Institut za javno zdravlje'
   ];
 
+  // Load existing doctor data on component mount
+  useEffect(() => {
+    // Mock data - replace with actual API call
+    const mockDoctorData = {
+      id: id,
+      imeIPrezime: 'Marko Petrović',
+      brojLicence: 'DOK001',
+      specijalizacija: 'Kardiolog',
+      brojTelefona: '+382 67 123 456',
+      emailAdresa: 'marko.petrovic@email.com',
+      adresa: 'Ulica Slobode 15, Podgorica',
+      napomena: 'Iskusan doktor sa 15 godina...',
+      ustanove: ['Klinički centar Podgorica', 'Dom zdravlja Cetinje'],
+      username: 'marko.petrovic@email.com',
+      password: 'AbC123dE'
+    };
+    
+    setFormData(mockDoctorData);
+    setSelectedUstanove(mockDoctorData.ustanove);
+    setOriginalEmail(mockDoctorData.emailAdresa);
+  }, [id]);
+
   // Generate password (5 letters + 3 numbers = 8 characters)
   const generatePassword = () => {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -58,21 +82,15 @@ const DodajDoktora = () => {
     return password.split('').sort(() => Math.random() - 0.5).join('');
   };
 
-  // Update username when email changes
+  // Update username only when email changes
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      username: prev.emailAdresa
-    }));
-  }, [formData.emailAdresa]);
-
-  // Generate password on component mount
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      password: generatePassword()
-    }));
-  }, []);
+    if (formData.emailAdresa !== originalEmail) {
+      setFormData(prev => ({
+        ...prev,
+        username: prev.emailAdresa
+      }));
+    }
+  }, [formData.emailAdresa, originalEmail]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -103,6 +121,14 @@ const DodajDoktora = () => {
 
   const handleUstanovaRemove = (ustanova) => {
     setSelectedUstanove(prev => prev.filter(u => u !== ustanova));
+  };
+
+  const handleRegeneratePassword = () => {
+    const newPassword = generatePassword();
+    setFormData(prev => ({
+      ...prev,
+      password: newPassword
+    }));
   };
 
   const validateForm = () => {
@@ -172,6 +198,7 @@ const DodajDoktora = () => {
 
   const handleCancelCancel = () => {
     setShowCancelModal(false);
+    // Stay on current page - do nothing else
   };
 
   const handleModalClose = () => {
@@ -182,7 +209,7 @@ const DodajDoktora = () => {
   const availableUstanove = dostupneUstanove.filter(ustanova => !selectedUstanove.includes(ustanova));
 
   return (
-    <div className="dodaj-doktora-page background">
+    <div className="izmijeni-doktora-page background">
       <div className="container py-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8">
@@ -197,8 +224,8 @@ const DodajDoktora = () => {
             {/* Main Card */}
             <div className="card main-card compact">
               <div className="card-header text-center">
-                <h3 className="card-title mb-1">Novi ljekar</h3>
-                <p className="card-subtitle">Unesite podatke o novom ljekaru u sistem</p>
+                <h3 className="card-title mb-1">Izmijeni ljekara</h3>
+                <p className="card-subtitle">Uredite podatke o ljekaru u sistemu</p>
               </div>
               
               <div className="card-body">
@@ -364,6 +391,13 @@ const DodajDoktora = () => {
                         <h6>Pristupni podaci</h6>
                       </div>
                       
+                      <p className="form-text success-text compact">
+                        {formData.emailAdresa === originalEmail 
+                          ? "✓ Username ostaje isti osim ako se email ne promijeni" 
+                          : "✓ Username ažuriran na osnovu novog email-a"
+                        }
+                      </p>
+                      
                       <div className="mb-3">
                         <label className="form-label compact">KORISNIČKO IME</label>
                         <input
@@ -376,12 +410,22 @@ const DodajDoktora = () => {
                       
                       <div className="mb-3">
                         <label className="form-label compact">LOZINKA</label>
-                        <input
-                          type="text"
-                          className="form-control compact"
-                          value={formData.password}
-                          disabled
-                        />
+                        <div className="password-input-group">
+                          <input
+                            type="text"
+                            className="form-control compact"
+                            value={formData.password}
+                            disabled
+                          />
+                          <button 
+                            type="button" 
+                            className="btn btn-outline-primary btn-sm regenerate-btn compact"
+                            onClick={handleRegeneratePassword}
+                            title="Generiši novu lozinku"
+                          >
+                            🔄
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -405,7 +449,7 @@ const DodajDoktora = () => {
               {/* Footer Buttons */}
               <div className="card-footer text-center compact">
                 <button className="btn btn-success compact me-3" onClick={handleSacuvaj}>
-                  ✓ Sačuvaj ljekara
+                  ✓ Sačuvaj izmjene
                 </button>
                 <button className="btn btn-secondary compact" onClick={handleOtkazi}>
                   ✕ Otkaži
@@ -423,10 +467,10 @@ const DodajDoktora = () => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header bg-success text-white">
-                  <h5 className="modal-title">✓ Uspešno sačuvano</h5>
+                  <h5 className="modal-title">✓ Uspešno ažurirano</h5>
                 </div>
                 <div className="modal-body text-center">
-                  <p className="mb-3">Ljekar je uspešno dodat u sistem!</p>
+                  <p className="mb-3">Podaci ljekara su uspešno ažurirani!</p>
                   <div className="saved-info">
                     <p><strong>Doktor:</strong> {savedDoctor?.imeIPrezime}</p>
                     <p><strong>Username:</strong> {savedDoctor?.username}</p>
@@ -455,8 +499,8 @@ const DodajDoktora = () => {
                   <h5 className="modal-title">⚠️ Potvrda otkazivanja</h5>
                 </div>
                 <div className="modal-body text-center">
-                  <p className="mb-3">Da li ste sigurni da želite da otkažete?</p>
-                  <p className="text-muted small">Svi uneseni podaci će biti izgubljeni.</p>
+                  <p className="mb-3">Da li ste sigurni da želite da otkažete izmjene?</p>
+                  <p className="text-muted small">Sve nesačuvane promjene će biti izgubljene.</p>
                 </div>
                 <div className="modal-footer justify-content-center">
                   <button 
@@ -484,4 +528,4 @@ const DodajDoktora = () => {
   );
 };
 
-export default DodajDoktora;
+export default IzmijeniDoktora;
