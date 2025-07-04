@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDataContext } from '../../context/DataContext';
+import { useAdmin } from '../../context/AdminContext';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,6 +9,9 @@ import './DodajUstanovu.css';
 
 const DodajUstanovu = () => {
   const navigate = useNavigate();
+  const { gradovi } = useDataContext();
+  const { komitenti, addUstanova } = useAdmin();
+
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedUstanova, setSavedUstanova] = useState(null);
@@ -16,6 +21,7 @@ const DodajUstanovu = () => {
     nazivPoslovneJedinice: '',
     adresaPoslovneJedinice: '',
     komitent: '',
+    grad: '',
     brojTelefonaPoslovnice: '',
     imeKontaktOsobe: '',
     prezimeKontaktOsobe: '',
@@ -24,122 +30,162 @@ const DodajUstanovu = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [selectedDoktori, setSelectedDoktori] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Mock data for doktori
-  const dostupniDoktori = [
-    'Dr. Marko Petrović',
-    'Dr. Ana Jovanović', 
-    'Dr. Petar Nikolić',
-    'Dr. Stefan Milanović',
-    'Dr. Milica Stanković'
-  ];
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
+ const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
-  };
-
-  const handleDoktorAdd = (doktor) => {
-    if (!selectedDoktori.includes(doktor)) {
-      setSelectedDoktori(prev => [...prev, doktor]);
-    }
-    setDropdownOpen(false);
-  };
-
-  const handleDoktorRemove = (doktor) => {
-    setSelectedDoktori(prev => prev.filter(d => d !== doktor));
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.nazivUstanove.trim()) {
-      newErrors.nazivUstanove = 'Naziv ustanove je obavezan';
-    }
-    
-    if (!formData.nazivPoslovneJedinice.trim()) {
-      newErrors.nazivPoslovneJedinice = 'Naziv poslovne jedinice je obavezan';
-    }
-    
-    if (!formData.adresaPoslovneJedinice.trim()) {
-      newErrors.adresaPoslovneJedinice = 'Adresa poslovne jedinice je obavezna';
-    }
-    
-    if (!formData.komitent.trim()) {
-      newErrors.komitent = 'Komitent je obavezan';
-    }
-    
-    if (!formData.brojTelefonaPoslovnice.trim()) {
-      newErrors.brojTelefonaPoslovnice = 'Broj telefona poslovnice je obavezan';
-    }
-    
-    if (!formData.imeKontaktOsobe.trim()) {
-      newErrors.imeKontaktOsobe = 'Ime kontakt osobe je obavezno';
-    }
-    
-    if (!formData.prezimeKontaktOsobe.trim()) {
-      newErrors.prezimeKontaktOsobe = 'Prezime kontakt osobe je obavezno';
-    }
-    
-    if (!formData.telefonKontaktOsobe.trim()) {
-      newErrors.telefonKontaktOsobe = 'Telefon kontakt osobe je obavezan';
-    }
-    
+    if (!formData.nazivUstanove.trim()) newErrors.nazivUstanove = 'Naziv ustanove je obavezan';
+    if (!formData.nazivPoslovneJedinice.trim()) newErrors.nazivPoslovneJedinice = 'Naziv poslovne jedinice je obavezan';
+    if (!formData.adresaPoslovneJedinice.trim()) newErrors.adresaPoslovneJedinice = 'Adresa poslovne jedinice je obavezna';
+    if (!formData.komitent) newErrors.komitent = 'Komitent je obavezan';
+    if (!formData.grad) newErrors.grad = 'Grad je obavezan';
+    if (!formData.brojTelefonaPoslovnice.trim()) newErrors.brojTelefonaPoslovnice = 'Broj telefona poslovnice je obavezan';
+    if (!formData.imeKontaktOsobe.trim()) newErrors.imeKontaktOsobe = 'Ime kontakt osobe je obavezno';
+    if (!formData.prezimeKontaktOsobe.trim()) newErrors.prezimeKontaktOsobe = 'Prezime kontakt osobe je obavezno';
+    // if (!formData.telefonKontaktOsobe.trim()) newErrors.telefonKontaktOsobe = 'Telefon kontakt osobe je obavezan';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSacuvaj = () => {
-    if (validateForm()) {
-      const ustanovaData = {
-        ...formData,
-        doktori: selectedDoktori,
-        kontaktOsoba: `${formData.imeKontaktOsobe} ${formData.prezimeKontaktOsobe}`,
-        status: 'Aktivan',
-        datumKreiranja: new Date().toISOString().split('T')[0]
-      };
-      
-      setSavedUstanova(ustanovaData);
+  const handleSacuvaj = async () => {
+    if (!validateForm()) return;
+
+     const payload = {
+      nazivPravnog: formData.nazivUstanove,
+      nazivUstanove: formData.nazivPoslovneJedinice,
+      adresaUstanove: formData.adresaPoslovneJedinice,
+      gradUstanove: formData.grad,
+      telUstanove: formData.brojTelefonaPoslovnice,
+      kontaktOsoba: `${formData.imeKontaktOsobe} ${formData.prezimeKontaktOsobe}`,
+      idKom: formData.komitent
+    };
+     try {
+      await addUstanova(payload);
+      setSavedUstanova({ ...formData });
       setShowSuccessModal(true);
+    } catch (err) {
+      console.error('Greška pri dodavanju ustanove:', err);
+      // po potrebi možeš dodati error poruku u UI
     }
   };
 
-  const handleBackClick = () => {
-    setShowCancelModal(true);
-  };
+   const handleBackClick = () => setShowCancelModal(true);
+  const handleOtkazi    = () => setShowCancelModal(true);
+  const handleCancelConfirm = () => { setShowCancelModal(false); navigate('/AdminUstanove'); };
+  const handleCancelCancel  = () => setShowCancelModal(false);
+  const handleModalClose    = () => { setShowSuccessModal(false); navigate('/AdminUstanove'); };
 
-  const handleOtkazi = () => {
-    setShowCancelModal(true);
-  };
 
-  const handleCancelConfirm = () => {
-    setShowCancelModal(false);
-    navigate('/AdminUstanove');
-  };
+//  const handleInputChange = (field, value) => {
+//     setFormData(prev => ({ ...prev, [field]: value }));
+//     if (errors[field]) {
+//       setErrors(prev => ({ ...prev, [field]: '' }));
+//     }
+//   };
+    
+    // Clear error when user starts typing
+  //   if (errors[field]) {
+  //     setErrors(prev => ({
+  //       ...prev,
+  //       [field]: ''
+  //     }));
+  //   }
+  // };
 
-  const handleCancelCancel = () => {
-    setShowCancelModal(false);
-    // Stay on current page - do nothing else
-  };
+  // const handleDoktorAdd = (doktor) => {
+  //   if (!selectedDoktori.includes(doktor)) {
+  //     setSelectedDoktori(prev => [...prev, doktor]);
+  //   }
+  //   setDropdownOpen(false);
+  // };
 
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    navigate('/AdminUstanove');
-  };
+  // const handleDoktorRemove = (doktor) => {
+  //   setSelectedDoktori(prev => prev.filter(d => d !== doktor));
+  // };
 
-  const availableDoktori = dostupniDoktori.filter(doktor => !selectedDoktori.includes(doktor));
+  // const validateForm = () => {
+  //   const newErrors = {};
+    
+  //   if (!formData.nazivUstanove.trim()) {
+  //     newErrors.nazivUstanove = 'Naziv ustanove je obavezan';
+  //   }
+    
+  //   if (!formData.nazivPoslovneJedinice.trim()) {
+  //     newErrors.nazivPoslovneJedinice = 'Naziv poslovne jedinice je obavezan';
+  //   }
+    
+  //   if (!formData.adresaPoslovneJedinice.trim()) {
+  //     newErrors.adresaPoslovneJedinice = 'Adresa poslovne jedinice je obavezna';
+  //   }
+    
+  //   if (!formData.komitent.trim()) {
+  //     newErrors.komitent = 'Komitent je obavezan';
+  //   }
+    
+  //   if (!formData.brojTelefonaPoslovnice.trim()) {
+  //     newErrors.brojTelefonaPoslovnice = 'Broj telefona poslovnice je obavezan';
+  //   }
+    
+  //   if (!formData.imeKontaktOsobe.trim()) {
+  //     newErrors.imeKontaktOsobe = 'Ime kontakt osobe je obavezno';
+  //   }
+    
+  //   if (!formData.prezimeKontaktOsobe.trim()) {
+  //     newErrors.prezimeKontaktOsobe = 'Prezime kontakt osobe je obavezno';
+  //   }
+    
+  //   if (!formData.telefonKontaktOsobe.trim()) {
+  //     newErrors.telefonKontaktOsobe = 'Telefon kontakt osobe je obavezan';
+  //   }
+    
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+
+  // const handleSacuvaj = () => {
+  //   if (validateForm()) {
+  //     const ustanovaData = {
+  //       ...formData,
+  //       doktori: selectedDoktori,
+  //       kontaktOsoba: `${formData.imeKontaktOsobe} ${formData.prezimeKontaktOsobe}`,
+  //       status: 'Aktivan',
+  //       datumKreiranja: new Date().toISOString().split('T')[0]
+  //     };
+      
+  //     setSavedUstanova(ustanovaData);
+  //     setShowSuccessModal(true);
+  //   }
+  // };
+
+  // const handleBackClick = () => {
+  //   setShowCancelModal(true);
+  // };
+
+  // const handleOtkazi = () => {
+  //   setShowCancelModal(true);
+  // };
+
+  // const handleCancelConfirm = () => {
+  //   setShowCancelModal(false);
+  //   navigate('/AdminUstanove');
+  // };
+
+  // const handleCancelCancel = () => {
+  //   setShowCancelModal(false);
+  //   // Stay on current page - do nothing else
+  // };
+
+  // const handleModalClose = () => {
+  //   setShowSuccessModal(false);
+  //   navigate('/AdminUstanove');
+  // };
+
+  // const availableDoktori = dostupniDoktori.filter(doktor => !selectedDoktori.includes(doktor));
 
   return (
     <div className="dodaj-ustanovu-page background">
@@ -207,20 +253,39 @@ const DodajUstanovu = () => {
                         {errors.adresaPoslovneJedinice && <div className="invalid-feedback">{errors.adresaPoslovneJedinice}</div>}
                       </div>
                       
-                      <div className="mb-3">
+                     <div className="mb-3">
                         <label className="form-label compact required">KOMITENT</label>
                         <select
                           className={`form-select compact ${errors.komitent ? 'is-invalid' : ''}`}
                           value={formData.komitent}
-                          onChange={(e) => handleInputChange('komitent', e.target.value)}
+                          onChange={e => handleInputChange('komitent', e.target.value)}
                         >
                           <option value="">Izaberite komitenta...</option>
-                          <option value="Fond zdravstvenog osiguranja">Fond zdravstvenog osiguranja</option>
-                          <option value="Ministarstvo zdravlja">Ministarstvo zdravlja</option>
-                          <option value="Privatni">Privatni</option>
+                          {komitenti.map(k => (
+                            <option key={k.id_kom} value={k.id_kom}>
+                              {k.naziv_kom}
+                            </option>
+                          ))}
                         </select>
                         {errors.komitent && <div className="invalid-feedback">{errors.komitent}</div>}
                       </div>
+
+              <div className="mb-3">
+  <label className="form-label compact required">GRAD</label>
+  <select
+    className={`form-select compact ${errors.grad ? 'is-invalid' : ''}`}
+    value={formData.grad}
+    onChange={e => handleInputChange('grad', e.target.value)}
+  >
+    <option value="">Izaberite grad...</option>
+    {gradovi.map(grad => (
+      <option key={grad.code} value={grad.code}>
+        {grad.name}
+      </option>
+    ))}
+  </select>
+  {errors.grad && <div className="invalid-feedback">{errors.grad}</div>}
+</div>
                       
                       <div className="mb-3">
                         <label className="form-label compact required">BROJ TELEFONA POSLOVNICE</label>
@@ -239,63 +304,43 @@ const DodajUstanovu = () => {
                     </div>
                   </div>
                   
-                  {/* Lista doktora */}
-                  <div className="col-12 col-md-6">
-                    <div className="form-section compact">
-                      <div className="section-header compact">
-                        <span className="section-number compact">2</span>
-                        <h6>Lista doktora</h6>
-                      </div>
-                      
-                      <label className="form-label compact">DODAJ DOKTORA</label>
-                      
-                      <div className="dropdown-container">
-                        <button
-                          type="button"
-                          className="btn dropdown-button"
-                          onClick={() => setDropdownOpen(!dropdownOpen)}
-                        >
-                          <span>{availableDoktori.length > 0 ? 'Izaberite doktora...' : 'Svi doktori su dodani'}</span>
-                          <span className="dropdown-plus">+</span>
-                        </button>
-                        
-                        {dropdownOpen && availableDoktori.length > 0 && (
-                          <div className="dropdown-menu-custom">
-                            {availableDoktori.map((doktor, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                className="dropdown-item-custom"
-                                onClick={() => handleDoktorAdd(doktor)}
-                              >
-                                {doktor}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Selected doktori */}
-                      {selectedDoktori.length > 0 && (
-                        <div className="selected-doktori">
-                          {selectedDoktori.map((doktor, index) => (
-                            <div key={index} className="selected-item">
-                              <span>{doktor}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm remove-button"
-                                onClick={() => handleDoktorRemove(doktor)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      <p className="form-text success-text compact">✓ Dodeljeni doktori iz liste</p>
-                    </div>
-                  </div>
+                 {/* Lista doktora */}
+<div className="col-12 col-md-6">
+  <div className="form-section compact">
+    <div className="section-header compact">
+      <span className="section-number compact">2</span>
+      <h6>Lista doktora</h6>
+    </div>
+    
+    <label className="form-label compact">DODAJ DOKTORA</label>
+    
+    <div className="dropdown-container" data-tooltip="Ova akcija trenutno nije dostupna">
+      <button
+        type="button"
+        className="btn dropdown-button"
+       disabled
+       
+      >
+        <span>Izaberite doktora...</span>
+        <span className="dropdown-plus">+</span>
+      </button>
+    </div>
+    
+    {/* Samo prikaz postojećih selektovanih doktora, ako ih ima */}
+    {/* {selectedDoktori.length > 0 && (
+      <div className="selected-doktori">
+        {selectedDoktori.map((doktor, index) => (
+          <div key={index} className="selected-item">
+            <span>{doktor}</span>
+          </div>
+        ))}
+      </div>
+    )} */}
+    
+    <p className="form-text success-text compact">✓ Dodeljeni doktori iz liste</p>
+  </div>
+</div>
+
                   
                   {/* Kontakt osoba */}
                   <div className="col-12">
@@ -306,7 +351,7 @@ const DodajUstanovu = () => {
                       </div>
                       
                       <div className="row g-3">
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-6">
                           <label className="form-label compact required">IME</label>
                           <input
                             type="text"
@@ -318,7 +363,7 @@ const DodajUstanovu = () => {
                           {errors.imeKontaktOsobe && <div className="invalid-feedback">{errors.imeKontaktOsobe}</div>}
                         </div>
                         
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-6">
                           <label className="form-label compact required">PREZIME</label>
                           <input
                             type="text"
@@ -330,7 +375,7 @@ const DodajUstanovu = () => {
                           {errors.prezimeKontaktOsobe && <div className="invalid-feedback">{errors.prezimeKontaktOsobe}</div>}
                         </div>
                         
-                        <div className="col-12 col-md-4">
+                        {/* <div className="col-12 col-md-4">
                           <label className="form-label compact required">TELEFON</label>
                           <div className="phone-input-wrapper">
                             <PhoneInput
@@ -343,7 +388,7 @@ const DodajUstanovu = () => {
                             />
                           </div>
                           {errors.telefonKontaktOsobe && <div className="text-danger small mt-1">{errors.telefonKontaktOsobe}</div>}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>

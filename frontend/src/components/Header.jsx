@@ -5,6 +5,7 @@ import './Header.css';
 import iconInstitution from '../assets/Icons/icon-institution.png';
 import iconDoctor from '../assets/Icons/icon-doctor.png';
 import iconPharmacy from '../assets/Icons/iconPharmacy.jpg';
+import iconAdmin from '../assets/Icons/icon-admin.png';
 
 const Header = () => {
    const {
@@ -20,7 +21,8 @@ const Header = () => {
 
   const iconMap = {
     'Ljekar': { src: iconDoctor, alt: 'Ljekar' },
-    'Apotekar': { src: iconPharmacy, alt: 'Apotekar'}
+    'Apotekar': { src: iconPharmacy, alt: 'Apotekar'},
+     'Admin': { src: iconAdmin, alt: 'Admin' }
   };
 
   const userIcon = iconMap[rola];
@@ -38,13 +40,19 @@ const Header = () => {
           <span className="institution-name">
             {(izabranaInstitucija?.name_institution || 'Ustanova').toUpperCase()}
           </span>
-        </div>
-        {izabranaInstitucija && (
+          </div>
+       {rola !== 'Admin' && izabranaInstitucija && (
           <div className="institution-details">
-            <span><strong>Adresa:</strong> {izabranaInstitucija.address_institution}, {izabranaInstitucija.city_institution}</span>
-            <span><strong>Tel:</strong> {izabranaInstitucija.phone_institution}</span>
+            <span>
+              <strong>Adresa:</strong> {izabranaInstitucija.address_institution}, {izabranaInstitucija.city_institution}
+            </span>
+            <span>
+              <strong>Tel:</strong> {izabranaInstitucija.phone_institution}
+            </span>
             {izabranaInstitucija.email_institution && (
-              <span><strong>Email:</strong> {izabranaInstitucija.email_institution}</span>
+              <span>
+                <strong>Email:</strong> {izabranaInstitucija.email_institution}
+              </span>
             )}
           </div>
         )}

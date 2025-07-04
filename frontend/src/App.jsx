@@ -2,6 +2,7 @@ import {
   Routes,
   Route,
   Navigate,
+  
   useLocation,
   useNavigate
 } from 'react-router-dom';
@@ -20,6 +21,8 @@ import RequestForm         from './pages/RequestForm/RequestForm.jsx';
 import MedicalPrescription from './pages/MedicalPrescription/MedicalPrescription.jsx';
 
 /* ───────  ADMIN stranice  ─────── */
+import { AdminLayout } from './layouts/AdminLayout.jsx';
+
 import AdminPage       from './pages/Admin/AdminPage.jsx';
 import AdminDoktori    from './pages/Admin/AdminDoktori.jsx';
 import AdminUstanove   from './pages/Admin/AdminUstanove.jsx';
@@ -68,10 +71,10 @@ function App() {
   const requireLogin = (Component) =>
     auth.isAuthenticated ? <Component /> : <Navigate to="/" replace />;
 
-  const requireAdmin = (Component) =>
-    auth.isAuthenticated && auth.rola === 'Admin'
-      ? <Component />
-      : <Navigate to="/" replace />;
+  // const requireAdmin = (Component) =>
+  //   auth.isAuthenticated && auth.rola === 'Admin'
+  //     ? <Component />
+  //     : <Navigate to="/" replace />;
 
   /*─────────────────────────────────────────────────────────
                      JSX
@@ -114,16 +117,17 @@ function App() {
               : <Navigate to="/" replace />
           }
         />
+        <Route element={<AdminLayout />}>
 
         {/* ───────  ADMIN RUTE  ─────── */}
-        <Route path="/AdminPage"              element={requireAdmin(AdminPage)} />
-        <Route path="/AdminDoktori"           element={requireAdmin(AdminDoktori)} />
-        <Route path="/AdminUstanove"          element={requireAdmin(AdminUstanove)} />
-        <Route path="/DodajDoktora"           element={requireAdmin(DodajDoktora)} />
-        <Route path="/DodajUstanovu"          element={requireAdmin(DodajUstanovu)} />
-        <Route path="/IzmijeniDoktora/:id"    element={requireAdmin(IzmijeniDoktora)} />
-        <Route path="/IzmijeniUstanovu/:id"   element={requireAdmin(IzmijeniUstanovu)} />
-
+        <Route path="/AdminPage"              element={<AdminPage/>} />
+        <Route path="/AdminDoktori"           element={<AdminDoktori/>} />
+        <Route path="/AdminUstanove"          element={<AdminUstanove/>} />
+        <Route path="/DodajDoktora"           element={<DodajDoktora/>} />
+        <Route path="/DodajUstanovu"          element={<DodajUstanovu/>} />
+        <Route path="/IzmijeniDoktora/:id"    element={<IzmijeniDoktora/>} />
+        <Route path="/IzmijeniUstanovu/:id"   element={<IzmijeniUstanovu/>} />
+</Route>
         {/* Fallback → sve nepoznato vodi na početnu  */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

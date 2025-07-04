@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './DodajDoktora.css';
+import { useAdmin } from '../../context/AdminContext.jsx';
 
 const DodajDoktora = () => {
   const navigate = useNavigate();
+    const { ustanove, addLjekar } = useAdmin();
+
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedDoctor, setSavedDoctor] = useState(null);
   
   const [formData, setFormData] = useState({
+    idKor: '',
     imeIPrezime: '',
     brojLicence: '',
     specijalizacija: '',
@@ -19,23 +23,23 @@ const DodajDoktora = () => {
     emailAdresa: '',
     adresa: '',
     napomena: '',
-    ustanove: [],
     username: '',
-    password: ''
+    password: '',
+    listaUstanova: []
   });
 
   const [errors, setErrors] = useState({});
-  const [selectedUstanove, setSelectedUstanove] = useState([]);
+  // const [selectedUstanove, setSelectedUstanove] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Mock data for ustanove
-  const dostupneUstanove = [
-    'Klinički centar Podgorica',
-    'Dom zdravlja Cetinje', 
-    'Dom zdravlja Nikšić',
-    'Specijalna bolnica Brezovik',
-    'Institut za javno zdravlje'
-  ];
+  // const dostupneUstanove = [
+  //   'Klinički centar Podgorica',
+  //   'Dom zdravlja Cetinje', 
+  //   'Dom zdravlja Nikšić',
+  //   'Specijalna bolnica Brezovik',
+  //   'Institut za javno zdravlje'
+  // ];
 
   // Generate password (5 letters + 3 numbers = 8 characters)
   const generatePassword = () => {
@@ -59,33 +63,19 @@ const DodajDoktora = () => {
   };
 
   // Update username when email changes
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      username: prev.emailAdresa
-    }));
+   useEffect(() => {
+    setFormData(prev => ({ ...prev, username: prev.emailAdresa }));
   }, [formData.emailAdresa]);
 
   // Generate password on component mount
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      password: generatePassword()
-    }));
+    setFormData(prev => ({ ...prev, password: generatePassword() }));
   }, []);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
+   const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -94,93 +84,74 @@ const DodajDoktora = () => {
     return emailRegex.test(email);
   };
 
-  const handleUstanovaAdd = (ustanova) => {
-    if (!selectedUstanove.includes(ustanova)) {
-      setSelectedUstanove(prev => [...prev, ustanova]);
-    }
+   const handleUstanovaAdd = id => {
+    setFormData(prev => ({
+      ...prev,
+      listaUstanova: prev.listaUstanova.includes(id)
+        ? prev.listaUstanova
+        : [...prev.listaUstanova, id]
+    }));
     setDropdownOpen(false);
   };
 
-  const handleUstanovaRemove = (ustanova) => {
-    setSelectedUstanove(prev => prev.filter(u => u !== ustanova));
+ const handleUstanovaRemove = id => {
+    setFormData(prev => ({ ...prev, listaUstanova: prev.listaUstanova.filter(u => u !== id) }));
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.imeIPrezime.trim()) {
-      newErrors.imeIPrezime = 'Ime i prezime je obavezno';
-    }
-    
-    if (!formData.brojLicence.trim()) {
-      newErrors.brojLicence = 'Broj licence je obavezan';
-    }
-    
-    if (!formData.specijalizacija.trim()) {
-      newErrors.specijalizacija = 'Specijalizacija je obavezna';
-    }
-    
-    if (!formData.brojTelefona.trim()) {
-      newErrors.brojTelefona = 'Broj telefona je obavezan';
-    }
-    
-    if (!formData.emailAdresa.trim()) {
-      newErrors.emailAdresa = 'Email adresa je obavezna';
-    } else if (!validateEmail(formData.emailAdresa)) {
-      newErrors.emailAdresa = 'Email adresa nije u ispravnom formatu';
-    }
-    
-    if (!formData.adresa.trim()) {
-      newErrors.adresa = 'Adresa je obavezna';
-    }
-    
-    if (selectedUstanove.length === 0) {
-      newErrors.ustanove = 'Morate odabrati najmanje jednu ustanovu';
-    }
-    
+    if (!formData.imeIPrezime.trim()) newErrors.imeIPrezime = 'Ime i prezime je obavezno';
+    if (!formData.brojLicence.trim()) newErrors.brojLicence = 'Broj licence je obavezan';
+    if (!formData.specijalizacija.trim()) newErrors.specijalizacija = 'Specijalizacija je obavezna';
+    if (!formData.brojTelefona.trim()) newErrors.brojTelefona = 'Broj telefona je obavezan';
+    if (!formData.emailAdresa.trim()) newErrors.emailAdresa = 'Email adresa je obavezna';
+    else if (!validateEmail(formData.emailAdresa)) newErrors.emailAdresa = 'Email adresa nije u ispravnom formatu';
+    if (!formData.adresa.trim()) newErrors.adresa = 'Adresa je obavezna';
+    if (formData.listaUstanova.length === 0) newErrors.listaUstanova = 'Morate odabrati najmanje jednu ustanovu';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSacuvaj = () => {
-    if (validateForm()) {
-      const doctorData = {
-        ...formData,
-        ustanove: selectedUstanove,
-        kontakt: formData.brojTelefona + '\n' + formData.emailAdresa,
-        status: 'Aktivan',
-        datumKreiranja: new Date().toISOString().split('T')[0]
+ const handleSacuvaj = async () => {
+    if (!validateForm()) return;
+    try {
+      const payload = {
+        idKor: formData.idKor,
+        imePrezime: formData.imeIPrezime,
+        email: formData.emailAdresa,
+        licenca: formData.brojLicence,
+        tel: formData.brojTelefona,
+        specijalizacija: formData.specijalizacija,
+        username: formData.username,
+        password: formData.password,
+        listaUstanova: formData.listaUstanova
       };
-      
-      setSavedDoctor(doctorData);
+       console.log('[DodajDoktora] Slanje payload za ljekara:', payload);
+      await addLjekar(payload);
+      setSavedDoctor(formData);
       setShowSuccessModal(true);
+    } catch (err) {
+      console.error(err);
+      alert('Greška prilikom dodavanja ljekara');
     }
   };
 
-  const handleBackClick = () => {
-    setShowCancelModal(true);
-  };
-
-  const handleOtkazi = () => {
-    setShowCancelModal(true);
-  };
-
+    const handleCancel        = () => setShowCancelModal(true);
+  // potvrdili otkazivanje
   const handleCancelConfirm = () => {
     setShowCancelModal(false);
     navigate('/AdminDoktori');
   };
+  // poništili otkazivanje
+  const handleCancelCancel  = () => setShowCancelModal(false);
 
-  const handleCancelCancel = () => {
-    setShowCancelModal(false);
-  };
-
-  const handleModalClose = () => {
+  // zatvara success-modal i ide nazad
+  const handleModalClose    = () => {
     setShowSuccessModal(false);
     navigate('/AdminDoktori');
   };
 
-  const availableUstanove = dostupneUstanove.filter(ustanova => !selectedUstanove.includes(ustanova));
-
+  const availableUstanove = ustanove.filter(u => !formData.listaUstanova.includes(u.id_ust));
   return (
     <div className="dodaj-doktora-page background">
       <div className="container py-4">
@@ -189,7 +160,7 @@ const DodajDoktora = () => {
             {/* Back Button */}
             <button 
               className="btn btn-link mb-3 back-button"
-              onClick={handleBackClick}
+              onClick={handleCancel}
             >
               ← Nazad
             </button>
@@ -213,12 +184,12 @@ const DodajDoktora = () => {
                       
                       <div className="mb-3">
                         <label className="form-label compact required">IME I PREZIME</label>
-                        <input
+                         <input
                           type="text"
                           className={`form-control compact ${errors.imeIPrezime ? 'is-invalid' : ''}`}
                           placeholder="Unesite ime i prezime"
                           value={formData.imeIPrezime}
-                          onChange={(e) => handleInputChange('imeIPrezime', e.target.value)}
+                          onChange={e => handleInputChange('imeIPrezime', e.target.value)}
                         />
                         {errors.imeIPrezime && <div className="invalid-feedback">{errors.imeIPrezime}</div>}
                       </div>
@@ -230,7 +201,7 @@ const DodajDoktora = () => {
                           className={`form-control compact ${errors.brojLicence ? 'is-invalid' : ''}`}
                           placeholder="Unesite broj licence"
                           value={formData.brojLicence}
-                          onChange={(e) => handleInputChange('brojLicence', e.target.value)}
+                          onChange={e => handleInputChange('brojLicence', e.target.value)}
                         />
                         {errors.brojLicence && <div className="invalid-feedback">{errors.brojLicence}</div>}
                       </div>
@@ -242,7 +213,7 @@ const DodajDoktora = () => {
                           className={`form-control compact ${errors.specijalizacija ? 'is-invalid' : ''}`}
                           placeholder="Unesite specijalizaciju"
                           value={formData.specijalizacija}
-                          onChange={(e) => handleInputChange('specijalizacija', e.target.value)}
+                          onChange={e => handleInputChange('specijalizacija', e.target.value)}
                         />
                         {errors.specijalizacija && <div className="invalid-feedback">{errors.specijalizacija}</div>}
                       </div>
@@ -259,7 +230,7 @@ const DodajDoktora = () => {
                       
                       <label className="form-label compact required">DODAJ USTANOVE</label>
                       
-                      <div className="dropdown-container">
+                       <div className="dropdown-container">
                         <button
                           type="button"
                           className="btn dropdown-button"
@@ -268,42 +239,41 @@ const DodajDoktora = () => {
                           <span>{availableUstanove.length > 0 ? 'Izaberite ustanovu...' : 'Sve ustanove su dodane'}</span>
                           <span className="dropdown-plus">+</span>
                         </button>
-                        
                         {dropdownOpen && availableUstanove.length > 0 && (
                           <div className="dropdown-menu-custom">
-                            {availableUstanove.map((ustanova, index) => (
+                            {availableUstanove.map(u => (
                               <button
-                                key={index}
+                                key={u.id_ust}
                                 type="button"
                                 className="dropdown-item-custom"
-                                onClick={() => handleUstanovaAdd(ustanova)}
+                                onClick={() => handleUstanovaAdd(u.id_ust)}
                               >
-                                {ustanova}
+                                {u.naziv_ustanove}
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
-                      
-                      {/* Selected ustanove */}
-                      {selectedUstanove.length > 0 && (
+                      {formData.listaUstanova.length > 0 && (
                         <div className="selected-ustanove">
-                          {selectedUstanove.map((ustanova, index) => (
-                            <div key={index} className="selected-item">
-                              <span>{ustanova}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm remove-button"
-                                onClick={() => handleUstanovaRemove(ustanova)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
+                          {formData.listaUstanova.map(id => {
+                            const u = ustanove.find(x => x.id_ust === id);
+                            return (
+                              <div key={id} className="selected-item">
+                                <span>{u ? u.naziv_ustanove : id}</span>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm remove-button"
+                                  onClick={() => handleUstanovaRemove(id)}
+                                >
+                                        
+                                </button>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
-                      
-                      {errors.ustanove && <div className="text-danger small mt-1">{errors.ustanove}</div>}
+                      {errors.listaUstanova && <div className="text-danger small mt-1">{errors.listaUstanova}</div>}
                     </div>
                   </div>
                   
@@ -318,10 +288,10 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">BROJ TELEFONA</label>
                         <div className="phone-input-wrapper">
-                          <PhoneInput
-                            country={'me'}
+                           <PhoneInput
+                            country="me"
                             value={formData.brojTelefona}
-                            onChange={(value) => handleInputChange('brojTelefona', value)}
+                            onChange={value => handleInputChange('brojTelefona', value)}
                             inputClass={`phone-input-field ${errors.brojTelefona ? 'is-invalid' : ''}`}
                             buttonClass="phone-button"
                             containerClass="phone-container"
@@ -332,12 +302,12 @@ const DodajDoktora = () => {
                       
                       <div className="mb-3">
                         <label className="form-label compact required">EMAIL ADRESA</label>
-                        <input
+                         <input
                           type="email"
                           className={`form-control compact ${errors.emailAdresa ? 'is-invalid' : ''}`}
                           placeholder="Email adresa"
                           value={formData.emailAdresa}
-                          onChange={(e) => handleInputChange('emailAdresa', e.target.value)}
+                          onChange={e => handleInputChange('emailAdresa', e.target.value)}
                         />
                         {errors.emailAdresa && <div className="invalid-feedback">{errors.emailAdresa}</div>}
                       </div>
@@ -349,7 +319,7 @@ const DodajDoktora = () => {
                           className={`form-control compact ${errors.adresa ? 'is-invalid' : ''}`}
                           placeholder="Adresa"
                           value={formData.adresa}
-                          onChange={(e) => handleInputChange('adresa', e.target.value)}
+                          onChange={e => handleInputChange('adresa', e.target.value)}
                         />
                         {errors.adresa && <div className="invalid-feedback">{errors.adresa}</div>}
                       </div>
@@ -366,22 +336,11 @@ const DodajDoktora = () => {
                       
                       <div className="mb-3">
                         <label className="form-label compact">KORISNIČKO IME</label>
-                        <input
-                          type="text"
-                          className="form-control compact"
-                          value={formData.username}
-                          disabled
-                        />
+                        <input type="text" className="form-control compact" value={formData.username} disabled />
                       </div>
-                      
                       <div className="mb-3">
                         <label className="form-label compact">LOZINKA</label>
-                        <input
-                          type="text"
-                          className="form-control compact"
-                          value={formData.password}
-                          disabled
-                        />
+                        <input type="text" className="form-control compact" value={formData.password} disabled />
                       </div>
                     </div>
                   </div>
@@ -407,7 +366,7 @@ const DodajDoktora = () => {
                 <button className="btn btn-success compact me-3" onClick={handleSacuvaj}>
                   ✓ Sačuvaj ljekara
                 </button>
-                <button className="btn btn-secondary compact" onClick={handleOtkazi}>
+                <button className="btn btn-secondary compact" onClick={handleCancel}>
                   ✕ Otkaži
                 </button>
               </div>

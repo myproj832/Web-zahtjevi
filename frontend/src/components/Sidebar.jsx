@@ -31,7 +31,7 @@ const Sidebar = () => {
     },
     {
       id: 'ljekare',
-      label: 'Ljekare',
+      label: 'Ljekari',
       path: '/AdminDoktori',
       icon: '👨‍⚕️'
     },
@@ -41,12 +41,12 @@ const Sidebar = () => {
       path: '/AdminUstanove',
       icon: '🏥'
     },
-    {
-      id: 'zahtjevi',
-      label: 'Zahtjevi',
-      path: '/requests',
-      icon: '📋'
-    }
+    // {
+    //   id: 'zahtjevi',
+    //   label: 'Zahtjevi',
+    //   path: '/requests',
+    //   icon: '📋'
+    // }
   ];
 
   return (

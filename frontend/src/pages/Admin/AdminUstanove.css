@@ -1,5 +1,5 @@
 /* Import your root variables */
-:root {
+html {
   font-family: 'PT sans', sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -59,16 +59,16 @@
 /* Fixed Sidebar */
 .admin-ustanove-page .sidebar {
   position: fixed;
-  top: 80px;
+  top: 60px;
   left: 0;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 60px);
   z-index: 1000;
 }
 
 /* Main Content Area */
 .admin-ustanove-main-content {
   margin-left: 280px;
-  margin-top: 80px;
+  margin-top: 50px;
   padding: 2rem 2rem 2rem 1rem;
   min-height: calc(100vh - 80px);
   transition: margin-left 0.3s ease;

@@ -249,7 +249,7 @@ if (out.error_u === 'OK') {
   
    setRola(out2.rola_u); 
  if (out2.rola_u === 'Admin') {
-   navigate('/admin');
+   navigate('/AdminPage');
  } else {
    navigate('/requests');
  }
