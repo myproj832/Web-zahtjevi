@@ -1,7 +1,10 @@
 // src/components/LoginModal.jsx
 import { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import PropTypes from "prop-types";
+import userIcon from "../assets/Icons/user.png";
+import padlockIcon from "../assets/Icons/padlock.png";
+import unlockIcon from "../assets/Icons/unlock.png";
 import { useAuth } from "../context/AuthContext.jsx";
 import ErrorMessages from "./Messages/ErrorMessage.jsx";
 
@@ -9,12 +12,18 @@ function LoginModal({ show, onHide, container  }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessages, setErrorMessages] = useState([]);
+   const [showPassword, setShowPassword] = useState(false);
   const auth = useAuth();
 
   // Clear errors when modal opens
   useEffect(() => {
     if (show) setErrorMessages([]);
   }, [show]);
+
+   const handleTogglePassword = () => {
+    setShowPassword(prev => !prev);
+  };
+
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -69,21 +78,46 @@ function LoginModal({ show, onHide, container  }) {
         />
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-5" controlId="loginUsername">
-            <Form.Control
-              type="text"
-              placeholder="Korisničko ime"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-            />
+            <InputGroup>
+              <Form.Control
+                type="text"
+                placeholder="Korisničko ime"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+              />
+              <InputGroup.Text>
+                <img
+                  src={userIcon}
+                  alt="Korisnik"
+                  style={{ width: '1.30rem', height: '1.30rem' }}
+                />
+              </InputGroup.Text>
+            </InputGroup>
           </Form.Group>
           <Form.Group className="mb-5" controlId="loginPassword">
-            <Form.Control
-              type="password"
-              placeholder="Lozinka"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
+            <InputGroup>
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Lozinka"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              <InputGroup.Text
+                onClick={handleTogglePassword}
+                style={{ cursor: 'pointer' }}
+                aria-label={showPassword ? "Sakrij lozinku" : "Prikaži lozinku"}
+              >
+                <img
+                  src={showPassword ? unlockIcon : padlockIcon}
+                  alt={showPassword ? 'Otključano' : 'Zaključano'}
+                  style={{ width: '1.30rem', height: '1.30rem' }}
+                />
+              </InputGroup.Text>
+            </InputGroup>
           </Form.Group>
+
           <Button type="submit" className="w-100" style={{ 
             background: "var(--gradient-primary-button)",
             border: "none",

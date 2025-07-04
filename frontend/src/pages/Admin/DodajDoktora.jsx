@@ -292,6 +292,7 @@ const DodajDoktora = () => {
                             country="me"
                             value={formData.brojTelefona}
                             onChange={value => handleInputChange('brojTelefona', value)}
+                             masks={{ me: '.. ... ...' }}
                             inputClass={`phone-input-field ${errors.brojTelefona ? 'is-invalid' : ''}`}
                             buttonClass="phone-button"
                             containerClass="phone-container"
