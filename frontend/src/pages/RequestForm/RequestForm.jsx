@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import { useDataContext } from "../../context/DataContext";
 import { Form, Button } from "react-bootstrap";
 import PatientInfo from "../../components/RequestForm/PatientInfo";
@@ -10,6 +9,7 @@ import FileUpload from "../../components/RequestForm/FileUpload";
 import AddPrescriptionButton from "../../components/RequestForm/AddPrescriptionButton";
 import Header from "../../components/Header";
 import "./RequestForm.css";
+import { flushSync } from "react-dom";
 
 function RequestForm() {
   const navigate = useNavigate();
@@ -20,9 +20,8 @@ function RequestForm() {
     gradovi,
     pacijenti,
     submitZahtjev,
-    loading,
   } = useDataContext();
-  const { tokenApp, korisnickoIme, tokenUser } = useAuth();
+
   const [recepti, setRecepti] = useState([
     {
       tipRecepta: "obrazac",
@@ -50,8 +49,56 @@ function RequestForm() {
 
   const isValidPhone = (phone) => {
     if (!phone) return false;
-    const cleaned = phone.replace(/\D/g, ""); // izbaci sve osim brojeva
+    const cleaned = phone.replace(/\D/g, "");
     return cleaned.length >= 11 && cleaned.length <= 12;
+  };
+
+  const validateForm = () => {
+    if (
+      !patientInfo.firstName ||
+      !patientInfo.lastName ||
+      !patientInfo.birthDate 
+    ) {
+      alert("Molimo popunite sve podatke o pacijentu.");
+      return false;
+    }
+
+    if (!isValidPhone(patientInfo.phone)) {
+      alert("Molimo unesite ispravan broj telefona.");
+      return false;
+    }
+
+    if (recepti.length === 0) {
+      alert("Dodajte bar jedan recept.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const result = await submitZahtjev({
+        patientInfo,
+        dijagnoza,
+        recepti,
+        files,
+      });
+
+      console.log("✅ Uspješno snimljeno:", result);
+
+      // flushSync obezbeđuje da se svi state update-ovi dovrše prije navigacije
+      flushSync(() => {
+        // možeš setovati state ovdje ako treba, npr. clear form
+      });
+
+      navigate("/requests");
+    } catch (err) {
+      console.error("❌ Greška:", err);
+      alert("Greška pri snimanju zahtjeva.");
+    }
   };
 
   return (
@@ -70,7 +117,6 @@ function RequestForm() {
           </div>
 
           <Form>
-            {/* <InstitutionDetails /> */}
             <PatientInfo
               patientInfo={patientInfo}
               setPatientInfo={setPatientInfo}
@@ -94,33 +140,8 @@ function RequestForm() {
 
             <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
             <FileUpload setFiles={setFiles} />
-            <Button
-              className="mt-4"
-              variant="primary"
-              onClick={async () => {
-                if (!isValidPhone(patientInfo.phone)) {
-                  alert("Molimo unesite ispravan broj telefona");
-                  return;
-                }
 
-                try {
-                  const result = await submitZahtjev({
-                    patientInfo,
-                    dijagnoza,
-                    recepti,
-                    files,
-                    tokenApp,
-                    korisnickoIme,
-                    tokenUser,
-                  });
-
-                  console.log("Uspješno snimljeno:", result);
-                  navigate("/requests");
-                } catch (err) {
-                  alert("Greška pri snimanju zahtjeva");
-                }
-              }}
-            >
+            <Button className="mt-4" variant="primary" onClick={handleSubmit}>
               Snimi zahtjev
             </Button>
           </Form>

@@ -18,12 +18,7 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // SLANJE PODATAKA BAZI
-  const submitZahtjev = async ({
-    patientInfo,
-    dijagnoza,
-    recepti,
-    files,
-  }) => {
+  const submitZahtjev = async ({ patientInfo, dijagnoza, recepti, files }) => {
     const requestBody = {
       token_app: tokenApp,
       in_auten: JSON.stringify({
@@ -53,7 +48,9 @@ export const DataProvider = ({ children }) => {
               ? recept.odabraniObrazac?.lijek_name || ""
               : recept.odabrani?.naziv || "",
           r_rp_obrazac:
-            recept.tipRecepta === "obrazac" ? recept.tekstRecepta : "",
+            recept.tipRecepta === "obrazac"
+              ? recept.tekstObrasca || recept.tekstRecepta || ""
+              : "",
           r_rp_blanko:
             recept.tipRecepta === "blanko" ? recept.tekstRecepta : "",
           r_vrsta_rp: recept.vrstaRecepta === "obn" ? "OB" : "NO",
@@ -69,6 +66,8 @@ export const DataProvider = ({ children }) => {
           ? files[0].substring(0, files[0].indexOf(";")).replace("data:", "")
           : "",
     };
+
+    console.log("✅ Zahtjev:", requestBody);
 
     try {
       const res = await fetch("http://62.4.59.86:3334/api/upisi_zahtjev", {
@@ -114,13 +113,17 @@ export const DataProvider = ({ children }) => {
         console.log("✅ Gradovi:", gradoviData);
 
         // Pacijenti
-        const resPacijenti = await fetch("http://62.4.59.86:3334/api/pacijenti");
+        const resPacijenti = await fetch(
+          "http://62.4.59.86:3334/api/pacijenti"
+        );
         const pacijentiData = (await resPacijenti.json())?.P_OUT_JSON || [];
         setPacijenti(pacijentiData);
         console.log("✅ Pacijenti:", pacijentiData);
 
         // Normativi (dijagnoze, indikacije, itd.)
-        const resNormativi = await fetch("http://62.4.59.86:3334/api/normativi");
+        const resNormativi = await fetch(
+          "http://62.4.59.86:3334/api/normativi"
+        );
         const normativiJson = await resNormativi.json();
         setDijagnoze(normativiJson?.P_DIJAGNOZE_JSON || []);
         setIndikacije(normativiJson?.P_INDIKACIJE_JSON || []);
@@ -129,19 +132,22 @@ export const DataProvider = ({ children }) => {
         console.log("✅ Normativi:", normativiJson);
 
         // Lista zahtjeva
-        const resLista = await fetch("http://62.4.59.86:3334/api/lista_zahtjeva", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token_app: tokenApp,
-            in_auten: {
-              KORISNIK: korisnickoIme,
-              LOZINKA: tokenUser,
+        const resLista = await fetch(
+          "http://62.4.59.86:3334/api/lista_zahtjeva",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-          }),
-        });
+            body: JSON.stringify({
+              token_app: tokenApp,
+              in_auten: {
+                KORISNIK: korisnickoIme,
+                LOZINKA: tokenUser,
+              },
+            }),
+          }
+        );
         const listaJson = await resLista.json();
         setListaZahtjeva(listaJson);
         console.log("✅ Lista zahtjeva:", listaJson);

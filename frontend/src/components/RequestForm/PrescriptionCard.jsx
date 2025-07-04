@@ -70,7 +70,9 @@ function PrescriptionCard({
       {/* Tekst recepta za blanko formu */}
       {recept.tipRecepta === "blanko" && (
         <Form.Group className="mt-2">
-          <Form.Label style={{textTransform: "none"}}>Recept (max 4000 karaktera)</Form.Label>
+          <Form.Label style={{ textTransform: "none" }}>
+            Recept (max 4000 karaktera)
+          </Form.Label>
           <Form.Control
             as="textarea"
             rows={4}
@@ -89,7 +91,9 @@ function PrescriptionCard({
       {recept.tipRecepta === "obrazac" && (
         <>
           <Form.Group className="mt-2">
-            <Form.Label style={{textTransform: "none"}}>Grupa-indikacija</Form.Label>
+            <Form.Label style={{ textTransform: "none" }}>
+              Grupa-indikacija
+            </Form.Label>
             <Form.Select
               className="text-capitalize"
               value={recept.grupa}
@@ -117,7 +121,9 @@ function PrescriptionCard({
           <Card className="mt-3 mb-0 pt-0 pb-2">
             <Card.Body className="py-0">
               <Form.Group className="mt-2">
-                <Form.Label style={{textTransform: "none"}}>Magistralni lijek</Form.Label>
+                <Form.Label style={{ textTransform: "none" }}>
+                  Magistralni lijek
+                </Form.Label>
 
                 {/* Filtrirani lijekovi na osnovu izabrane grupe */}
                 {(() => {
@@ -169,11 +175,18 @@ function PrescriptionCard({
                             .join("\n");
                           const tekst = `${normativi}\n${odabrani.lijek_m_f}\n${odabrani.lijek_d_s}`;
 
-                          novi[index].tekstObrasca = tekst;
-                          novi[index].tekstRecepta = tekst; // <-- dodano da se popuni tekstRecepta
+                          // Samo ako korisnik još nije ručno mijenjao tekst
+                          if (!novi[index].manualChange) {
+                            novi[index].tekstObrasca = tekst;
+                            novi[index].tekstRecepta = tekst;
+                          }
+
+                          // Dodaj ostalo
+                          novi[index].odabraniObrazac = odabrani || null;
+                          novi[index].odabrani = odabrani || null;
                         } else {
                           novi[index].tekstObrasca = "";
-                          novi[index].tekstRecepta = ""; // <-- dodano za brisanje kad nema odabira
+                          novi[index].tekstRecepta = "";
                         }
 
                         setRecepti(novi);
@@ -225,6 +238,8 @@ function PrescriptionCard({
                       onChange={(e) => {
                         const novi = [...recepti];
                         novi[index].tekstObrasca = e.target.value;
+                        novi[index].tekstRecepta = e.target.value;
+                        novi[index].manualChange = true;
                         setRecepti(novi);
                       }}
                     />
@@ -275,7 +290,10 @@ function PrescriptionCard({
                 <Row>
                   <Col md={3}>
                     <Form.Group className="d-flex align-items-center gap-2">
-                      <Form.Label className="py-0 my-0 mx-0" style={{ textTransform: "none" }}>
+                      <Form.Label
+                        className="py-0 my-0 mx-0"
+                        style={{ textTransform: "none" }}
+                      >
                         Količina
                       </Form.Label>
                       <Form.Control
@@ -372,7 +390,9 @@ function PrescriptionCard({
 
       {/* Napomena */}
       <Form.Group className="mt-4">
-        <Form.Label style={{textTransform: "none"}}>Napomena (max 4000 karaktera)</Form.Label>
+        <Form.Label style={{ textTransform: "none" }}>
+          Napomena (max 4000 karaktera)
+        </Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
