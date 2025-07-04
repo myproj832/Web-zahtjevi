@@ -1,5 +1,4 @@
 function FilterForm({ filters, handleFilterChange, isAdmin }) {
-
   return (
     <div className="row g-2 mb-4">
       <div className="col-md-2 m-0">
@@ -45,18 +44,24 @@ function FilterForm({ filters, handleFilterChange, isAdmin }) {
         />
       </div>
       <div className="col-md-2 m-0">
-        <label></label>
+        <label>Status:</label>
         <select
           className="form-control"
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
         >
-          <option value="">Status</option>
-          <option value="Kreiran">Kreiran</option>
-          <option value="Na čekanju">Na čekanju</option>
+          <option value="">Svi statusi</option>
+          <option value="2">Kreiran</option>
+          <option value="1">Zaprimljen / Prihvaćen</option>
+          <option value="7">Odbijen</option>
+          <option value="4">U izradi</option>
+          <option value="5">Izrađen</option>
+          <option value="6">Spreman za isporuku</option>
+          <option value="3">Isporučen</option>
         </select>
       </div>
+
       <div className="col-md-2 m-0">
         <label>Rola:</label>
         <select

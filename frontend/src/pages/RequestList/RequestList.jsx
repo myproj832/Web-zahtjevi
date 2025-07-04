@@ -35,10 +35,21 @@ function RequestList() {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
+  function parseDateDDMMYYYY(dateString) {
+    // Radi i za "02.07.2025" i "02.07.2025 18:53"
+    const [datePart] = dateString.trim().split(" ");
+    const [day, month, year] = datePart.split(".").map(Number);
+    return new Date(year, month - 1, day); // month is 0-based
+  }
+  function parseDateFromInput(dateString) {
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   const filteredRequests = requests.filter((r) => {
-    const datum = new Date(r.dat_prijema);
-    const od = filters.datumOd ? new Date(filters.datumOd) : null;
-    const doD = filters.datumDo ? new Date(filters.datumDo) : null;
+    const datum = parseDateDDMMYYYY(r.dat_prijema); // dat_prijema je "02.07.2025 18:53"
+    const od = filters.datumOd ? parseDateFromInput(filters.datumOd) : null; // ISO: "2025-07-01"
+    const doD = filters.datumDo ? parseDateFromInput(filters.datumDo) : null;
 
     const combinedPacijentTelefon =
       `${r.pacijent_ime} ${r.pacijent_prezime}`.toLowerCase();
@@ -56,6 +67,10 @@ function RequestList() {
       (!filters.rola || rola.toLowerCase() === filters.rola.toLowerCase())
     );
   });
+
+  /* const r = { dat_prijema: "02.07.2025 18:53" };
+  console.log(parseDateDDMMYYYY(r.dat_prijema)); // Tue Jul 02 2025
+  console.log(filters.datumOd); */
 
   const handleDelete = (id) => {
     const confirmed = window.confirm(

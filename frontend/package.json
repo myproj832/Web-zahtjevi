@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap": "^5.3.7",
     "react": "^19.1.0",
+    "react-barcode": "^1.6.1",
     "react-bootstrap": "^2.10.10",
     "react-phone-input-2": "^2.15.1",
     "react-phone-number-input": "^3.4.12",

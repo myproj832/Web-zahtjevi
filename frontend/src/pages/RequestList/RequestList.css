@@ -75,14 +75,48 @@
   border: none;
 }
 
-.badge-status-kreiran {
-  background-color: #b2d8b8;
-  color: rgb(88, 87, 87);
+.badge {
+  padding: 0.25rem 0.50rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  display: inline-block;
+  text-align: center;
 }
 
-.badge-status-na-cekanju {
-  background-color: #f4db91;
-  color: rgb(66, 65, 65);
+.badge-status-kreiran {
+  background-color: #e0f7fa;
+  color: #00796b;
+}
+
+.badge-status-zaprimljen {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-status-odbijen {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.badge-status-u-izradi {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.badge-status-izradjen {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge-status-spreman {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
+
+.badge-status-isporucen {
+  background-color: #ede7f6;
+  color: #4527a0;
 }
 
 .badge.bg-info {

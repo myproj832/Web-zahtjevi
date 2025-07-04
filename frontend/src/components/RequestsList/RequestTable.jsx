@@ -1,4 +1,5 @@
 import { Table } from "react-bootstrap";
+import Barcode from "react-barcode";
 
 function RequestTable({
   filteredRequests,
@@ -11,24 +12,23 @@ function RequestTable({
       <Table bordered hover responsive className="bg-white shadow-sm">
         <thead>
           <tr>
-            <th>Datum</th>
-            <th>Datum izdavanja</th>
+            <th>Datum recepta</th>
+            {/* <th>Datum izdavanja</th> */}
             <th>Pacijent / Telefon</th>
             <th>Magistralni lijek</th>
             <th>
-              Izdao recept
+              Ljekar / Zdravstvena ustanova
               {/* Podnosilac zahtjeva - Ustanova / rola(ljekar) */}
             </th>
+            {/* <th>
+              Lijek izradio - farmaceut
+            </th> */}
             <th>
-              Prijem recepta
-              {/* Prijem/Odobravanje zahtjeva - Farmaceut / Prijem */}
-            </th>
-            <th>
-              Isporuka recepta
+              Lijek preuzeo
               {/* Isporuka zahtjeva - Apoteka */}
             </th>
             <th>Napomena</th>
-            <th>Rola</th>
+            <th>Barkod</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -44,12 +44,12 @@ function RequestTable({
               style={{ cursor: "pointer" }}
             >
               <td>{request.dat_prijema}</td>
-              <td>{request.rp?.[0]?.dat_izdavanja || "—"}</td>
+              {/* <td>{request.rp?.[0]?.dat_izdavanja || "—"}</td> */}
               <td>
                 <div className="text-capitalize">
                   {request.pacijent_ime} {request.pacijent_prezime}
                 </div>
-                <div>{/* telefon ako postoji */}</div>
+                <div>{request.br_tel}</div>
               </td>
               <td>
                 {request.rp?.map((rp, idx) => (
@@ -76,21 +76,57 @@ function RequestTable({
                   <strong>Ljekar:</strong> {request.izdao_recept_lj}
                 </div>
               </td>
-              <td>{request.napomena_prijem || "—"}</td>
+              {/* <td>{request.napomena_prijem || "—"}</td> */}
               <td>{request.dat_isporuke || "—"}</td>
               <td>{request.napomena_isporuka || "—"}</td>
-              <td>{rola || "—"}</td>
+              <td>
+                {request.barcode ? (
+                  <Barcode
+                    value={request.barcode}
+                    width={1.3}
+                    height={50}
+                    fontSize={12}
+                    background="transparent"
+                  />
+                ) : (
+                  "—"
+                )}
+              </td>
               <td>
                 <span
                   className={`badge ${
-                    request.status === "1"
+                    request.status === "2"
                       ? "badge-status-kreiran"
-                      : request.status === "2"
-                      ? "badge-status-na-cekanju"
-                      : "badge-status-odobren"
+                      : request.status === "1"
+                      ? "badge-status-zaprimljen"
+                      : request.status === "7"
+                      ? "badge-status-odbijen"
+                      : request.status === "4"
+                      ? "badge-status-u-izradi"
+                      : request.status === "5"
+                      ? "badge-status-izradjen"
+                      : request.status === "6"
+                      ? "badge-status-spreman"
+                      : request.status === "3"
+                      ? "badge-status-isporucen"
+                      : ""
                   }`}
                 >
-                  {request.status}
+                  {request.status === "2"
+                    ? "Kreiran"
+                    : request.status === "1"
+                    ? "Zaprimljen"
+                    : request.status === "7"
+                    ? "Odbijen"
+                    : request.status === "4"
+                    ? "U izradi"
+                    : request.status === "5"
+                    ? "Izrađen"
+                    : request.status === "6"
+                    ? "Spreman za isporuku"
+                    : request.status === "3"
+                    ? "Isporučen"
+                    : "Nepoznat"}
                 </span>
               </td>
             </tr>
