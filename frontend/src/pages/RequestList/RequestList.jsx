@@ -1,59 +1,73 @@
 import { useState } from "react";
-import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { Button, Pagination } from "react-bootstrap";
+
+import Header from "../../components/Header";
 import FilterForm from "../../components/RequestsList/FilterForm";
 import RequestTable from "../../components/RequestsList/RequestTable";
 import RequestCard from "../../components/RequestsList/RequestCard";
 import ActionButtons from "../../components/RequestsList/ActionButtons";
-import Header from "../../components/Header";
+
 import { useAuth } from "../../context/AuthContext";
 import { useDataContext } from "../../context/DataContext";
+
 import "./RequestList.css";
 
 function RequestList() {
   const navigate = useNavigate();
   const { rola } = useAuth();
   const { listaZahtjeva } = useDataContext();
+
+  const [showRequests, setShowRequests] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [filters, setFilters] = useState({
-    datumOd: "",
-    datumDo: "",
-    pacijent: "",
-    lijek: "",
-    status: "",
-    rola: "",
-  });
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const isAdmin = rola === "admin";
+function getInitialDates() {
+  const now = new Date();
+  // First day of last month
+  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 2);
+  // Last day of current month
+  const lastDayCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  /* const requests = allRequests.filter((r) => r.ljekarId === doctorId); */
-  /* const all = JSON.parse(localStorage.getItem("requests")) || []; */
-  const requests = listaZahtjeva?.P_OUT_JSON || [];
+  const toISO = (d) => d.toISOString().slice(0, 10);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+  return {
+    datumOd: toISO(firstDayLastMonth),
+    datumDo: toISO(lastDayCurrentMonth),
   };
+}
 
-  function parseDateDDMMYYYY(dateString) {
-    // Radi i za "02.07.2025" i "02.07.2025 18:53"
+const [filters, setFilters] = useState({
+  ...getInitialDates(),
+  pacijent: "",
+  lijek: "",
+  status: "",
+  rola: "",
+});
+
+  const requests = listaZahtjeva?.P_OUT_JSON || [];
+  const isAdmin = rola === "admin";
+  const requestsPerPage = 10;
+
+  const parseDateDDMMYYYY = (dateString) => {
     const [datePart] = dateString.trim().split(" ");
     const [day, month, year] = datePart.split(".").map(Number);
-    return new Date(year, month - 1, day); // month is 0-based
-  }
-  function parseDateFromInput(dateString) {
+    return new Date(year, month - 1, day);
+  };
+
+  const parseDateFromInput = (dateString) => {
     const [year, month, day] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day);
-  }
+  };
 
   const filteredRequests = requests.filter((r) => {
-    const datum = parseDateDDMMYYYY(r.dat_prijema); // dat_prijema je "02.07.2025 18:53"
-    const od = filters.datumOd ? parseDateFromInput(filters.datumOd) : null; // ISO: "2025-07-01"
+    const datum = parseDateDDMMYYYY(r.dat_prijema);
+    const od = filters.datumOd ? parseDateFromInput(filters.datumOd) : null;
     const doD = filters.datumDo ? parseDateFromInput(filters.datumDo) : null;
 
-    const combinedPacijentTelefon =
+    const combinedPacijent =
       `${r.pacijent_ime} ${r.pacijent_prezime}`.toLowerCase();
-    const combinedLijekSastav = r.rp
+    const combinedLijek = r.rp
       ?.map((el) => el.naziv || el.rp_blanko || el.rp_obrazac)
       .join(" ")
       .toLowerCase();
@@ -61,16 +75,67 @@ function RequestList() {
     return (
       (!od || datum >= od) &&
       (!doD || datum <= doD) &&
-      combinedPacijentTelefon.includes(filters.pacijent.toLowerCase()) &&
-      combinedLijekSastav.includes(filters.lijek.toLowerCase()) &&
-      r.status.toString().includes(filters.status.toLowerCase()) &&
+      combinedPacijent.includes(filters.pacijent.toLowerCase()) &&
+      combinedLijek.includes(filters.lijek.toLowerCase()) &&
+      (!filters.status ||
+        r.status.toString().toLowerCase() === filters.status.toLowerCase()) &&
       (!filters.rola || rola.toLowerCase() === filters.rola.toLowerCase())
     );
   });
 
-  /* const r = { dat_prijema: "02.07.2025 18:53" };
-  console.log(parseDateDDMMYYYY(r.dat_prijema)); // Tue Jul 02 2025
-  console.log(filters.datumOd); */
+  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(
+    indexOfFirstRequest,
+    indexOfLastRequest
+  );
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const items = [];
+    const sideCount = 1;
+
+    const addPage = (page) => {
+      items.push(
+        <Pagination.Item
+          key={page}
+          active={page === currentPage}
+          onClick={() => setCurrentPage(page)}
+        >
+          {page}
+        </Pagination.Item>
+      );
+    };
+
+    addPage(1);
+
+    if (currentPage > sideCount + 2) {
+      items.push(<Pagination.Ellipsis key="start-ellipsis" disabled />);
+    }
+
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+      addPage(i);
+    }
+
+    if (currentPage < totalPages - sideCount - 1) {
+      items.push(<Pagination.Ellipsis key="end-ellipsis" disabled />);
+    }
+
+    if (totalPages > 1 && currentPage < totalPages) {
+      addPage(totalPages);
+    }
+
+    return (
+      <div className="d-flex justify-content-center mt-4">
+        <Pagination>{items}</Pagination>
+      </div>
+    );
+  };
 
   const handleDelete = (id) => {
     const confirmed = window.confirm(
@@ -80,14 +145,22 @@ function RequestList() {
       const existing = JSON.parse(localStorage.getItem("requests")) || [];
       const updated = existing.filter((req) => req.id !== id);
       localStorage.setItem("requests", JSON.stringify(updated));
-      window.location.reload(); // ili refetch lokalno
+      // Ako koristiš kontekst, treba refetch, a ne reload:
+      // refetchZahtjeve(); // ili neka funkcija iz DataContext
+      window.location.reload();
     }
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1);
+  };
+
   return (
-    <>
+    <div className="background">
       <Header />
-      <div className="background p-4">
+      <div className="p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2 className="mb-1" style={{ color: "#47466D" }}>
             Lista Zahtjeva
@@ -103,31 +176,50 @@ function RequestList() {
           isAdmin={isAdmin}
         />
 
-        <ActionButtons
-          selectedRequest={filteredRequests.find((r) => r.id === selectedRowId)}
-          handleDelete={handleDelete}
-        />
+        {!showRequests && (
+          <Button
+            variant="outline-secondary"
+            onClick={() => setShowRequests(true)}
+          >
+            📋 Prikaži listu zahtjeva
+          </Button>
+        )}
 
-        <RequestTable
-          listaZahtjeva={listaZahtjeva}
-          filteredRequests={filteredRequests}
-          setSelectedRowId={setSelectedRowId}
-          selectedRowId={selectedRowId}
-          rola={rola}
-        />
-
-        <div className="d-md-none">
-          {filteredRequests.map((req) => (
-            <RequestCard
-              key={req.id_zah}
-              request={req}
-              rola={rola}
-              onSelect={setSelectedRowId}
+        {showRequests && (
+          <>
+            <ActionButtons
+              selectedRequest={filteredRequests.find(
+                (r) => r.id_zah === selectedRowId
+              )}
+              handleDelete={handleDelete}
             />
-          ))}
-        </div>
+
+            <div className="d-none d-md-block">
+              <RequestTable
+                listaZahtjeva={listaZahtjeva}
+                filteredRequests={currentRequests}
+                setSelectedRowId={setSelectedRowId}
+                selectedRowId={selectedRowId}
+                rola={rola}
+              />
+              {renderPagination()}
+            </div>
+
+            <div className="d-md-none">
+              {currentRequests.map((req) => (
+                <RequestCard
+                  key={req.id_zah}
+                  request={req}
+                  rola={rola}
+                  onSelect={setSelectedRowId}
+                />
+              ))}
+              {renderPagination()}
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 

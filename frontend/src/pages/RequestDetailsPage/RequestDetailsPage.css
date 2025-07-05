@@ -1,6 +1,116 @@
 .background {
-  background: #89b0cc;
   background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
   min-height: 100vh;
   width: 100%;
+}
+
+.details-main-card {
+  background-color: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
+  max-width: 980px;
+  margin: 1rem auto 1.5rem auto;
+  border: 1.5px solid #e3ffe7;
+}
+
+.details-title {
+  color: #3a5a7a;
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+  text-align: center;
+  background: #e3ffe7;
+  border-radius: 1.2rem;
+  padding: 0.6rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px #e3ffe755;
+}
+
+.details-section-card {
+  background-color: #f7fbff;
+  border-color: #e3ffe7;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
+  border: 1px solid #e3ffe7;
+}
+
+.details-section-title {
+  color: #3a5a7a;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+.details-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.details-list-item {
+  margin-bottom: 0.5rem;
+}
+
+.details-rp-title {
+  color: #3a5a7a;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 2rem 0 1rem 0;
+  text-align: center;
+  background: #e3ffe7;
+  border-radius: 1.2rem;
+  padding: 0.5rem 0;
+  box-shadow: 0 1px 4px #e3ffe755;
+}
+
+.details-rp-card {
+  background-color: #f7fbff;
+  border-color: #e3ffe7;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
+  min-height: 100%;
+  border: 1px solid #e3ffe7;
+}
+
+.details-rp-card-title {
+  color: #3a5a7a;
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.details-rp-card-text {
+  font-size: 0.98rem;
+}
+
+.details-rp-obrazac {
+  white-space: pre-wrap;
+  background-color: #f0f7fa;
+  padding: 0.7rem;
+  border-radius: 0.7rem;
+  font-size: 0.97rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 1px 4px #e3ffe755;
+}
+
+.details-no-rp {
+  color: #3a5a7a;
+  text-align: center;
+  font-weight: 500;
+  margin-top: 1.5rem;
+}
+
+.details-topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 980px;
+  margin: 0 auto 0.5rem auto;
+  padding-top: 1.5rem;
+}
+
+.details-stampa-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: 1rem;
 }

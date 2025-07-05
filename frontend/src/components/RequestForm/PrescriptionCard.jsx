@@ -317,7 +317,7 @@ function PrescriptionCard({
             {recept.vrstaRecepta === "obn" && (
               <>
                 <Row style={{ color: "transparent" }}>nesto</Row>
-                <Row>
+                <Row className="pt-2">
                   <Col md={3}>
                     <Form.Group className="d-flex align-items-center gap-2">
                       <Form.Label

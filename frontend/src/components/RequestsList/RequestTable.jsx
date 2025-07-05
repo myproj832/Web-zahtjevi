@@ -83,9 +83,9 @@ function RequestTable({
                 {request.barcode ? (
                   <Barcode
                     value={request.barcode}
-                    width={1.3}
-                    height={50}
-                    fontSize={12}
+                    width={1}
+                    height={35}
+                    fontSize={11}
                     background="transparent"
                   />
                 ) : (
@@ -95,34 +95,34 @@ function RequestTable({
               <td>
                 <span
                   className={`badge ${
-                    request.status === "2"
+                    request.status === "0"
                       ? "badge-status-kreiran"
                       : request.status === "1"
                       ? "badge-status-zaprimljen"
-                      : request.status === "7"
-                      ? "badge-status-odbijen"
                       : request.status === "4"
-                      ? "badge-status-u-izradi"
+                      ? "badge-status-odbijen"
                       : request.status === "5"
-                      ? "badge-status-izradjen"
+                      ? "badge-status-u-izradi"
                       : request.status === "6"
+                      ? "badge-status-izradjen"
+                      : request.status === "2"
                       ? "badge-status-spreman"
                       : request.status === "3"
                       ? "badge-status-isporucen"
                       : ""
                   }`}
                 >
-                  {request.status === "2"
+                  {request.status === "0"
                     ? "Kreiran"
                     : request.status === "1"
                     ? "Zaprimljen"
-                    : request.status === "7"
-                    ? "Odbijen"
                     : request.status === "4"
-                    ? "U izradi"
+                    ? "Odbijen"
                     : request.status === "5"
-                    ? "Izrađen"
+                    ? "U izradi"
                     : request.status === "6"
+                    ? "Izrađen"
+                    : request.status === "2"
                     ? "Spreman za isporuku"
                     : request.status === "3"
                     ? "Isporučen"
@@ -133,6 +133,7 @@ function RequestTable({
           ))}
         </tbody>
       </Table>
+      
     </div>
   );
 }

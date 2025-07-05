@@ -52,12 +52,12 @@ function FilterForm({ filters, handleFilterChange, isAdmin }) {
           onChange={handleFilterChange}
         >
           <option value="">Svi statusi</option>
-          <option value="2">Kreiran</option>
+          <option value="0">Zaprimljen / Kreiran</option>
           <option value="1">Zaprimljen / Prihvaćen</option>
-          <option value="7">Odbijen</option>
-          <option value="4">U izradi</option>
-          <option value="5">Izrađen</option>
-          <option value="6">Spreman za isporuku</option>
+          <option value="4">Poništen / Odbijen</option>
+          <option value="5">U izradi</option>
+          <option value="6">Izrađen</option>
+          <option value="2">Spreman za isporuku</option>
           <option value="3">Isporučen</option>
         </select>
       </div>

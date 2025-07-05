@@ -64,8 +64,13 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             country={"me"}
             value={patientInfo.phone}
             onChange={handlePhoneChange}
-            /* inputStyle={{ width: "100%" }} */
-            masks={{ me: ".. ... ...." }}
+            masks={{
+              me: ".. ... ....",
+              rs: ".. ... ....",
+              ba: ".. ... ....",
+              hr: ".. ... ....",
+              mk: ".. ... ....",
+            }}
             inputProps={{
               onKeyDown: (e) => handleKeyDown(e, firstNameRef),
             }}

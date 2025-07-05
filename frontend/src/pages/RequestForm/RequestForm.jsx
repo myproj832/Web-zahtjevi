@@ -57,7 +57,7 @@ function RequestForm() {
     if (
       !patientInfo.firstName ||
       !patientInfo.lastName ||
-      !patientInfo.birthDate 
+      !patientInfo.birthDate
     ) {
       alert("Molimo popunite sve podatke o pacijentu.");
       return false;
@@ -103,48 +103,53 @@ function RequestForm() {
 
   return (
     <>
-      <Header />
       <div className="background text-dark position-relative">
-        <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h1 className="mb-1">Unos zahtjeva</h1>
-            <Button
-              variant="outline-secondary"
-              onClick={() => navigate("/requests")}
-            >
-              Lista zahtjeva
-            </Button>
-          </div>
+        <Header />
+        <div>
+          <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h1 className="mb-1">Unos zahtjeva</h1>
+              <Button
+                variant="outline-secondary"
+                onClick={() => navigate("/requests")}
+              >
+                Lista zahtjeva
+              </Button>
+            </div>
 
-          <Form>
-            <PatientInfo
-              patientInfo={patientInfo}
-              setPatientInfo={setPatientInfo}
-              pacijenti={pacijenti}
-              gradovi={gradovi}
-            />
-            <DiagnosisBlock onChangeDijagnoza={setDijagnoza} />
-
-            {recepti.map((recept, index) => (
-              <PrescriptionCard
-                key={index}
-                recept={recept}
-                index={index}
-                recepti={recepti}
-                setRecepti={setRecepti}
-                indikLijek={indikLijek}
-                indikacije={indikacije}
-                lijekNormativ={lijekNormativ}
+            <Form>
+              <PatientInfo
+                patientInfo={patientInfo}
+                setPatientInfo={setPatientInfo}
+                pacijenti={pacijenti}
+                gradovi={gradovi}
               />
-            ))}
+              <DiagnosisBlock onChangeDijagnoza={setDijagnoza} />
 
-            <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
-            <FileUpload setFiles={setFiles} />
+              {recepti.map((recept, index) => (
+                <PrescriptionCard
+                  key={index}
+                  recept={recept}
+                  index={index}
+                  recepti={recepti}
+                  setRecepti={setRecepti}
+                  indikLijek={indikLijek}
+                  indikacije={indikacije}
+                  lijekNormativ={lijekNormativ}
+                />
+              ))}
 
-            <Button className="mt-4" variant="primary" onClick={handleSubmit}>
-              Snimi zahtjev
-            </Button>
-          </Form>
+              <AddPrescriptionButton
+                setRecepti={setRecepti}
+                recepti={recepti}
+              />
+              <FileUpload setFiles={setFiles} />
+
+              <Button className="mt-4" variant="primary" onClick={handleSubmit}>
+                Snimi zahtjev
+              </Button>
+            </Form>
+          </div>
         </div>
       </div>
     </>
