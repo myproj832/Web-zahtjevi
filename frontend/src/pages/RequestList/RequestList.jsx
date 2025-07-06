@@ -24,9 +24,9 @@ function RequestList() {
 
 function getInitialDates() {
   const now = new Date();
-  // First day of last month
+  // Prvi dan proslog mjeseca
   const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 2);
-  // Last day of current month
+  // Zadnji dan tekuceg mjeseca
   const lastDayCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
   const toISO = (d) => d.toISOString().slice(0, 10);
@@ -83,10 +83,17 @@ const [filters, setFilters] = useState({
     );
   });
 
-  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+  // poredjaj filtrirane zahtjeve po datumu prijema silazno (najnoviji prvi)
+  const sortedRequests = [...filteredRequests].sort((a, b) => {
+    const dateA = parseDateDDMMYYYY(a.dat_prijema);
+    const dateB = parseDateDDMMYYYY(b.dat_prijema);
+    return dateB - dateA;
+  });
+
+  const totalPages = Math.ceil(sortedRequests.length / requestsPerPage);
   const indexOfLastRequest = currentPage * requestsPerPage;
   const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-  const currentRequests = filteredRequests.slice(
+  const currentRequests = sortedRequests.slice(
     indexOfFirstRequest,
     indexOfLastRequest
   );

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 function ActionButtons({ selectedRequest, handleDelete }) {
   const navigate = useNavigate();
+  const canDelete = selectedRequest && selectedRequest.status === 0;
 
   return (
     <div className="d-none d-md-block">
@@ -24,6 +25,7 @@ function ActionButtons({ selectedRequest, handleDelete }) {
         <button
           className="btn btn-sm btn-outline-danger btn-light btn-30"
           onClick={() => handleDelete(selectedRequest.id)}
+          disabled={!canDelete}
         >
           Obrisi&nbsp;🗑︎
         </button>

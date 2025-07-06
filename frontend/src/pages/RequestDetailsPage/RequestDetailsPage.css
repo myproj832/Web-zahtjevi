@@ -1,29 +1,36 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .background {
   background: linear-gradient(45deg, #e3ffe7 0%, #d9e7ff 100%);
   min-height: 100vh;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .details-main-card {
-  background-color: #fff;
+  background-color: #ffffff89;
   border-radius: 1.2rem;
-  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
+  box-shadow: 0 2px 12px rgba(72, 85, 94, 0.444);
   padding: 1.5rem 1.5rem 2rem 1.5rem;
   max-width: 980px;
   margin: 1rem auto 1.5rem auto;
-  border: 1.5px solid #e3ffe7;
+  border: 1.5px solid #c3c7c3;
 }
 
 .details-title {
   color: #3a5a7a;
   font-weight: 700;
-  font-size: 2rem;
+  font-size: 1.5rem;
   letter-spacing: -0.5px;
   text-align: center;
-  background: #e3ffe7;
+  background: #b1d9e0b2;
   border-radius: 1.2rem;
-  padding: 0.6rem 0;
-  margin-bottom: 2rem;
+  padding: 0.4rem 0;
+  margin-bottom: 1rem;
   box-shadow: 0 1px 4px #e3ffe755;
 }
 
@@ -31,8 +38,8 @@
   background-color: #f7fbff;
   border-color: #e3ffe7;
   border-radius: 1.2rem;
-  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
-  border: 1px solid #e3ffe7;
+  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.1);
+  border: 1px solid #babfba;
 }
 
 .details-section-title {
@@ -54,10 +61,10 @@
 .details-rp-title {
   color: #3a5a7a;
   font-weight: 600;
-  font-size: 1.15rem;
-  margin: 2rem 0 1rem 0;
+  font-size: 1.1rem;
+  margin: 1.2rem 0 1rem 0;
   text-align: center;
-  background: #e3ffe7;
+  background: #b1d9e0b2;
   border-radius: 1.2rem;
   padding: 0.5rem 0;
   box-shadow: 0 1px 4px #e3ffe755;
@@ -67,9 +74,9 @@
   background-color: #f7fbff;
   border-color: #e3ffe7;
   border-radius: 1.2rem;
-  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.10);
+  box-shadow: 0 2px 12px rgba(137, 176, 204, 0.1);
   min-height: 100%;
-  border: 1px solid #e3ffe7;
+  border: 1px solid #babfba;
 }
 
 .details-rp-card-title {
@@ -85,11 +92,11 @@
 .details-rp-obrazac {
   white-space: pre-wrap;
   background-color: #f0f7fa;
-  padding: 0.7rem;
+  padding: 0.5rem;
   border-radius: 0.7rem;
   font-size: 0.97rem;
-  margin-top: 0.5rem;
-  box-shadow: 0 1px 4px #e3ffe755;
+  margin-top: 0.2rem;
+  box-shadow: 0 1px 4px #babfba;
 }
 
 .details-no-rp {
@@ -112,5 +119,35 @@
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.print-modal .modal-content {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .print-modal .modal-content, .print-modal .modal-content * {
+    visibility: visible !important;
+  }
+  .print-modal .modal-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    min-height: 100vh;
+    background: #fff;
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  .print-modal .modal-footer {
+    display: none !important;
+  }
 }

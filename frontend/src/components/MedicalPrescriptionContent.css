@@ -1,0 +1,111 @@
+.medical-prescription-card {
+  width: 400px;
+  padding: 1rem;
+  margin: 20px auto;
+  border: 1px solid #000;
+  font-family: 'Calibri', sans-serif;
+  font-size: 11px;
+  background-color: #fff;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.medical-section {
+  background-color: #e8f4d8;
+  border: 1px solid #999;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 8px;
+  min-height: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  font-weight: bold;
+  margin: 0;
+  text-align: left;
+}
+
+.medical-input-line {
+  background-color: #fff;
+  border: 1px solid #999;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  height: 20px;
+  margin: 0;
+}
+
+.medical-checkbox-row {
+  background-color: #fff;
+  border: 1px solid #999;
+  border-top: none;
+  border-bottom: 1px solid #999;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: 25px;
+}
+
+.medical-rp-section {
+  background-color: #e8f4d8;
+  border: 1px solid #999;
+  border-top: none;
+  border-bottom: 1px solid #999;
+  padding: 15px 8px;
+  min-height: 200px;
+  position: relative;
+}
+
+.medical-bottom-section {
+  background-color: #e8f4d8;
+  border: 1px solid #999;
+  border-top: none;
+  border-bottom: 1px solid #999;
+  padding: 8px;
+  min-height: 120px;
+  font-weight: bold;
+}
+
+.medical-final-section {
+  background-color: #e8f4d8;
+  border: 1px solid #999;
+  border-top: none;
+  border-bottom: 1px solid #999;
+  padding: 6px 8px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  text-align: left;
+}
+
+.medical-small-text {
+  font-size: 9px;
+  font-style: italic;
+  font-weight: normal;
+  color: #666;
+}
+
+.medical-square {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #000;
+  margin-right: 6px;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.medical-section-with-line {
+  border: 1px solid #999;
+  border-bottom: 1px solid #999;
+  margin: 0;
+}
+
+.medical-bottom-cell {
+  border: 1px solid #999;
+  padding: 6px;
+  min-height: 45px;
+  display: flex;
+  flex-direction: column;
+}

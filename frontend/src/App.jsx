@@ -18,7 +18,6 @@ import SessionMessages from './components/Messages/SessionMessage.jsx';
 import Dashboard           from './pages/Dashboard/Dashboard.jsx';
 import RequestList         from './pages/RequestList/RequestList.jsx';
 import RequestForm         from './pages/RequestForm/RequestForm.jsx';
-import MedicalPrescription from './pages/MedicalPrescription/MedicalPrescription.jsx';
 import RequestDetailsPage from './pages/RequestDetailsPage/RequestDetailsPage.jsx';
 
 /* ───────  ADMIN stranice  ─────── */
@@ -105,7 +104,6 @@ function App() {
         />
 
         <Route path="/form"     element={requireLogin(RequestForm)} />
-        <Route path="/med"      element={requireLogin(MedicalPrescription)} />
         <Route path="/details/:id" element={requireLogin(RequestDetailsPage)} />
         
         {/* Ako je admin, preusmjeri /requests na admin verziju liste */}
