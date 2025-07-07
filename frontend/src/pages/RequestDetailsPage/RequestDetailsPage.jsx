@@ -1,6 +1,7 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Modal } from "react-bootstrap";
+import Barcode from "react-barcode";
 import Header from "../../components/Header";
 import MedicalPrescriptionContent from "../../components/MedicalPrescriptionContent";
 import "./RequestDetailsPage.css";
@@ -68,9 +69,19 @@ function DetailsPage() {
       </div>
       <Card className="details-main-card">
         <Card.Body>
-          <Card.Title as="h1" className="details-title">
-            Detalji zahtjeva #{id_zah}
+          <Card.Title
+            as="h1"
+            className="px-4 details-title flex-row justify-content-between"
+          >
+            Detalji zahtjeva
+            <Card.Subtitle className="items-right">
+              <div className="mb-1">
+                ID zahtjeva #<strong>{id_zah}</strong>
+              </div>
+              <div>Datum zahtjeva: {dat_prijema || "Nije uneto"}</div>
+            </Card.Subtitle>
           </Card.Title>
+
           <Row xs={1} md={2} lg={2} className="g-3">
             <Col>
               <Card className="details-section-card mb-2">
@@ -93,6 +104,19 @@ function DetailsPage() {
                   </ul>
                 </Card.Body>
               </Card>
+              <Card className="details-section-card mb-2 mt-2 pt-1 align-items-center">
+                {barcode ? (
+                  <Barcode
+                    value={barcode}
+                    width={2}
+                    height={45}
+                    fontSize={16}
+                    background="transparent"
+                  />
+                ) : (
+                  "—"
+                )}
+              </Card>
             </Col>
 
             <Col>
@@ -103,31 +127,26 @@ function DetailsPage() {
                   </Card.Title>
                   <ul className="details-list">
                     <li className="details-list-item">
-                      <strong>Barcode:</strong> {barcode}
+                      <strong>Izdavanje recepta (ljekar):</strong>{" "}
+                      {izdao_recept_lj}
                     </li>
                     <li className="details-list-item">
-                      <strong>Datum prijema:</strong>{" "}
-                      {dat_prijema || "Nije uneto"}
-                    </li>
-                    <li className="details-list-item">
-                      <strong>Datum isporuke:</strong>{" "}
-                      {dat_isporuke || "Nije uneto"}
-                    </li>
-                    <li className="details-list-item">
-                      <strong>Isporuka mg:</strong> {isporuka_mg}
-                    </li>
-                    <li className="details-list-item">
-                      <strong>Izdao recept (ljekar):</strong> {izdao_recept_lj}{" "}
+                      <strong>Izdavanje recepta (ustanova):</strong>{" "}
                       {izdao_recept_u}
                     </li>
                     <li className="details-list-item">
-                      <strong>Napomena prijem:</strong>{" "}
-                      {napomena_prijem || "Nema"}
+                      <strong>Isporuka - željeni grad:</strong> /
                     </li>
                     <li className="details-list-item">
-                      <strong>Napomena isporuka:</strong>{" "}
-                      {napomena_isporuka || "Nema"}
+                      <strong>Isporuka - apoteka:</strong> {isporuka_mg}
                     </li>
+                    <li className="details-list-item">
+                      <strong>Isporuka - datum:</strong>{" "}
+                      {dat_isporuke || "Nije uneto"}
+                    </li>
+                    {/* <li className="details-list-item">
+                      <strong>Isporuka - farmaceut:</strong> -
+                    </li> */}
                   </ul>
                 </Card.Body>
               </Card>
@@ -142,18 +161,25 @@ function DetailsPage() {
                   <Card className="details-rp-card h-100 d-flex flex-column">
                     <Card.Body className="d-flex flex-column">
                       <Card.Title className="details-rp-card-title">
-                        {item.naziv || `Recept ID: ${item.id_det}`}
+                        {item.naziv || `Blanko recept - ID: ${item.id_det}`}
                       </Card.Title>
                       <Card.Text className="details-rp-card-text">
-                        <strong>ID det:</strong> {item.id_det} <br />
                         <strong>ID art:</strong> {item.id_art || "-"} <br />
-                        <strong>Tip RP:</strong> {item.tip_rp} <br />
-                        <strong>Vrsta RP:</strong> {item.vrsta_rp} <br />
+                        <strong>Tip RP:</strong>{" "}
+                        {item.tip_rp === "OB"
+                          ? "Obrazac lijeka"
+                          : "Blanko obrazac"}{" "}
+                        <br />
+                        <strong>Vrsta RP:</strong>{" "}
+                        {item.vrsta_rp === "NO" ? "Neobnovljiv" : "Obnovljiv"}{" "}
+                        <br />
                         <strong>Količina:</strong> {item.kol} <br />
                         <strong>Broj mjeseci:</strong> {item.br_mjeseci || "-"}{" "}
                         <br />
                         <strong>Broj ponavljanja:</strong>{" "}
                         {item.br_ponavljanja || "-"} <br />
+                        <br></br>
+                        Normativi:
                       </Card.Text>
                       <Card.Text className="details-rp-obrazac">
                         {item.rp_obrazac}
@@ -191,6 +217,16 @@ function DetailsPage() {
             <p className="details-no-rp">Nema recepta za ovaj zahtjev.</p>
           )}
         </Card.Body>
+        <Card className="px-2 pt-1 my-2">
+          <div className="details-list-item">
+            Napomena prijem: {napomena_prijem === "null" ? "" : napomena_prijem || "Nema"}
+          </div>
+        </Card>
+        <Card className="px-2 pt-1">
+          <div className="details-list-item">
+            Napomena isporuka: {napomena_isporuka === "null" ? "" : napomena_isporuka || "Nema"}
+          </div>
+        </Card>
       </Card>
       <Modal
         show={printModal.show}

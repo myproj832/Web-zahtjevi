@@ -17,7 +17,8 @@ function ActionButtons({ selectedRequest, handleDelete }) {
 
         <button
           className="btn btn-sm btn-outline-warning btn-light btn-30"
-          onClick={() => alert("Izmijeni zahtjev")}
+          onClick={() => navigate(`/edit/${selectedRequest.id_zah}`)}
+          disabled={!selectedRequest}
         >
           Izmjeni&nbsp;🖉
         </button>

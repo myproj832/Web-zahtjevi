@@ -12,7 +12,7 @@ function RequestTable({
       <Table bordered hover responsive className="bg-white shadow-sm">
         <thead>
           <tr>
-            <th>Datum recepta</th>
+            <th>ID zahtjeva / Datum recepta</th>
             {/* <th>Datum izdavanja</th> */}
             <th>Pacijent / Telefon</th>
             <th>Magistralni lijek</th>
@@ -43,7 +43,7 @@ function RequestTable({
               onClick={() => setSelectedRowId(request.id_zah)}
               style={{ cursor: "pointer" }}
             >
-              <td>{request.dat_prijema}</td>
+              <td><strong>{request.id_zah}</strong> <br></br>{request.dat_prijema}</td>
               {/* <td>{request.rp?.[0]?.dat_izdavanja || "—"}</td> */}
               <td>
                 <div className="text-capitalize">
@@ -54,7 +54,7 @@ function RequestTable({
               <td>
                 {request.rp?.map((rp, idx) => (
                   <div key={idx} className="mb-2">
-                    <strong>Tip:</strong> {rp.tip_rp} <br />
+                    <strong>Tip:</strong> {rp.tip_rp === "OB" ? "Obrazac lijeka" : "Blanko obrazac"} <br />
                     {rp.naziv !== "null" && <div>{rp.naziv}</div>}
                     <div
                       className="p-1 rounded"
@@ -77,7 +77,7 @@ function RequestTable({
                 </div>
               </td>
               {/* <td>{request.napomena_prijem || "—"}</td> */}
-              <td>{request.dat_isporuke || "—"}</td>
+              <td>{request.isporuka_mg} <br></br> <strong>{request.dat_isporuke || "—"}</strong></td>
               <td>{request.napomena_isporuka || "—"}</td>
               <td>
                 {request.barcode ? (

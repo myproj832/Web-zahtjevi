@@ -60,6 +60,10 @@ const [filters, setFilters] = useState({
     return new Date(year, month - 1, day);
   };
 
+  // Lista svih ustanova iz zahtjeva
+  // Koristi Set da ukloni duplikate
+  const allUstanove = Array.from(new Set(requests.map(r => r.izdao_recept_u).filter(Boolean)));
+
   const filteredRequests = requests.filter((r) => {
     const datum = parseDateDDMMYYYY(r.dat_prijema);
     const od = filters.datumOd ? parseDateFromInput(filters.datumOd) : null;
@@ -79,7 +83,8 @@ const [filters, setFilters] = useState({
       combinedLijek.includes(filters.lijek.toLowerCase()) &&
       (!filters.status ||
         r.status.toString().toLowerCase() === filters.status.toLowerCase()) &&
-      (!filters.rola || rola.toLowerCase() === filters.rola.toLowerCase())
+      (!filters.rola || rola.toLowerCase() === filters.rola.toLowerCase()) &&
+      (!filters.ustanova || r.izdao_recept_u === filters.ustanova)
     );
   });
 
@@ -181,6 +186,8 @@ const [filters, setFilters] = useState({
           filters={filters}
           handleFilterChange={handleFilterChange}
           isAdmin={isAdmin}
+          rola={rola}
+          listaUstanova={allUstanove}
         />
 
         {!showRequests && (

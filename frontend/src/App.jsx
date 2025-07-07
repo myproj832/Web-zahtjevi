@@ -19,6 +19,7 @@ import Dashboard           from './pages/Dashboard/Dashboard.jsx';
 import RequestList         from './pages/RequestList/RequestList.jsx';
 import RequestForm         from './pages/RequestForm/RequestForm.jsx';
 import RequestDetailsPage from './pages/RequestDetailsPage/RequestDetailsPage.jsx';
+import EditRequest         from './pages/EditRequest/EditRequest.jsx';
 
 /* ───────  ADMIN stranice  ─────── */
 import { AdminLayout } from './layouts/AdminLayout.jsx';
@@ -105,7 +106,7 @@ function App() {
 
         <Route path="/form"     element={requireLogin(RequestForm)} />
         <Route path="/details/:id" element={requireLogin(RequestDetailsPage)} />
-        
+        <Route path="/edit/:id" element={requireLogin(EditRequest)} />
         {/* Ako je admin, preusmjeri /requests na admin verziju liste */}
         <Route
           path="/requests"

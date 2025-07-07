@@ -1,4 +1,4 @@
-function FilterForm({ filters, handleFilterChange, isAdmin }) {
+function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova }) {
   return (
     <div className="row g-2 mb-4">
       <div className="col-md-2 m-0">
@@ -44,6 +44,20 @@ function FilterForm({ filters, handleFilterChange, isAdmin }) {
         />
       </div>
       <div className="col-md-2 m-0">
+        <label>Ustanova:</label>
+        <select
+          className="form-control"
+          name="ustanova"
+          value={filters.ustanova || ""}
+          onChange={handleFilterChange}
+        >
+          <option value="">Sve ustanove</option>
+          {listaUstanova && listaUstanova.map((u, idx) => (
+            <option key={idx} value={u}>{u}</option>
+          ))}
+        </select>
+      </div>
+      <div className="col-md-2 m-0">
         <label>Status:</label>
         <select
           className="form-control"
@@ -62,22 +76,22 @@ function FilterForm({ filters, handleFilterChange, isAdmin }) {
         </select>
       </div>
 
-      <div className="col-md-2 m-0">
-        <label>Rola:</label>
-        <select
-          disabled={!isAdmin}
-          className="form-control"
-          name="Rola"
-          value={filters.rola}
-          onChange={handleFilterChange}
-        >
-          {/* <option value="">Rola</option> */}
-          <option value="Ljekar">Ljekar</option>
-          <option value="Apotekar">Apotekar</option>
-          <option value="Admin">Admin</option>
-          <option value="Ustanova">Ustanova</option>
-        </select>
-      </div>
+      {isAdmin ? (
+        <div className="col-md-2 m-0">
+          <label>Rola:</label>
+          <select
+            className="form-control"
+            name="Rola"
+            value={filters.rola || rola || ""}
+            onChange={handleFilterChange}
+          >
+            <option value="Ljekar">Ljekar</option>
+            <option value="Apotekar">Apotekar</option>
+            <option value="Admin">Admin</option>
+            <option value="Ustanova">Ustanova</option>
+          </select>
+        </div>
+      ) : null}
     </div>
   );
 }
