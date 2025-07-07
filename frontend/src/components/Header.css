@@ -1,83 +1,4 @@
-/* 
-.header-page {
-  background: #ecfeff !important;
-  
- 
-  border-radius: 0 0 3px 3px;
-  padding: 1rem;
-}
 
-.header-institution,
-.header-user {
-    display: inline-flex;
-    align-items: center;            
-  padding: 0.30rem 0.8rem;          
-  border-radius: 0.35rem;           
-  color: #fff;
-   background: linear-gradient(
-    90deg,
-    rgba(36, 93, 131, 0.6) 0%,
-    rgba(37, 180, 180, 0.9) 50%,
-    rgba(65, 124, 163, 0.6) 100%
-  );
-   box-shadow:
-   
-    0 30px 60px -15px rgba(0, 0, 0.25, 0.25),
-    
-    0 6px 8px -3px rgba(0, 0, 0.25, 0.12); 
-  color: #fff;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-}
-
-.header-institution {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.header-user {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  font-weight: 500;
-}
-
-.header-icon {
-  
-  width: 1.8rem;
-  height: 1.8rem;
-  object-fit: cover;
-  margin-right: 0.5rem;
-  border-radius: 50%;
- 
-  color: #205375;
-}
-
-.btn-logout {
-  margin-left: 1rem;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid #205375;
-  background: var(--gradient-primary-button);
-  color: #f4f6fa ;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  transition: background 0.2s, color 0.2s;
-}
-
-.btn-logout:hover {
-  background: #c7d6f3;
-  color: var(--color-royal-hyacinth);
-  border: 1px solid #205375;
-}
-@media (max-width: 576px) {
-  .header {
-    padding: 10px 24px;
-  }
-  .header-institution,
-  .header-user {
-    font-size: 0.85rem;
-    margin: 0 0.25rem;
-  }
-} */
 .header-page {
   background: #b1d9e0;
   border-radius: 0 0 3px 3px;
@@ -85,21 +6,31 @@
   padding: 0.5rem;
 }
 
+
+
+.institution-top,
+.institution-details,
+.user-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+
 .header-institution-block {
   display: flex;
   flex-direction: column;
-  align-items: center;
+   align-items: flex-start;
 }
 .institution-name {
   font-size: 1rem;
   font-weight: 700;
-  margin-left: 0.5rem;
+ margin-left: 1rem;
   text-transform: uppercase;
 }
 .institution-details {
   font-size: 0.85rem;
   color: #333;
-  margin-left: 28px;
+  margin-left: 1rem;
 }
 .institution-details span {
   display: block;
@@ -108,19 +39,19 @@
 .header-user-block {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start !important;
   
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
 }
 .user-name {
   font-size: 1rem;
   font-weight: 500;
-  margin-left: 0.5rem;
+  margin-left: 1rem;
 }
 .user-specialization {
   font-size: 0.85rem;
  margin-left: 2rem;
- 
+ margin-left: 1rem;
   color: #555;
   text-transform: capitalize;
 }

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Card, Form, Row, Col } from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
+import { IMaskInput } from "react-imask";
 import "react-phone-input-2/lib/style.css";
 
 function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
@@ -12,6 +13,20 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
   const lastNameRef = useRef(null);
   const birthDateRef = useRef(null);
   const cityRef = useRef(null);
+
+   const handleBlur = (e) => {
+    // kad korisnik “izleti” iz polja, dodatno formatiramo vrijednost
+    const digits = e.target.value.replace(/\D/g, "");
+    if (digits.length === 8) {
+      const day = digits.slice(0, 2);
+      const month = digits.slice(2, 4);
+      const year = digits.slice(4, 8);
+      handleChange("birthDate", `${day}.${month}.${year}`);
+    } else {
+      // opcionalno: možete obrisati neispravan unos
+      handleChange("birthDate", "");
+    }
+  };
 
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef?.current) {
@@ -131,15 +146,18 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
           Datum rođenja<span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Col sm={9}>
-          <Form.Control
-            ref={birthDateRef}
-            className="p-1"
-            type="text"
-            value={patientInfo.birthDate}
-            onChange={(e) => handleChange("birthDate", e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, cityRef)}
-          />
-        </Col>
+          <IMaskInput
+    mask="00.00.0000"
+    unmask={false}
+    placeholder="dd.mm.yyyy"
+    value={patientInfo.birthDate}
+    onAccept={(val) => handleChange("birthDate", val)}
+    onBlur={handleBlur}
+    onKeyDown={(e) => handleKeyDown(e, cityRef)}
+    inputRef={birthDateRef}
+    className="form-control p-1"
+  />
+</Col>
       </Form.Group>
 
       {/* Grad */}

@@ -813,6 +813,7 @@
 
 .footer-bottom {
   background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
 }
 
 .footer-bottom-row {
@@ -826,6 +827,7 @@
 .footer-copyright {
   color: #adb5bd;
   font-size: 0.9rem;
+  padding: 0 18px;
 }
 
 .footer-copyright strong {
@@ -836,6 +838,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  padding: 0 18px;
 }
 
 .footer-link {

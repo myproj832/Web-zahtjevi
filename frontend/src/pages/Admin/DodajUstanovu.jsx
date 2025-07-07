@@ -294,6 +294,7 @@ const DodajUstanovu = () => {
                             country={'me'}
                             value={formData.brojTelefonaPoslovnice}
                             onChange={(value) => handleInputChange('brojTelefonaPoslovnice', value)}
+                             masks={{ me: '.. ... ...' }}
                             inputClass={`phone-input-field ${errors.brojTelefonaPoslovnice ? 'is-invalid' : ''}`}
                             buttonClass="phone-button"
                             containerClass="phone-container"

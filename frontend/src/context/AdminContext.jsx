@@ -66,6 +66,7 @@ export const AdminProvider = ({ children }) => {
 
   // Load reference data on mount
   useEffect(() => {
+     if (!tokenApp || !tokenUser) return; 
     fetchKomitenti().catch(console.error);
     fetchUstanove().catch(console.error);
   }, [tokenApp, tokenUser]);

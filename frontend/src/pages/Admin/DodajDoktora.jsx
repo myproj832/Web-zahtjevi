@@ -266,7 +266,7 @@ const DodajDoktora = () => {
                                   className="btn btn-sm remove-button"
                                   onClick={() => handleUstanovaRemove(id)}
                                 >
-                                        
+                                    &times;      
                                 </button>
                               </div>
                             );
