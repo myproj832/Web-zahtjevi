@@ -160,7 +160,7 @@ export const DataProvider = ({ children }) => {
 
   //   fetchAll();
   // }, [tokenApp, korisnickoIme, tokenUser]);
-   const fetchGradovi = async () => {
+  const fetchGradovi = async () => {
     if (!tokenApp || !korisnickoIme || !tokenUser) return;
     try {
       const res = await fetch("http://62.4.59.86:3334/api/gradovi", {
@@ -255,6 +255,33 @@ export const DataProvider = ({ children }) => {
     fetchByRole();
   }, [tokenApp, korisnickoIme, tokenUser, rola]);
 
+  // Funkcija za refresh liste zahtjeva
+  const refreshListaZahtjeva = async () => {
+    try {
+      const resLista = await fetch(
+        "http://62.4.59.86:3334/api/lista_zahtjeva",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token_app: tokenApp,
+            in_auten: {
+              KORISNIK: korisnickoIme,
+              LOZINKA: tokenUser,
+            },
+          }),
+        }
+      );
+      const listaJson = await resLista.json();
+      setListaZahtjeva(listaJson);
+      console.log("✅ Lista zahtjeva refreshovana:", listaJson);
+    } catch (error) {
+      console.error("❌ Greška pri refreshu liste zahtjeva:", error);
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -265,12 +292,14 @@ export const DataProvider = ({ children }) => {
         indikLijek,
         lijekNormativ,
         listaZahtjeva,
-         fetchGradovi,
+        fetchGradovi,
         fetchPacijenti,
         fetchNormativi,
         fetchListaZahtjeva,
         submitZahtjev,
         loading,
+        setListaZahtjeva,
+        refreshListaZahtjeva,
       }}
     >
       {children}

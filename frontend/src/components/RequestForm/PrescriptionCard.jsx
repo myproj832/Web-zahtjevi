@@ -1,4 +1,6 @@
 import { Card, Form, Button, Row, Col } from "react-bootstrap";
+import { useContext } from "react";
+import { ValidationContext } from "../../context/ValidationContext";
 
 function PrescriptionCard({
   recept,
@@ -9,6 +11,15 @@ function PrescriptionCard({
   indikLijek,
   lijekNormativ,
 }) {
+  const allowedSigns = useContext(ValidationContext);
+  const handleBeforeInput = (e) => {
+    const char = e.data;
+    if (!char || !allowedSigns) return;
+    if (!allowedSigns.includes(char)) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Card
       className="pt-2 pb-3 px-4 mb-2 mt-3"
@@ -20,8 +31,6 @@ function PrescriptionCard({
     >
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-1 d-flex justify-content-between w-25">
-          {/* <span className="fs-3 mb-3">*RP/</span> */}
-          {/* <span>#{index + 1}</span> */}
         </h5>
         {recepti.length > 1 && (
           <Button
@@ -47,8 +56,22 @@ function PrescriptionCard({
         checked={recept.tipRecepta === "obrazac"}
         onChange={() => {
           const novi = [...recepti];
-          novi[index].tipRecepta = "obrazac";
-          novi[index].tekstRecepta = "";
+          novi[index] = {
+            ...novi[index],
+            tipRecepta: "obrazac",
+            tekstRecepta: "",
+            grupa: "",
+            obrazac: "",
+            odabraniObrazac: null,
+            odabrani: null,
+            kolicina: "",
+            brojPonavljanja: "",
+            vremenskiPeriod: "",
+            napomena: "",
+            vrstaRecepta: "neobn",
+            manualChange: false,
+            tekstObrasca: "",
+          };
           setRecepti(novi);
         }}
       />
@@ -59,10 +82,22 @@ function PrescriptionCard({
         checked={recept.tipRecepta === "blanko"}
         onChange={() => {
           const novi = [...recepti];
-          novi[index].tipRecepta = "blanko";
-          novi[index].grupa = "";
-          novi[index].obrazac = "";
-          novi[index].odabraniObrazac = null;
+          novi[index] = {
+            ...novi[index],
+            tipRecepta: "blanko",
+            grupa: "",
+            obrazac: "",
+            odabraniObrazac: null,
+            odabrani: null,
+            tekstObrasca: "",
+            tekstRecepta: "",
+            kolicina: "",
+            brojPonavljanja: "",
+            vremenskiPeriod: "",
+            napomena: "",
+            vrstaRecepta: "neobn",
+            manualChange: false,
+          };
           setRecepti(novi);
         }}
       />
@@ -83,6 +118,7 @@ function PrescriptionCard({
               novi[index].tekstRecepta = e.target.value;
               setRecepti(novi);
             }}
+            onBeforeInput={handleBeforeInput}
           />
         </Form.Group>
       )}
@@ -169,6 +205,14 @@ function PrescriptionCard({
                         novi[index].odabraniObrazac = odabrani || null;
                         novi[index].odabrani = odabrani || null; // <-- dodano za r_art_id i r_art_naziv
 
+                        // Resetuj polja ispod kada se promijeni magistralni lijek
+                        novi[index].kolicina = "";
+                        novi[index].brojPonavljanja = "";
+                        novi[index].vremenskiPeriod = "";
+                        novi[index].napomena = "";
+                        novi[index].vrstaRecepta = "neobn";
+                        novi[index].manualChange = false;
+
                         if (odabrani) {
                           const normativi = odabrani.lijek_normativ
                             .map((n) => n.normativ_name)
@@ -242,6 +286,7 @@ function PrescriptionCard({
                         novi[index].manualChange = true;
                         setRecepti(novi);
                       }}
+                      onBeforeInput={handleBeforeInput}
                     />
                   </Form.Group>
                 </>
@@ -305,7 +350,8 @@ function PrescriptionCard({
                           setRecepti(novi);
                         }}
                         className="py-0"
-                        style={{ width: "50px" }} // ili koliko ti odgovara
+                        style={{ width: "50px" }}
+                        onBeforeInput={handleBeforeInput}
                       />
                     </Form.Group>
                   </Col>
@@ -317,11 +363,11 @@ function PrescriptionCard({
             {recept.vrstaRecepta === "obn" && (
               <>
                 <Row style={{ color: "transparent" }}>nesto</Row>
-                <Row className="pt-2">
-                  <Col md={3}>
-                    <Form.Group className="d-flex align-items-center gap-2">
+                <Row className="pt-1 gap-0 align-items-center" style={{ marginBottom: '-10px' }}>
+                  <Col md={3} className="px-1">
+                    <Form.Group className="d-flex align-items-center gap-0 mb-0">
                       <Form.Label
-                        style={{ width: "60px", textTransform: "none" }}
+                        style={{ width: "60px", textTransform: "none", marginBottom: 0 }}
                         className="py-0 my-0"
                       >
                         Količina
@@ -335,20 +381,21 @@ function PrescriptionCard({
                           setRecepti(novi);
                         }}
                         className="py-0"
-                        style={{ width: "50px" }}
+                        style={{ width: "50px", minWidth: "50px" }}
+                        onBeforeInput={handleBeforeInput}
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={5}>
-                    <Form.Group className="d-flex align-items-center gap-2">
+                  <Col md={4} className="px-1">
+                    <Form.Group className="d-flex align-items-center gap-0 mb-0">
                       <Form.Label
-                        style={{ width: "120px", textTransform: "none" }}
+                        style={{ width: "110px", textTransform: "none", marginBottom: 0 }}
                         className="py-0 my-0"
                       >
                         Broj ponavljanja
                       </Form.Label>
                       <Form.Control
-                        type="number"
+                        type="text"
                         value={recept.brojPonavljanja}
                         onChange={(e) => {
                           const novi = [...recepti];
@@ -356,20 +403,21 @@ function PrescriptionCard({
                           setRecepti(novi);
                         }}
                         className="py-0"
-                        style={{ width: "50px" }}
+                        style={{ width: "50px", minWidth: "50px" }}
+                        onBeforeInput={handleBeforeInput}
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={4}>
-                    <Form.Group className="d-flex align-items-center gap-2">
+                  <Col md={5} className="px-1">
+                    <Form.Group className="d-flex align-items-center gap-0 mb-0">
                       <Form.Label
-                        style={{ width: "140px", textTransform: "none" }}
+                        style={{ width: "120px", textTransform: "none", marginBottom: 0 }}
                         className="py-0 my-0"
                       >
-                        Period liječenja
+                        Period liječenja(mjeseci)
                       </Form.Label>
                       <Form.Control
-                        type="number"
+                        type="text"
                         value={recept.vremenskiPeriod}
                         onChange={(e) => {
                           const novi = [...recepti];
@@ -377,7 +425,8 @@ function PrescriptionCard({
                           setRecepti(novi);
                         }}
                         className="py-0"
-                        style={{ width: "50px" }}
+                        style={{ width: "50px", minWidth: "50px" }}
+                        onBeforeInput={handleBeforeInput}
                       />
                     </Form.Group>
                   </Col>
@@ -403,6 +452,7 @@ function PrescriptionCard({
             novi[index].napomena = e.target.value;
             setRecepti(novi);
           }}
+          onBeforeInput={handleBeforeInput}
         />
       </Form.Group>
     </Card>

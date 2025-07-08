@@ -54,6 +54,7 @@ function DetailsPage() {
     pacijent_ime,
     pacijent_prezime,
     rp,
+    p_grad, // <-- dodato
   } = requestData;
 
   return (
@@ -135,7 +136,7 @@ function DetailsPage() {
                       {izdao_recept_u}
                     </li>
                     <li className="details-list-item">
-                      <strong>Isporuka - željeni grad:</strong> /
+                      <strong>Isporuka - željeni grad:</strong> {p_grad || "/"}
                     </li>
                     <li className="details-list-item">
                       <strong>Isporuka - apoteka:</strong> {isporuka_mg}
@@ -161,7 +162,7 @@ function DetailsPage() {
                   <Card className="details-rp-card h-100 d-flex flex-column">
                     <Card.Body className="d-flex flex-column">
                       <Card.Title className="details-rp-card-title">
-                        {item.naziv || `Blanko recept - ID: ${item.id_det}`}
+                        {item.naziv === "null" || item.naziv == null || item.naziv === "" ? "Blanko recept" : item.naziv}
                       </Card.Title>
                       <Card.Text className="details-rp-card-text">
                         <strong>ID art:</strong> {item.id_art || "-"} <br />
@@ -182,8 +183,18 @@ function DetailsPage() {
                         Normativi:
                       </Card.Text>
                       <Card.Text className="details-rp-obrazac">
-                        {item.rp_obrazac}
+                        {item.rp_obrazac === "null" || item.rp_obrazac == null || item.rp_obrazac === ""
+                          ? item.rp_blanko || "Blanko recept"
+                          : item.rp_obrazac}
                       </Card.Text>
+                      {item.r_napomena && item.r_napomena !== "null" && (
+                        <>
+                          <div>Napomena:</div>
+                          <Card.Text className="details-rp-obrazac">
+                            {item.r_napomena}
+                          </Card.Text>{" "}
+                        </>
+                      )}
                       <div className="details-stampa-btn-wrap mt-auto">
                         <Button
                           variant="outline-secondary"
@@ -219,12 +230,14 @@ function DetailsPage() {
         </Card.Body>
         <Card className="px-2 pt-1 my-2">
           <div className="details-list-item">
-            Napomena prijem: {napomena_prijem === "null" ? "" : napomena_prijem || "Nema"}
+            Napomena prijem:{" "}
+            {napomena_prijem === "null" ? "" : napomena_prijem || "Nema"}
           </div>
         </Card>
         <Card className="px-2 pt-1">
           <div className="details-list-item">
-            Napomena isporuka: {napomena_isporuka === "null" ? "" : napomena_isporuka || "Nema"}
+            Napomena isporuka:{" "}
+            {napomena_isporuka === "null" ? "" : napomena_isporuka || "Nema"}
           </div>
         </Card>
       </Card>

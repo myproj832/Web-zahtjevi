@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "react-bootstrap";
 
@@ -16,34 +16,34 @@ import "./RequestList.css";
 function RequestList() {
   const navigate = useNavigate();
   const { rola } = useAuth();
-  const { listaZahtjeva } = useDataContext();
+  const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
 
   const [showRequests, setShowRequests] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-function getInitialDates() {
-  const now = new Date();
-  // Prvi dan proslog mjeseca
-  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 2);
-  // Zadnji dan tekuceg mjeseca
-  const lastDayCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  function getInitialDates() {
+    const now = new Date();
+    // Prvi dan proslog mjeseca
+    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 2);
+    // Zadnji dan tekuceg mjeseca
+    const lastDayCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const toISO = (d) => d.toISOString().slice(0, 10);
+    const toISO = (d) => d.toISOString().slice(0, 10);
 
-  return {
-    datumOd: toISO(firstDayLastMonth),
-    datumDo: toISO(lastDayCurrentMonth),
-  };
-}
+    return {
+      datumOd: toISO(firstDayLastMonth),
+      datumDo: toISO(lastDayCurrentMonth),
+    };
+  }
 
-const [filters, setFilters] = useState({
-  ...getInitialDates(),
-  pacijent: "",
-  lijek: "",
-  status: "",
-  rola: "",
-});
+  const [filters, setFilters] = useState({
+    ...getInitialDates(),
+    pacijent: "",
+    lijek: "",
+    status: "",
+    rola: "",
+  });
 
   const requests = listaZahtjeva?.P_OUT_JSON || [];
   const isAdmin = rola === "admin";
@@ -168,6 +168,12 @@ const [filters, setFilters] = useState({
     setFilters((prev) => ({ ...prev, [name]: value }));
     setCurrentPage(1);
   };
+
+  useEffect(() => {
+    if (typeof refreshListaZahtjeva === 'function') {
+      refreshListaZahtjeva();
+    }
+  }, []);
 
   return (
     <div className="background">

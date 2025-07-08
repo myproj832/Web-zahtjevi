@@ -1,10 +1,13 @@
-import { useRef } from "react";
+import { useRef, useContext } from "react";
 import { Card, Form, Row, Col } from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import { IMaskInput } from "react-imask";
 import "react-phone-input-2/lib/style.css";
+import { ValidationContext } from "../../context/ValidationContext";
 
 function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
+  const allowedSigns = useContext(ValidationContext);
+
   const handleChange = (field, value) => {
     setPatientInfo({ ...patientInfo, [field]: value });
   };
@@ -14,7 +17,15 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
   const birthDateRef = useRef(null);
   const cityRef = useRef(null);
 
-   const handleBlur = (e) => {
+  const handleBeforeInput = (e) => {
+    const char = e.data;
+    if (!char || !allowedSigns) return;
+    if (!allowedSigns.includes(char)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleBlur = (e) => {
     // kad korisnik “izleti” iz polja, dodatno formatiramo vrijednost
     const digits = e.target.value.replace(/\D/g, "");
     if (digits.length === 8) {
@@ -109,6 +120,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             className="p-1 text-capitalize"
             value={patientInfo.firstName}
             onChange={(e) => handleChange("firstName", e.target.value)}
+            onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
           />
         </Col>
@@ -130,6 +142,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             className="p-1 text-capitalize"
             value={patientInfo.lastName}
             onChange={(e) => handleChange("lastName", e.target.value)}
+            onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, birthDateRef)}
           />
         </Col>
@@ -147,17 +160,17 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
         </Form.Label>
         <Col sm={9}>
           <IMaskInput
-    mask="00.00.0000"
-    unmask={false}
-    placeholder="dd.mm.yyyy"
-    value={patientInfo.birthDate}
-    onAccept={(val) => handleChange("birthDate", val)}
-    onBlur={handleBlur}
-    onKeyDown={(e) => handleKeyDown(e, cityRef)}
-    inputRef={birthDateRef}
-    className="form-control p-1"
-  />
-</Col>
+            mask="00.00.0000"
+            unmask={false}
+            placeholder="dd.mm.yyyy"
+            value={patientInfo.birthDate}
+            onAccept={(val) => handleChange("birthDate", val)}
+            onBlur={handleBlur}
+            onKeyDown={(e) => handleKeyDown(e, cityRef)}
+            inputRef={birthDateRef}
+            className="form-control p-1"
+          />
+        </Col>
       </Form.Group>
 
       {/* Grad */}

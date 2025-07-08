@@ -14,7 +14,14 @@ function EditRequest() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { listaZahtjeva, indikacije, indikLijek, lijekNormativ, gradovi, pacijenti } = useDataContext();
+  const {
+    listaZahtjeva,
+    indikacije,
+    indikLijek,
+    lijekNormativ,
+    gradovi,
+    pacijenti,
+  } = useDataContext();
   const [recepti, setRecepti] = useState([]);
   const [dijagnoza, setDijagnoza] = useState("");
   const [files, setFiles] = useState([]);
@@ -30,7 +37,9 @@ function EditRequest() {
   useEffect(() => {
     let found = location.state?.request;
     if (!found && listaZahtjeva?.P_OUT_JSON) {
-      found = listaZahtjeva.P_OUT_JSON.find((z) => String(z.id_zah) === String(id));
+      found = listaZahtjeva.P_OUT_JSON.find(
+        (z) => String(z.id_zah) === String(id)
+      );
     }
     if (found) {
       setPatientInfo({
@@ -42,19 +51,25 @@ function EditRequest() {
       });
       setDijagnoza(found.dijagnoza || "");
       setRecepti(
-        found.rp?.map((rp) => ({
-          tipRecepta: rp.tip_rp === "OB" ? "obrazac" : "blanko",
-          tekstRecepta: rp.rp_obrazac || rp.rp_blanko || "",
-          odabraniObrazac: rp.naziv || "",
-          vrstaRecepta: rp.vrsta_rp || "",
-          kolicina: rp.kolicina || "",
-          brojPonavljanja: rp.broj_ponavljanja || "",
-          vremenskiPeriod: rp.vremenski_period || "",
-          napomena: rp.napomena || "",
-          grupa: rp.grupa || "",
-          obrazac: rp.naziv || "",
-          odabrani: rp.naziv || "",
-        })) || []
+        found.rp?.map((rp) => {
+          const odabraniObj = lijekNormativ.find(
+            (l) => l.lijek_name === (rp.naziv || rp.r_art_naziv)
+          ) || null;
+          return {
+            tipRecepta: rp.tip_rp === "OB" ? "obrazac" : "blanko",
+            grupa: rp.grupa || rp.r_indikacija || "",
+            obrazac: rp.rp_obrazac || "",
+            odabraniObrazac: odabraniObj,
+            tekstRecepta: rp.rp_blanko || rp.rp_obrazac || "",
+            tekstObrasca: rp.rp_obrazac || "",
+            vrstaRecepta: rp.vrsta_rp === "OB" ? "obn" : "neobn",
+            kolicina: rp.kolicina || rp.r_kol || "",
+            brojPonavljanja: rp.broj_ponavljanja || rp.r_br_ponavljanja || "",
+            vremenskiPeriod: rp.vremenski_period || rp.r_br_mjeseci || "",
+            napomena: rp.napomena || rp.r_napomena || "",
+            odabrani: rp.naziv || rp.r_art_naziv || "",
+          };
+        }) || []
       );
       setFiles([]);
       setLoading(false);
@@ -119,7 +134,10 @@ function EditRequest() {
               pacijenti={pacijenti}
               gradovi={gradovi}
             />
-            <DiagnosisBlock onChangeDijagnoza={setDijagnoza} dijagnoza={dijagnoza} />
+            <DiagnosisBlock
+              onChangeDijagnoza={setDijagnoza}
+              dijagnoza={dijagnoza}
+            />
             {recepti.map((recept, index) => (
               <PrescriptionCard
                 key={index}

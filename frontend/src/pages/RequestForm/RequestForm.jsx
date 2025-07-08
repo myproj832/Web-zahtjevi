@@ -89,7 +89,6 @@ function RequestForm() {
 
       console.log("✅ Uspješno snimljeno:", result);
 
-      // flushSync obezbeđuje da se svi state update-ovi dovrše prije navigacije
       flushSync(() => {
         // možeš setovati state ovdje ako treba, npr. clear form
       });
@@ -145,9 +144,14 @@ function RequestForm() {
               />
               <FileUpload setFiles={setFiles} />
 
-              <Button className="mt-4" variant="primary" onClick={handleSubmit}>
-                Snimi zahtjev
-              </Button>
+              <div className="d-flex gap-2 mt-4">
+                <Button variant="primary" onClick={handleSubmit}>
+                  Snimi zahtjev
+                </Button>
+                <Button variant="secondary" onClick={() => navigate("/requests")}>
+                  Odustani
+                </Button>
+              </div>
             </Form>
           </div>
         </div>
