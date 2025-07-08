@@ -34,7 +34,7 @@ export const AdminProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log('[AdminContext] fetchKomitenti - Raw response:', res);
+    // console.log('[AdminContext] fetchKomitenti - Raw response:', res);
     if (!res.ok) {
       console.error('[AdminContext] fetchKomitenti - Error status:', res.status);
       throw new Error('Greška pri učitavanju komitenata');

@@ -6,7 +6,7 @@ const DataContext = createContext();
 export const useDataContext = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  const { tokenApp, korisnickoIme, tokenUser } = useAuth();
+  const { tokenApp, korisnickoIme, tokenUser, rola } = useAuth();
 
   const [gradovi, setGradovi] = useState([]);
   const [pacijenti, setPacijenti] = useState([]);
@@ -89,77 +89,171 @@ export const DataProvider = ({ children }) => {
   };
 
   // PREUZIMANJE PODATAKA IZ BAZE
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (!tokenApp || !korisnickoIme || !tokenUser) return;
+
+  //   const fetchAll = async () => {
+  //     try {
+  //       // Gradovi
+  //       const resGradovi = await fetch("http://62.4.59.86:3334/api/gradovi", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           token_app: tokenApp,
+  //           in_auten: JSON.stringify({
+  //             username_u: korisnickoIme,
+  //             token_user: tokenUser,
+  //           }),
+  //         }),
+  //       });
+  //       const gradoviData = (await resGradovi.json())?.P_OUT_JSON || [];
+  //       setGradovi(gradoviData);
+  //       console.log("✅ Gradovi:", gradoviData);
+
+  //       // Pacijenti
+  //       const resPacijenti = await fetch(
+  //         "http://62.4.59.86:3334/api/pacijenti"
+  //       );
+  //       const pacijentiData = (await resPacijenti.json())?.P_OUT_JSON || [];
+  //       setPacijenti(pacijentiData);
+  //       console.log("✅ Pacijenti:", pacijentiData);
+
+  //       // Normativi (dijagnoze, indikacije, itd.)
+  //       const resNormativi = await fetch(
+  //         "http://62.4.59.86:3334/api/normativi"
+  //       );
+  //       const normativiJson = await resNormativi.json();
+  //       setDijagnoze(normativiJson?.P_DIJAGNOZE_JSON || []);
+  //       setIndikacije(normativiJson?.P_INDIKACIJE_JSON || []);
+  //       setIndikLijek(normativiJson?.P_INDIK_LIJEK_JSON || []);
+  //       setLijekNormativ(normativiJson?.P_LIJEK_NORMATIV_JSON || []);
+  //       console.log("✅ Normativi:", normativiJson);
+
+  //       // Lista zahtjeva
+  //       const resLista = await fetch(
+  //         "http://62.4.59.86:3334/api/lista_zahtjeva",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             token_app: tokenApp,
+  //             in_auten: {
+  //               KORISNIK: korisnickoIme,
+  //               LOZINKA: tokenUser,
+  //             },
+  //           }),
+  //         }
+  //       );
+  //       const listaJson = await resLista.json();
+  //       setListaZahtjeva(listaJson);
+  //       console.log("✅ Lista zahtjeva:", listaJson);
+  //     } catch (error) {
+  //       console.error("❌ Greška pri dohvaćanju podataka:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchAll();
+  // }, [tokenApp, korisnickoIme, tokenUser]);
+   const fetchGradovi = async () => {
     if (!tokenApp || !korisnickoIme || !tokenUser) return;
-
-    const fetchAll = async () => {
-      try {
-        // Gradovi
-        const resGradovi = await fetch("http://62.4.59.86:3334/api/gradovi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token_app: tokenApp,
-            in_auten: JSON.stringify({
-              username_u: korisnickoIme,
-              token_user: tokenUser,
-            }),
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/gradovi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token_app: tokenApp,
+          in_auten: JSON.stringify({
+            username_u: korisnickoIme,
+            token_user: tokenUser,
           }),
-        });
-        const gradoviData = (await resGradovi.json())?.P_OUT_JSON || [];
-        setGradovi(gradoviData);
-        console.log("✅ Gradovi:", gradoviData);
+        }),
+      });
+      const data = await res.json();
+      const lista = data?.P_OUT_JSON || [];
+      setGradovi(lista);
+      console.log("✅ Gradovi:", lista);
+    } catch (error) {
+      console.error("❌ Greška pri fetchGradovi:", error);
+    }
+  };
 
-        // Pacijenti
-        const resPacijenti = await fetch(
-          "http://62.4.59.86:3334/api/pacijenti"
-        );
-        const pacijentiData = (await resPacijenti.json())?.P_OUT_JSON || [];
-        setPacijenti(pacijentiData);
-        console.log("✅ Pacijenti:", pacijentiData);
+  const fetchPacijenti = async () => {
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/pacijenti");
+      const data = await res.json();
+      const lista = data?.P_OUT_JSON || [];
+      setPacijenti(lista);
+      console.log("✅ Pacijenti:", lista);
+    } catch (error) {
+      console.error("❌ Greška pri fetchPacijenti:", error);
+    }
+  };
 
-        // Normativi (dijagnoze, indikacije, itd.)
-        const resNormativi = await fetch(
-          "http://62.4.59.86:3334/api/normativi"
-        );
-        const normativiJson = await resNormativi.json();
-        setDijagnoze(normativiJson?.P_DIJAGNOZE_JSON || []);
-        setIndikacije(normativiJson?.P_INDIKACIJE_JSON || []);
-        setIndikLijek(normativiJson?.P_INDIK_LIJEK_JSON || []);
-        setLijekNormativ(normativiJson?.P_LIJEK_NORMATIV_JSON || []);
-        console.log("✅ Normativi:", normativiJson);
+  const fetchNormativi = async () => {
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/normativi");
+      const data = await res.json();
+      setDijagnoze(data?.P_DIJAGNOZE_JSON || []);
+      setIndikacije(data?.P_INDIKACIJE_JSON || []);
+      setIndikLijek(data?.P_INDIK_LIJEK_JSON || []);
+      setLijekNormativ(data?.P_LIJEK_NORMATIV_JSON || []);
+      console.log("✅ Normativi:", data);
+    } catch (error) {
+      console.error("❌ Greška pri fetchNormativi:", error);
+    }
+  };
 
-        // Lista zahtjeva
-        const resLista = await fetch(
-          "http://62.4.59.86:3334/api/lista_zahtjeva",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token_app: tokenApp,
-              in_auten: {
-                KORISNIK: korisnickoIme,
-                LOZINKA: tokenUser,
-              },
-            }),
-          }
-        );
-        const listaJson = await resLista.json();
-        setListaZahtjeva(listaJson);
-        console.log("✅ Lista zahtjeva:", listaJson);
-      } catch (error) {
-        console.error("❌ Greška pri dohvaćanju podataka:", error);
+  const fetchListaZahtjeva = async () => {
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/lista_zahtjeva", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token_app: tokenApp,
+          in_auten: {
+            KORISNIK: korisnickoIme,
+            LOZINKA: tokenUser,
+          },
+        }),
+      });
+      const data = await res.json();
+      setListaZahtjeva(data);
+      console.log("✅ Lista zahtjeva:", data);
+    } catch (error) {
+      console.error("❌ Greška pri fetchListaZahtjeva:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!tokenApp || !korisnickoIme || !tokenUser || !rola) return;
+
+    const fetchByRole = async () => {
+      try {
+        if (rola === "Admin" || rola === "Ljekar") {
+          await fetchGradovi();
+        }
+        if (rola === "Ljekar") {
+          await Promise.all([
+            fetchPacijenti(),
+            fetchNormativi(),
+            fetchListaZahtjeva(),
+          ]);
+        }
+      } catch (err) {
+        console.error("❌ Greška u lazy loadingu:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAll();
-  }, [tokenApp, korisnickoIme, tokenUser]);
+    fetchByRole();
+  }, [tokenApp, korisnickoIme, tokenUser, rola]);
 
   return (
     <DataContext.Provider
@@ -171,6 +265,10 @@ export const DataProvider = ({ children }) => {
         indikLijek,
         lijekNormativ,
         listaZahtjeva,
+         fetchGradovi,
+        fetchPacijenti,
+        fetchNormativi,
+        fetchListaZahtjeva,
         submitZahtjev,
         loading,
       }}
