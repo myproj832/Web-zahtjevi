@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 function ActionButtons({ selectedRequest, handleDelete }) {
   const navigate = useNavigate();
-  const canDelete = selectedRequest && selectedRequest.status === 0;
+  const canDelete = selectedRequest && selectedRequest.status === "0";
 
   return (
     <div className="d-none d-md-block">
