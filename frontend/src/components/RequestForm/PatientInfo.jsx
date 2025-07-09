@@ -7,6 +7,7 @@ import { ValidationContext } from "../../context/ValidationContext";
 
 function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
   const allowedSigns = useContext(ValidationContext);
+  const [messages, setMessages] = useState({ error: "", firstName: false, lastName: false });
 
   const handleChange = (field, value) => {
     setPatientInfo({ ...patientInfo, [field]: value });
@@ -16,13 +17,18 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
   const lastNameRef = useRef(null);
   const birthDateRef = useRef(null);
   const cityRef = useRef(null);
-  const [showLatinMsg, setShowLatinMsg] = useState({ firstName: false, lastName: false });
+
+  const showMessage = (field, msg) => {
+    setMessages((prev) => ({ ...prev, [field]: msg }));
+    setTimeout(() => setMessages((prev) => ({ ...prev, [field]: field === "error" ? "" : false })), 3000);
+  };
 
   const handleBeforeInput = (e) => {
     const char = e.data;
     if (!char || !allowedSigns) return;
     if (!allowedSigns.includes(char)) {
       e.preventDefault();
+      showMessage("error", `Znak "${char}" nije dozvoljen.`);
     }
   };
 
@@ -35,7 +41,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
       const year = digits.slice(4, 8);
       handleChange("birthDate", `${day}.${month}.${year}`);
     } else {
-      // opcionalno: možete obrisati neispravan unos
       handleChange("birthDate", "");
     }
   };
@@ -49,7 +54,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
 
   const handlePhoneChange = (value) => {
     handleChange("phone", value);
-
     // Pronađi pacijenta po broju telefona
     const matched = pacijenti?.find((p) => p.phoneNo === value);
     if (matched) {
@@ -64,7 +68,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
     }
   };
 
-  // Dodatna validacija za ime i prezime
   const forbiddenLetters = /[šđžčćŠĐŽČĆ]/g;
 
   return (
@@ -77,7 +80,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
       }}
     >
       <h5>Podaci o pacijentu</h5>
-
       {/* Telefonski broj */}
       <Form.Group as={Row}>
         <Form.Label
@@ -107,7 +109,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
           />
         </Col>
       </Form.Group>
-
       {/* Ime */}
       <Form.Group as={Row}>
         <Form.Label
@@ -126,22 +127,21 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             onChange={(e) => {
               const value = e.target.value;
               if (forbiddenLetters.test(value)) {
-                setShowLatinMsg((prev) => ({ ...prev, firstName: true }));
+                showMessage("firstName", true);
                 return;
-              } else {
-                setShowLatinMsg((prev) => ({ ...prev, firstName: false }));
               }
+              showMessage("firstName", false);
               handleChange("firstName", value);
             }}
             onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
           />
-          {showLatinMsg.firstName && (
+          {messages.error && <Form.Text className="text-danger">{messages.error}</Form.Text>}
+          {messages.firstName && (
             <div style={{ color: 'red', fontSize: 12 }}>Nisu dozvoljena slova č,ć,š,ž,đ - Molimo Vas da koristite c,s,z,dj,dz</div>
           )}
         </Col>
       </Form.Group>
-
       {/* Prezime */}
       <Form.Group as={Row}>
         <Form.Label
@@ -160,22 +160,20 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             onChange={(e) => {
               const value = e.target.value;
               if (forbiddenLetters.test(value)) {
-                setShowLatinMsg((prev) => ({ ...prev, lastName: true }));
+                showMessage("lastName", true);
                 return;
-              } else {
-                setShowLatinMsg((prev) => ({ ...prev, lastName: false }));
               }
+              showMessage("lastName", false);
               handleChange("lastName", value);
             }}
             onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, birthDateRef)}
           />
-          {showLatinMsg.lastName && (
-            <div style={{ color: 'red', fontSize: 12 }}>Koristite csd</div>
+          {messages.lastName && (
+            <div style={{ color: 'red', fontSize: 12 }}>Nisu dozvoljena slova č,ć,š,ž,đ - Molimo Vas da koristite c,s,z,dj,dz</div>
           )}
         </Col>
       </Form.Group>
-
       {/* Datum rođenja */}
       <Form.Group as={Row}>
         <Form.Label
@@ -200,7 +198,6 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
           />
         </Col>
       </Form.Group>
-
       {/* Grad */}
       <Form.Group as={Row}>
         <Form.Label
@@ -229,7 +226,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
         </Col>
       </Form.Group>
     </Card>
-  );
+  );  
 }
 
 export default PatientInfo;

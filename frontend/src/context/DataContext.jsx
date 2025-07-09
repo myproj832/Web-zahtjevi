@@ -39,17 +39,32 @@ export const DataProvider = ({ children }) => {
           r_indikacija: recept.grupa || "",
           r_id_det: "",
           r_tip_rp: recept.tipRecepta === "obrazac" ? "OB" : "BL",
-          r_art_id:
+          r_id_art:
             recept.tipRecepta === "obrazac"
-              ? recept.odabraniObrazac?.lijek_id || ""
-              : recept.odabrani?.id || "",
-          r_art_naziv:
+              ? recept.odabraniObrazac?.id_art || ""
+              : recept.odabrani?.id_art || "",
+          r_id_normativ:
+            recept.tipRecepta === "obrazac"
+              ? recept.odabraniObrazac?.id_normativ || ""
+              : recept.odabrani?.id_normativ || "",
+          /* r_art_naziv:
             recept.tipRecepta === "obrazac"
               ? recept.odabraniObrazac?.lijek_name || ""
-              : recept.odabrani?.naziv || "",
+              : recept.odabrani?.lijek_name || "", */
+          r_lijek_name:
+            recept.tipRecepta === "obrazac"
+              ? recept.odabraniObrazac?.lijek_name || ""
+              : recept.odabrani?.lijek_name || "",
           r_rp_obrazac:
             recept.tipRecepta === "obrazac"
               ? recept.tekstObrasca || recept.tekstRecepta || ""
+              : "",
+          r_rp_obrazac_org:
+            recept.tipRecepta === "obrazac" && recept.odabraniObrazac
+              ? `${recept.odabraniObrazac.lijek_normativ
+                  .map((n) => n.normativ_name)
+                  .join("\n")}` +
+                `\n${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
               : "",
           r_rp_blanko:
             recept.tipRecepta === "blanko" ? recept.tekstRecepta : "",
