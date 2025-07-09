@@ -1,7 +1,6 @@
 import "./Dashboard.css";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import logoSpecija from "../../assets/logoSpecija0.png";
-// laboratorijske slike
 import lab1 from "../../assets/DSC_0052.jpg";
 import lab2 from "../../assets/DSC_0138.jpg";
 import lab3 from "../../assets/DSC_0071.jpg";
@@ -10,16 +9,14 @@ import lab5 from "../../assets/DSC_0092.jpg";
 import lab6 from "../../assets/DSC_0146.jpg";
 import lab7 from "../../assets/DSC_0070-2.jpg";
 import lab8 from "../../assets/DSC_0062.jpg";
-// dodatne slike za kartice (dodajte ove u assets folder)
-import cardBg1 from "../../assets/DSC_0073.jpg"; // dodajte ovu sliku
-import cardBg2 from "../../assets/DSC_0133.jpg"; // dodajte ovu sliku
-import cardBg3 from "../../assets/DSC_0137.jpg"; // dodajte ovu sliku
-import cardBg4 from "../../assets/DSC_0078.jpg"; // dodajte ovu sliku
-import cardBg5 from "../../assets/DSC_0104.jpg"; // dodajte ovu sliku
-import cardBg6 from "../../assets/DSC_0058.jpg"; // dodajte ovu sliku
-import cardBg7 from "../../assets/DSC_0067.jpg"; // dodajte ovu sliku
-import cardBg8 from "../../assets/DSC_0082-2.jpg"; // dodajte ovu sliku
-import cardBg9 from "../../assets/DSC_0067.jpg"; // dodajte ovu sliku
+import cardBg1 from "../../assets/DSC_0073.jpg"; 
+import cardBg2 from "../../assets/DSC_0133.jpg"; 
+import cardBg3 from "../../assets/DSC_0137.jpg"; 
+import cardBg4 from "../../assets/DSC_0078.jpg"; 
+import cardBg5 from "../../assets/DSC_0104.jpg"; 
+import cardBg6 from "../../assets/DSC_0058.jpg"; 
+import cardBg7 from "../../assets/DSC_0067.jpg"; 
+import cardBg8 from "../../assets/DSC_0082-2.jpg"; 
 import LoginModal from "../../components/LoginModal";
 import { useState, useRef, useEffect } from "react";
 
@@ -318,6 +315,83 @@ function Dashboard({ openLogin }) {
             </Col>
           </Row>
 
+          {/* --- O NAMA (full width) --- */}
+          <Row className="g-4 mt-4">
+            <Col lg={12}>
+              <div className="content-card about-us-card">
+                <div className="card-header">
+                  <h3 className="card-title">
+                    <span className="title-icon">📖</span> O nama
+                  </h3>
+                  <p className="card-subtitle">Naša priča i vizija za budućnost farmacije</p>
+                </div>
+                <div className="card-body">
+                  <div className="about-content">
+                    <div className="about-section">
+                      <h5 className="about-section-title">
+                        <span className="section-icon">🏢</span> Osnivanje i razvoj
+                      </h5>
+                      <p>
+                        Cosmetics apoteke su osnovane 2010. godine u sklopu firme MPM d.o.o.. 
+                        U Cosmetics apotekama se obavlja kompletna farmaceutska zdravstvena djelatnost koja obuhvata 
+                        promociju zdravlja, promet ljekova na malo, izdavanje ljekova na teret Fonda za zdravstveno osiguranje, 
+                        savjetovanje pacijenata o pravilnoj upotrebi lijeka i određenih vrsta medicinskih sredstava. 
+                        Na taj način pacijentima je obezbijeđena kvalitetna usluga i posvećenost kao i stručnost, 
+                        znanje, povjerenje i odgovornost naših zaposlenih.
+                      </p>
+                    </div>
+
+                    <div className="about-section">
+                      <h5 className="about-section-title">
+                        <span className="section-icon">⚗️</span> PZU Cosmetics Specija
+                      </h5>
+                      <p>
+                        PZU Cosmetics Specija je zdravstvena ustanova osnovana 2024. godine. Ova apoteka uz pružanje 
+                        kompletne zdravstvene zaštite je temelj za širenje magistralne laboratorije i otvaranje 
+                        prve galenske laboratorije u Crnoj Gori.
+                      </p>
+                    </div>
+
+                    <div className="about-section">
+                      <h5 className="about-section-title">
+                        <span className="section-icon">🧬</span> Magistralna izrada
+                      </h5>
+                      <p>
+                        Godine iskustva su pokazale da je magistralna izrada važan dio zdravstvenog sistema i od 
+                        suštinskog značaja za poboljšanje kvaliteta života specifičnih grupa pacijenata sa specifičnim 
+                        indikacijama. Značaj izrade magistralnih ljekova naročito je izražen u slučaju dermatoloških 
+                        oboljenja. Osim toga, praksa je pokazala veliku potrebu za izradom magistralnih ljekova kod 
+                        pedijatrijske populacije. U nedostatku registrovanih ljekova na tržištu, u Cosmetics Specija 
+                        laboratoriji se izrađuju tečni preparati za per os primjenu za djecu, sve zasnovano na naučnim studijama.
+                      </p>
+                    </div>
+
+                    <div className="about-section">
+                      <h5 className="about-section-title">
+                        <span className="section-icon">🔬</span> Bioidentični hormoni
+                      </h5>
+                      <p>
+                        Od 2025. godine naša magistralna laboratorija je počela i sa izradom preparata sa bioidentičnim 
+                        hormonima, po nalogu ljekara, u cilju personalizovane hormonske terapije prema potrebama pacijenta. 
+                        Izrada bioidentičnih hormona se odvija u strogo kontrolisanim uslovima.
+                      </p>
+                    </div>
+
+                    <div className="about-section">
+                      <h5 className="about-section-title">
+                        <span className="section-icon">📦</span> Veledrogerija
+                      </h5>
+                      <p>
+                        Trenutno je MPM d.o.o. i jedna od registrovanih veledrogerija za uvoz aktivnih farmaceutskih 
+                        supstanci u Crnoj Gori.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+
           {/* --- STRUČNI TIM (full width) --- */}
           <Row className="g-4 mt-4">
             <Col lg={12}>
@@ -326,12 +400,12 @@ function Dashboard({ openLogin }) {
                   <h3 className="card-title">
                     <span className="title-icon">🎓</span> Naš stručni tim
                   </h3>
-                <p className="card-subtitle">
-  🔬 Specijalisti farmaceutske tehnologije • 
-  🧪 Specijalizanti ispitivanja i kontrole kvaliteta lijekova • 
-  👨‍🎓 Magistri farmacije • 
-  💊 Farmaceutski tehničari 
-</p>
+                  <p className="card-subtitle">
+                    Zaposleni u apotekama su magistri farmacije, doktori farmacije, diplomirani farmaceuti, 
+                    doktoranti, farmaceut specijalista kozmetologije, farmaceut specijalista farmaceutske tehnologije, 
+                    farmaceut specijalizant ispitivanja i kontrole kvaliteta ljekova, farmaceut specijalizant kliničke farmacije, 
+                    i farmaceutski tehničari.
+                  </p>
                 </div>
                 <div className="card-body">
                   <div className="team-image-slideshow mb-3">
@@ -353,29 +427,39 @@ function Dashboard({ openLogin }) {
                       />
                     </div>
                   </div>
-                <div className="team-stats">
-  <div className="team-stat">
-    <div className="stat-icon">⚕️</div>
-    <div className="stat-content">
-      <h6>15+ godina iskustva</h6>
-      <p>Dugogodišnje iskustvo u struci</p>
-    </div>
-  </div>
-  <div className="team-stat">
-    <div className="stat-icon">📚</div>
-    <div className="stat-content">
-      <h6>Kontinuirana edukacija</h6>
-      <p>Redovno usavršavanje znanja</p>
-    </div>
-  </div>
-  <div className="team-stat">
-    <div className="stat-icon">🏆</div>
-    <div className="stat-content">
-      <h6>Sertifikati</h6>
-      <p>Međunarodne farmaceutske licence</p>
-    </div>
-  </div>
-</div>
+                  <div className="team-stats">
+                    <div className="team-stat">
+                      <div className="stat-icon">⚕️</div>
+                      <div className="stat-content">
+                        <h6>15+ godina iskustva</h6>
+                        <p>Dugogodišnje iskustvo u struci</p>
+                      </div>
+                    </div>
+                    <div className="team-stat">
+                      <div className="stat-icon">📚</div>
+                      <div className="stat-content">
+                        <h6>Kontinuirana edukacija</h6>
+                        <p>Redovno usavršavanje znanja</p>
+                      </div>
+                    </div>
+                    <div className="team-stat">
+                      <div className="stat-icon">🏆</div>
+                      <div className="stat-content">
+                        <h6>Sertifikati</h6>
+                        <p>Međunarodne farmaceutske licence</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="closing-message mt-4">
+                    <div className="message-box">
+                      <p className="message-text">
+                        <strong>Kako je magistralna izrada ljekova jedinstvena djelatnost farmacije, 
+                        nastavljamo saradnju sa pacijentima i ljekarima, kako bismo omogućili da pravi lijek 
+                        u pravom farmaceutskom obliku i dozi bude dostupan za pacijenta.</strong>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Col>
@@ -442,7 +526,7 @@ function Dashboard({ openLogin }) {
                   <p className="footer-company-subtitle">Privatna Zdravstvena Ustanova</p>
                   <p className="footer-description">
                     Najsavremenija laboratorija za izradu magistralnih lijekova 
-                    u Crnoj Gori sa više od 15 godina iskustva.
+                    u Crnoj Gori.
                   </p>
                 </div>
               </div>
@@ -506,13 +590,7 @@ function Dashboard({ openLogin }) {
                 </p>
               </div>
               <div className="footer-bottom-right">
-                <div className="footer-legal-links">
-                  <a href="#" className="footer-link">Pravila privatnosti</a>
-                  <span className="footer-divider">|</span>
-                  <a href="#" className="footer-link">Uslovi korištenja</a>
-                  <span className="footer-divider">|</span>
-                  <a href="#" className="footer-link">GDPR</a>
-                </div>
+              
               </div>
             </div>
           </div>

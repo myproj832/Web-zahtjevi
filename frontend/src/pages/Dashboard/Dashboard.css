@@ -1,6 +1,4 @@
-/* Dashboard.css - Complete stylesheet for the pharmacy dashboard */
-
-/* ---------- GLOBAL & RESET ---------- */
+/* ---------- GLOBAL ---------- */
 * {
   margin: 0;
   padding: 0;
@@ -537,6 +535,70 @@
   font-size: 1.1rem;
 }
 
+/* About Us card */
+.about-us-card {
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.about-section {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 15px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.about-section:hover {
+  background: rgba(0, 123, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.about-section-title {
+  color: #002f4b;
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+}
+
+.section-icon {
+  font-size: 1.3rem;
+}
+
+.about-section p {
+  color: #495057;
+  line-height: 1.6;
+  margin: 0;
+  text-align: justify;
+}
+
+.closing-message {
+  margin-top: 30px;
+}
+
+.message-box {
+  background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+}
+
+.message-text {
+  color: white;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 /* Team card */
 .team-card {
   background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
@@ -818,7 +880,7 @@
 
 .footer-bottom-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 20px;
@@ -828,6 +890,8 @@
   color: #adb5bd;
   font-size: 0.9rem;
   padding: 0 18px;
+  text-align: center;
+  width: 100%;
 }
 
 .footer-copyright strong {
