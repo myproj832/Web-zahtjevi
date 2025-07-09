@@ -1,4 +1,4 @@
-import { useRef, useContext } from "react";
+import { useRef, useContext, useState } from "react";
 import { Card, Form, Row, Col } from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import { IMaskInput } from "react-imask";
@@ -16,6 +16,7 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
   const lastNameRef = useRef(null);
   const birthDateRef = useRef(null);
   const cityRef = useRef(null);
+  const [showLatinMsg, setShowLatinMsg] = useState({ firstName: false, lastName: false });
 
   const handleBeforeInput = (e) => {
     const char = e.data;
@@ -62,6 +63,9 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
       }));
     }
   };
+
+  // Dodatna validacija za ime i prezime
+  const forbiddenLetters = /[šđžčćŠĐŽČĆ]/g;
 
   return (
     <Card
@@ -119,10 +123,22 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             ref={firstNameRef}
             className="p-1 text-capitalize"
             value={patientInfo.firstName}
-            onChange={(e) => handleChange("firstName", e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (forbiddenLetters.test(value)) {
+                setShowLatinMsg((prev) => ({ ...prev, firstName: true }));
+                return;
+              } else {
+                setShowLatinMsg((prev) => ({ ...prev, firstName: false }));
+              }
+              handleChange("firstName", value);
+            }}
             onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
           />
+          {showLatinMsg.firstName && (
+            <div style={{ color: 'red', fontSize: 12 }}>Nisu dozvoljena slova č,ć,š,ž,đ - Molimo Vas da koristite c,s,z,dj,dz</div>
+          )}
         </Col>
       </Form.Group>
 
@@ -141,10 +157,22 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             ref={lastNameRef}
             className="p-1 text-capitalize"
             value={patientInfo.lastName}
-            onChange={(e) => handleChange("lastName", e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (forbiddenLetters.test(value)) {
+                setShowLatinMsg((prev) => ({ ...prev, lastName: true }));
+                return;
+              } else {
+                setShowLatinMsg((prev) => ({ ...prev, lastName: false }));
+              }
+              handleChange("lastName", value);
+            }}
             onBeforeInput={handleBeforeInput}
             onKeyDown={(e) => handleKeyDown(e, birthDateRef)}
           />
+          {showLatinMsg.lastName && (
+            <div style={{ color: 'red', fontSize: 12 }}>Koristite csd</div>
+          )}
         </Col>
       </Form.Group>
 
@@ -192,9 +220,9 @@ function PatientInfo({ patientInfo, setPatientInfo, pacijenti, gradovi }) {
             onChange={(e) => handleChange("city", e.target.value)}
           >
             <option value="">Izaberi grad</option>
-            {gradovi?.map((grad) => (
+            {gradovi?.filter((grad) => grad.name_delivery).map((grad) => (
               <option key={grad.code} value={grad.code}>
-                {grad.name}
+                {grad.name_delivery}
               </option>
             ))}
           </Form.Select>

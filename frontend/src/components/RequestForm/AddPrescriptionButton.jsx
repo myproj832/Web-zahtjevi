@@ -22,7 +22,7 @@ function AddPrescriptionButton({ setRecepti, recepti }) {
         ])
       }
     >
-      + Dodaj lijek
+      + Dodaj recept
     </Button>
   );
 }
