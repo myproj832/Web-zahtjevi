@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Pagination } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 
 import Header from "../../components/Header";
 import FilterForm from "../../components/RequestsList/FilterForm";
@@ -18,16 +18,28 @@ function RequestList() {
   const { rola } = useAuth();
   const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
 
-  const [showRequests, setShowRequests] = useState(false);
+  // Inicijalno stanje iz localStorage
+  const [showRequests, setShowRequests] = useState(() => {
+    const stored = localStorage.getItem("showRequests");
+    return stored === null ? false : stored === "true";
+  });
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   function getInitialDates() {
     const now = new Date();
     // Prvi dan proslog mjeseca
-    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 2);
+    const firstDayLastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      2
+    );
     // Zadnji dan tekuceg mjeseca
-    const lastDayCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const lastDayCurrentMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      1
+    );
 
     const toISO = (d) => d.toISOString().slice(0, 10);
 
@@ -62,7 +74,9 @@ function RequestList() {
 
   // Lista svih ustanova iz zahtjeva
   // Koristi Set da ukloni duplikate
-  const allUstanove = Array.from(new Set(requests.map(r => r.izdao_recept_u).filter(Boolean)));
+  const allUstanove = Array.from(
+    new Set(requests.map((r) => r.izdao_recept_u).filter(Boolean))
+  );
 
   const filteredRequests = requests.filter((r) => {
     const datum = parseDateDDMMYYYY(r.dat_prijema);
@@ -106,46 +120,94 @@ function RequestList() {
   const renderPagination = () => {
     if (totalPages <= 1) return null;
 
-    const items = [];
-    const sideCount = 1;
-
-    const addPage = (page) => {
-      items.push(
-        <Pagination.Item
-          key={page}
-          active={page === currentPage}
-          onClick={() => setCurrentPage(page)}
-        >
-          {page}
-        </Pagination.Item>
-      );
+    const handleInputChange = (e) => {
+      let value = e.target.value.replace(/\D/g, "");
+      if (!value) return;
+      let page = Math.max(1, Math.min(totalPages, Number(value)));
+      setCurrentPage(page);
     };
 
-    addPage(1);
-
-    if (currentPage > sideCount + 2) {
-      items.push(<Pagination.Ellipsis key="start-ellipsis" disabled />);
-    }
-
-    const startPage = Math.max(2, currentPage - 1);
-    const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      addPage(i);
-    }
-
-    if (currentPage < totalPages - sideCount - 1) {
-      items.push(<Pagination.Ellipsis key="end-ellipsis" disabled />);
-    }
-
-    if (totalPages > 1 && currentPage < totalPages) {
-      addPage(totalPages);
-    }
-
     return (
-      <div className="d-flex justify-content-center mt-4">
-        <Pagination>{items}</Pagination>
-      </div>
+      <Card
+        className=" mt-2 mx-auto w-50 rounded-pill"
+        style={{
+          background: "rgba(255,255,255,0.7)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <span>1</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(1)}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+              }}
+              className="mx-1 px-20"
+            >
+              <span style={{ color: "#007bff" }}>⇐</span>
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+                paddingLeft: 20,
+                paddingRight: 20,
+              }}
+            >
+              <span style={{ color: "#007bff" }}>⟵</span>
+            </Button>
+            <input
+              type="text"
+              value={currentPage}
+              onChange={handleInputChange}
+              style={{
+                width: 60,
+                textAlign: "center",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                margin: "0.5rem",
+              }}
+            />
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+                paddingLeft: 20,
+                paddingRight: 20,
+              }}
+            >
+              <span style={{ color: "#007bff" }}>⟶</span>
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(totalPages)}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+              }}
+              className="mx-1 px-20"
+            >
+              <span style={{ color: "#007bff" }}>⇒</span>
+            </Button>
+          </div>
+          <span>{totalPages}</span>
+        </div>
+      </Card>
     );
   };
 
@@ -170,7 +232,7 @@ function RequestList() {
   };
 
   useEffect(() => {
-    if (typeof refreshListaZahtjeva === 'function') {
+    if (typeof refreshListaZahtjeva === "function") {
       refreshListaZahtjeva();
     }
   }, []);
@@ -184,15 +246,23 @@ function RequestList() {
             Lista Zahtjeva
           </h2>
           <div className="d-flex gap-2">
-            {!showRequests && (
-              <Button
-                variant="outline-secondary"
-                onClick={() => setShowRequests(true)}
-              >
-                📋 Prikaži listu zahtjeva
-              </Button>
-            )}
-            <Button variant="outline-secondary" onClick={() => navigate("/form")}>
+            <Button
+              variant="outline-secondary"
+              onClick={() => {
+                setShowRequests((prev) => {
+                  localStorage.setItem("showRequests", !prev);
+                  return !prev;
+                });
+              }}
+            >
+              {showRequests
+                ? "˄   Sakrij listu zahtjeva"
+                : "˅   Prikaži listu zahtjeva"}
+            </Button>
+            <Button
+              variant="outline-secondary"
+              onClick={() => navigate("/form")}
+            >
               + Novi Zahtjev
             </Button>
           </div>

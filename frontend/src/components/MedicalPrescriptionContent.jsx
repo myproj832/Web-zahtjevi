@@ -107,12 +107,11 @@ export default function MedicalPrescriptionContent({ recept, pacijent, lekar, us
             Rp./
           </div>
           <br />
-          <p className="py-0 my-0">Grupa: {recept?.grupa || "-"}</p>
-          <p>Obrazac: {recept?.obrazac || recept?.naziv || "-"}</p>
-          <p className="py-0 my-0">{recept?.rp_obrazac || "-"}</p>
+          <p className="py-0 my-0">{recept?.grupa || "-"}</p>
+          <p>{recept?.obrazac || recept?.naziv || "-"}</p>
+          <pre style={{ all: "unset", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{recept?.rp_obrazac || "-"}</pre>
+          <br></br>
           <p>excipiens ad {recept?.kolicina || recept?.kol || "-"}</p>
-          <p>M.f. cremor</p>
-          <p className="py-0 my-0">D.S. {recept?.napomena || "-"}</p>
         </div>
         {/* Napomene */}
         <div className="medical-bottom-section">Napomene: {recept?.napomena || "-"}</div>
