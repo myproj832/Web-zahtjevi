@@ -183,9 +183,19 @@ function RequestList() {
           <h2 className="mb-1" style={{ color: "#47466D" }}>
             Lista Zahtjeva
           </h2>
-          <Button variant="outline-secondary" onClick={() => navigate("/form")}>
-            + Novi Zahtjev
-          </Button>
+          <div className="d-flex gap-2">
+            {!showRequests && (
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowRequests(true)}
+              >
+                📋 Prikaži listu zahtjeva
+              </Button>
+            )}
+            <Button variant="outline-secondary" onClick={() => navigate("/form")}>
+              + Novi Zahtjev
+            </Button>
+          </div>
         </div>
 
         <FilterForm
@@ -195,15 +205,6 @@ function RequestList() {
           rola={rola}
           listaUstanova={allUstanove}
         />
-
-        {!showRequests && (
-          <Button
-            variant="outline-secondary"
-            onClick={() => setShowRequests(true)}
-          >
-            📋 Prikaži listu zahtjeva
-          </Button>
-        )}
 
         {showRequests && (
           <>

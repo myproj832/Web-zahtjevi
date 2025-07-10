@@ -1,5 +1,6 @@
 import { Card, Form, Button, Row, Col } from "react-bootstrap";
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
+import Select from "react-select";
 import { ValidationContext } from "../../context/ValidationContext";
 
 function PrescriptionCard({
@@ -12,13 +13,105 @@ function PrescriptionCard({
   lijekNormativ,
 }) {
   const allowedSigns = useContext(ValidationContext);
+
+  // Optimizovana funkcija za ažuriranje recepta
+  const updateRecept = useCallback(
+    (changes) => {
+      setRecepti((prev) => {
+        const novi = [...prev];
+        novi[index] = { ...novi[index], ...changes };
+        return novi;
+      });
+    },
+    [index, setRecepti]
+  );
+
   const handleBeforeInput = (e) => {
     const char = e.data;
     if (!char || !allowedSigns) return;
+    if (char === "\n") return;
     if (!allowedSigns.includes(char)) {
       e.preventDefault();
     }
   };
+
+  const handleTipReceptaChange = (tip) => {
+    updateRecept({
+      tipRecepta: tip,
+      tekstRecepta: "",
+      grupa: "",
+      obrazac: "",
+      odabraniObrazac: null,
+      odabrani: null,
+      kolicina: "",
+      brojPonavljanja: "",
+      vremenskiPeriod: "",
+      napomena: "",
+      vrstaRecepta: "neobn",
+      manualChange: false,
+      tekstObrasca: "",
+    });
+  };
+
+  const handleObrazacChange = (e, filtriraniLijekovi) => {
+    const value = e.target ? e.target.value : e.value;
+    const odabrani = lijekNormativ.find(
+      (o) =>
+        o.id_normativ ===
+        filtriraniLijekovi.find((f) => f.lijek_name === value)?.id_normativ
+    );
+    const changes = {
+      obrazac: value,
+      odabraniObrazac: odabrani || null,
+      odabrani: odabrani || null,
+      kolicina: "",
+      brojPonavljanja: "",
+      vremenskiPeriod: "",
+      napomena: "",
+      vrstaRecepta: "neobn",
+      manualChange: false,
+    };
+    if (odabrani) {
+      const normativi = odabrani.lijek_normativ.map((n) => n.normativ_name).join("\n");
+      const tekst = `${normativi}\n${odabrani.lijek_m_f}\n${odabrani.lijek_d_s}`;
+      if (!recept.manualChange) {
+        changes.tekstObrasca = tekst;
+        changes.tekstRecepta = tekst;
+      }
+    } else {
+      changes.tekstObrasca = "";
+      changes.tekstRecepta = "";
+    }
+    updateRecept(changes);
+  };
+
+  const handleGrupaChange = (e) => {
+    const value = e.target ? e.target.value : e.value;
+    updateRecept({ grupa: value, obrazac: "", odabraniObrazac: null });
+  };
+
+  const handleFieldChange = (field, value) => {
+    updateRecept({ [field]: value });
+  };
+
+  const getFiltriraniLijekovi = () => {
+    if (!recept.grupa) return lijekNormativ;
+    return lijekNormativ.filter((ln) =>
+      indikLijek
+        .filter((il) => il.indikacije_name === recept.grupa)
+        .some((il) => Number(il.id_normativ) === Number(ln.id_normativ))
+    );
+  };
+
+  // Opcije za react-select
+  const grupaOptions = indikacije?.map((ind) => ({
+    value: ind.indikacije_name,
+    label: ind.indikacije_name,
+  })) || [];
+  const magistralniOptions = getFiltriraniLijekovi().map((nor) => ({
+    value: nor.lijek_name,
+    label: nor.lijek_name,
+  }));
 
   return (
     <Card
@@ -30,23 +123,23 @@ function PrescriptionCard({
       }}
     >
       <div className="d-flex justify-content-between align-items-center mb-2">
-        <h5 className="mb-1 d-flex justify-content-between w-25">
-        </h5>
+        <h5 className="mb-1 d-flex justify-content-between w-25"></h5>
         {recepti.length > 1 && (
           <Button
             variant="outline-danger"
             size="sm"
             onClick={() => {
-              const novi = [...recepti];
-              novi.splice(index, 1);
-              setRecepti(novi);
+              setRecepti((prev) => {
+                const novi = [...prev];
+                novi.splice(index, 1);
+                return novi;
+              });
             }}
           >
             Obriši
           </Button>
         )}
       </div>
-
       {/* Tip recepta */}
       <h6 className="mb-3 fs-5">Tip recepta</h6>
       <Form.Check
@@ -54,54 +147,15 @@ function PrescriptionCard({
         name={`tipRecepta-${index}`}
         label="Obrazac lijeka"
         checked={recept.tipRecepta === "obrazac"}
-        onChange={() => {
-          const novi = [...recepti];
-          novi[index] = {
-            ...novi[index],
-            tipRecepta: "obrazac",
-            tekstRecepta: "",
-            grupa: "",
-            obrazac: "",
-            odabraniObrazac: null,
-            odabrani: null,
-            kolicina: "",
-            brojPonavljanja: "",
-            vremenskiPeriod: "",
-            napomena: "",
-            vrstaRecepta: "neobn",
-            manualChange: false,
-            tekstObrasca: "",
-          };
-          setRecepti(novi);
-        }}
+        onChange={() => handleTipReceptaChange("obrazac")}
       />
       <Form.Check
         type="radio"
         name={`tipRecepta-${index}`}
         label="Blanko forma"
         checked={recept.tipRecepta === "blanko"}
-        onChange={() => {
-          const novi = [...recepti];
-          novi[index] = {
-            ...novi[index],
-            tipRecepta: "blanko",
-            grupa: "",
-            obrazac: "",
-            odabraniObrazac: null,
-            odabrani: null,
-            tekstObrasca: "",
-            tekstRecepta: "",
-            kolicina: "",
-            brojPonavljanja: "",
-            vremenskiPeriod: "",
-            napomena: "",
-            vrstaRecepta: "neobn",
-            manualChange: false,
-          };
-          setRecepti(novi);
-        }}
+        onChange={() => handleTipReceptaChange("blanko")}
       />
-
       {/* Tekst recepta za blanko formu */}
       {recept.tipRecepta === "blanko" && (
         <Form.Group className="mt-2">
@@ -113,16 +167,11 @@ function PrescriptionCard({
             rows={4}
             maxLength={4000}
             value={recept.tekstRecepta}
-            onChange={(e) => {
-              const novi = [...recepti];
-              novi[index].tekstRecepta = e.target.value;
-              setRecepti(novi);
-            }}
+            onChange={(e) => handleFieldChange("tekstRecepta", e.target.value)}
             onBeforeInput={handleBeforeInput}
           />
         </Form.Group>
       )}
-
       {/* Obrazac sa grupom i normativima */}
       {recept.tipRecepta === "obrazac" && (
         <>
@@ -130,142 +179,31 @@ function PrescriptionCard({
             <Form.Label style={{ textTransform: "none" }}>
               Grupa-indikacija
             </Form.Label>
-            <Form.Select
+            <Select
               className="text-capitalize"
-              value={recept.grupa}
-              onChange={(e) => {
-                const novi = [...recepti];
-                novi[index].grupa = e.target.value;
-                novi[index].obrazac = "";
-                novi[index].odabraniObrazac = null;
-                setRecepti(novi);
-              }}
-            >
-              <option value="">-- Izaberite grupu --</option>
-              {indikacije?.map((ind) => (
-                <option
-                  key={ind.indikacije_id}
-                  value={ind.indikacije_name}
-                  className="text-capitalize"
-                >
-                  {ind.indikacije_name}
-                </option>
-              ))}
-            </Form.Select>
+              options={grupaOptions}
+              value={grupaOptions.find(opt => opt.value === recept.grupa) || null}
+              onChange={(selected) => handleGrupaChange(selected || { target: { value: "" } })}
+              placeholder="-- Izaberite grupu --"
+              isClearable
+            />
           </Form.Group>
-
           <Card className="mt-3 mb-0 pt-0 pb-2">
             <Card.Body className="py-0">
               <Form.Group className="mt-2">
                 <Form.Label style={{ textTransform: "none" }}>
                   Magistralni lijek
                 </Form.Label>
-
-                {/* Filtrirani lijekovi na osnovu izabrane grupe */}
-                {(() => {
-                  /* const filtriraniLijekovi = !recept.grupa
-                    ? lijekNormativ
-                    : lijekNormativ.filter((ln) =>
-                        indikLijek
-                          .filter((il) => il.indikacije_name === recept.grupa)
-                          .some(
-                            (il) => Number(il.lijek_id) === Number(ln.lijek_id)
-                          )
-                      ); */
-
-                  return (
-                    <Form.Select
-                      className="text-capitalize"
-                      value={recept.obrazac}
-                      onChange={(e) => {
-                        const novi = [...recepti];
-
-                        const filtriraniLijekovi = !recept.grupa
-                          ? lijekNormativ
-                          : lijekNormativ.filter((ln) =>
-                              indikLijek
-                                .filter(
-                                  (il) => il.indikacije_name === recept.grupa
-                                )
-                                .some(
-                                  (il) =>
-                                    Number(il.id_normativ) === Number(ln.id_normativ)
-                                )
-                            );
-
-                        const odabrani = lijekNormativ.find(
-                          (o) =>
-                            o.id_normativ ===
-                            filtriraniLijekovi.find(
-                              (f) => f.lijek_name === e.target.value
-                            )?.id_normativ
-                        );
-
-                        novi[index].obrazac = e.target.value;
-                        novi[index].odabraniObrazac = odabrani || null;
-                        novi[index].odabrani = odabrani || null; // <-- dodano za r_art_id i r_art_naziv
-
-                        // Resetuj polja ispod kada se promijeni magistralni lijek
-                        novi[index].kolicina = "";
-                        novi[index].brojPonavljanja = "";
-                        novi[index].vremenskiPeriod = "";
-                        novi[index].napomena = "";
-                        novi[index].vrstaRecepta = "neobn";
-                        novi[index].manualChange = false;
-
-                        if (odabrani) {
-                          const normativi = odabrani.lijek_normativ
-                            .map((n) => n.normativ_name)
-                            .join("\n");
-                          const tekst = `${normativi}\n${odabrani.lijek_m_f}\n${odabrani.lijek_d_s}`;
-
-                          // Samo ako korisnik još nije ručno mijenjao tekst
-                          if (!novi[index].manualChange) {
-                            novi[index].tekstObrasca = tekst;
-                            novi[index].tekstRecepta = tekst;
-                          }
-
-                          // Dodaj ostalo
-                          novi[index].odabraniObrazac = odabrani || null;
-                          novi[index].odabrani = odabrani || null;
-                        } else {
-                          novi[index].tekstObrasca = "";
-                          novi[index].tekstRecepta = "";
-                        }
-
-                        setRecepti(novi);
-                      }}
-                    >
-                      <option value="">-- Izaberite obrazac --</option>
-                      {(() => {
-                        const filtriraniLijekovi = !recept.grupa
-                          ? lijekNormativ
-                          : lijekNormativ.filter((ln) =>
-                              indikLijek
-                                .filter(
-                                  (il) => il.indikacije_name === recept.grupa
-                                )
-                                .some(
-                                  (il) =>
-                                    Number(il.id_normativ) === Number(ln.id_normativ)
-                                )
-                            );
-
-                        return filtriraniLijekovi.map((nor) => (
-                          <option
-                            key={nor.id_normativ}
-                            value={nor.lijek_name}
-                            className="text-capitalize"
-                          >
-                            {nor.lijek_name}
-                          </option>
-                        ));
-                      })()}
-                    </Form.Select>
-                  );
-                })()}
+                <Select
+                  className="text-capitalize"
+                  options={magistralniOptions}
+                  value={magistralniOptions.find(opt => opt.value === recept.obrazac) || null}
+                  onChange={(selected) => handleObrazacChange(selected || { target: { value: "" } }, getFiltriraniLijekovi())}
+                  placeholder="-- Izaberite obrazac --"
+                  isClearable
+                  isDisabled={!recept.grupa}
+                />
               </Form.Group>
-
               {recept.odabraniObrazac && (
                 <>
                   <Card.Subtitle
@@ -280,11 +218,11 @@ function PrescriptionCard({
                       rows={6}
                       value={recept.tekstObrasca || ""}
                       onChange={(e) => {
-                        const novi = [...recepti];
-                        novi[index].tekstObrasca = e.target.value;
-                        novi[index].tekstRecepta = e.target.value;
-                        novi[index].manualChange = true;
-                        setRecepti(novi);
+                        updateRecept({
+                          tekstObrasca: e.target.value,
+                          tekstRecepta: e.target.value,
+                          manualChange: true,
+                        });
                       }}
                       onBeforeInput={handleBeforeInput}
                     />
@@ -307,7 +245,6 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
           </Card>
         </>
       )}
-
       <Row className="align-items-start mt-4">
         {/* Leva kolona: radio dugmad */}
         <Col md={2}>
@@ -316,29 +253,17 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
             name={`vrstaRecepta-${index}`}
             label="Neobnovljiv"
             checked={recept.vrstaRecepta === "neobn"}
-            onChange={() => {
-              const novi = [...recepti];
-              novi[index].vrstaRecepta = "neobn";
-              novi[index].brojPonavljanja = "";
-              novi[index].vremenskiPeriod = "";
-              setRecepti(novi);
-            }}
+            onChange={() => updateRecept({ vrstaRecepta: "neobn", brojPonavljanja: "", vremenskiPeriod: "" })}
             className="mb-2"
           />
-
           <Form.Check
             type="radio"
             name={`vrstaRecepta-${index}`}
             label="Obnovljiv"
             checked={recept.vrstaRecepta === "obn"}
-            onChange={() => {
-              const novi = [...recepti];
-              novi[index].vrstaRecepta = "obn";
-              setRecepti(novi);
-            }}
+            onChange={() => updateRecept({ vrstaRecepta: "obn" })}
           />
         </Col>
-
         {/* Desna kolona: polja u zavisnosti od izbora */}
         <Col md={10}>
           <Row className="align-items-center">
@@ -356,11 +281,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
                       <Form.Control
                         type="text"
                         value={recept.kolicina}
-                        onChange={(e) => {
-                          const novi = [...recepti];
-                          novi[index].kolicina = e.target.value;
-                          setRecepti(novi);
-                        }}
+                        onChange={(e) => handleFieldChange("kolicina", e.target.value)}
                         className="py-0"
                         style={{ width: "50px" }}
                         onBeforeInput={handleBeforeInput}
@@ -371,7 +292,6 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
                 <Row style={{ color: "transparent" }}>nesto</Row>
               </>
             )}
-
             {recept.vrstaRecepta === "obn" && (
               <>
                 <Row style={{ color: "transparent" }}>nesto</Row>
@@ -387,11 +307,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
                       <Form.Control
                         type="text"
                         value={recept.kolicina}
-                        onChange={(e) => {
-                          const novi = [...recepti];
-                          novi[index].kolicina = e.target.value;
-                          setRecepti(novi);
-                        }}
+                        onChange={(e) => handleFieldChange("kolicina", e.target.value)}
                         className="py-0"
                         style={{ width: "50px", minWidth: "50px" }}
                         onBeforeInput={handleBeforeInput}
@@ -409,11 +325,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
                       <Form.Control
                         type="text"
                         value={recept.brojPonavljanja}
-                        onChange={(e) => {
-                          const novi = [...recepti];
-                          novi[index].brojPonavljanja = e.target.value;
-                          setRecepti(novi);
-                        }}
+                        onChange={(e) => handleFieldChange("brojPonavljanja", e.target.value)}
                         className="py-0"
                         style={{ width: "50px", minWidth: "50px" }}
                         onBeforeInput={handleBeforeInput}
@@ -431,11 +343,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
                       <Form.Control
                         type="text"
                         value={recept.vremenskiPeriod}
-                        onChange={(e) => {
-                          const novi = [...recepti];
-                          novi[index].vremenskiPeriod = e.target.value;
-                          setRecepti(novi);
-                        }}
+                        onChange={(e) => handleFieldChange("vremenskiPeriod", e.target.value)}
                         className="py-0"
                         style={{ width: "50px", minWidth: "50px" }}
                         onBeforeInput={handleBeforeInput}
@@ -448,7 +356,6 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
           </Row>
         </Col>
       </Row>
-
       {/* Napomena */}
       <Form.Group className="mt-4">
         <Form.Label style={{ textTransform: "none" }}>
@@ -459,11 +366,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
           rows={3}
           maxLength={4000}
           value={recept.napomena}
-          onChange={(e) => {
-            const novi = [...recepti];
-            novi[index].napomena = e.target.value;
-            setRecepti(novi);
-          }}
+          onChange={(e) => handleFieldChange("napomena", e.target.value)}
           onBeforeInput={handleBeforeInput}
         />
       </Form.Group>

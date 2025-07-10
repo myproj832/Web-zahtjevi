@@ -154,7 +154,7 @@ function DetailsPage() {
             </Col>
           </Row>
 
-          <h2 className="details-rp-title">Recepti (rp)</h2>
+          <h2 className="details-rp-title">Propisani recepti (rp)</h2>
           {rp && rp.length > 0 ? (
             <Row xs={1} md={2} lg={3} className="g-3">
               {rp.map((item, idx) => (
