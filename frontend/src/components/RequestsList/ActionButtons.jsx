@@ -20,7 +20,7 @@ function ActionButtons({ selectedRequest, handleDelete }) {
           onClick={() => navigate(`/edit/${selectedRequest.id_zah}`)}
           disabled={!selectedRequest}
         >
-          Izmjeni&nbsp;🖉
+          Izmijeni&nbsp;🖉
         </button>
 
         <button

@@ -163,7 +163,7 @@ function PrescriptionCard({
 
                 {/* Filtrirani lijekovi na osnovu izabrane grupe */}
                 {(() => {
-                  const filtriraniLijekovi = !recept.grupa
+                  /* const filtriraniLijekovi = !recept.grupa
                     ? lijekNormativ
                     : lijekNormativ.filter((ln) =>
                         indikLijek
@@ -171,7 +171,7 @@ function PrescriptionCard({
                           .some(
                             (il) => Number(il.lijek_id) === Number(ln.lijek_id)
                           )
-                      );
+                      ); */
 
                   return (
                     <Form.Select
@@ -189,16 +189,16 @@ function PrescriptionCard({
                                 )
                                 .some(
                                   (il) =>
-                                    Number(il.lijek_id) === Number(ln.lijek_id)
+                                    Number(il.id_normativ) === Number(ln.id_normativ)
                                 )
                             );
 
                         const odabrani = lijekNormativ.find(
                           (o) =>
-                            o.lijek_id ===
+                            o.id_normativ ===
                             filtriraniLijekovi.find(
                               (f) => f.lijek_name === e.target.value
-                            )?.lijek_id
+                            )?.id_normativ
                         );
 
                         novi[index].obrazac = e.target.value;
@@ -247,13 +247,13 @@ function PrescriptionCard({
                                 )
                                 .some(
                                   (il) =>
-                                    Number(il.lijek_id) === Number(ln.lijek_id)
+                                    Number(il.id_normativ) === Number(ln.id_normativ)
                                 )
                             );
 
                         return filtriraniLijekovi.map((nor) => (
                           <option
-                            key={nor.lijek_id}
+                            key={nor.id_normativ}
                             value={nor.lijek_name}
                             className="text-capitalize"
                           >
@@ -287,6 +287,18 @@ function PrescriptionCard({
                         setRecepti(novi);
                       }}
                       onBeforeInput={handleBeforeInput}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mt-3">
+                    <Form.Control
+                      as="textarea"
+                      rows={6}
+                      value={
+                        `${recept.odabraniObrazac.lijek_normativ.map((n) => n.normativ_name).join("\n")}
+${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
+                      }
+                      readOnly
+                      style={{ display: "none" }}
                     />
                   </Form.Group>
                 </>

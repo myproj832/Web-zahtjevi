@@ -162,7 +162,7 @@ function DetailsPage() {
                   <Card className="details-rp-card h-100 d-flex flex-column">
                     <Card.Body className="d-flex flex-column">
                       <Card.Title className="details-rp-card-title">
-                        {item.naziv === "null" || item.naziv == null || item.naziv === "" ? "Blanko recept" : item.naziv}
+                        {item.naziv === "null" || item.naziv == null || item.naziv == "NORMATIV" ||item.naziv === "" ? "Blanko recept" : item.naziv}
                       </Card.Title>
                       <Card.Text className="details-rp-card-text">
                         <strong>ID art:</strong> {item.id_art || "-"} <br />
