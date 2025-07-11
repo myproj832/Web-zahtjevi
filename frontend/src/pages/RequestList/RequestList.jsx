@@ -294,8 +294,13 @@ function RequestList() {
         {showRequests && (
           <>
             {" "}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              {renderPagination()}
+            <div
+              className="d-flex align-items-center mb-3"
+              style={{ justifyContent: "flex-end" }}
+            >
+              {renderPagination() && (
+                <div style={{ marginRight: "auto" }}>{renderPagination()}</div>
+              )}
               <ActionButtons
                 selectedRequest={filteredRequests.find(
                   (r) => r.id_zah === selectedRowId
