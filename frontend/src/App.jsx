@@ -51,20 +51,19 @@ function App() {
     }
   }, [auth.tokenKorisnik, auth.isAuthenticated]);
 
-  /*─────────────────────────────────────────────────────────
-    2)  Kada se rola postavi na "Admin", a korisnik je
-        još uvijek na početnoj ("/") → automatski ga preusmjeri
-        na admin panel.
-  ─────────────────────────────────────────────────────────*/
+
+// 2) CENTRALNA NAVIGACIJA nakon što se authentication kompletira
   useEffect(() => {
-    if (
-      auth.isAuthenticated &&
-      auth.rola === 'Admin' &&
-      location.pathname === '/'
-    ) {
-      navigate('/AdminPage', { replace: true });
+    // samo ako smo još uvijek na "/" i user je authenticated
+    if (!auth.isAuthenticated || location.pathname !== '/') return;
+
+    if (auth.rola === 'Admin') {
+      navigate('/AdminPage',  { replace: true });
+    } else {
+      navigate('/requests',   { replace: true });
     }
   }, [auth.isAuthenticated, auth.rola, location.pathname, navigate]);
+
 
   /*─────────────────────────────────────────────────────────
     3)  Helperi za rute
@@ -72,10 +71,6 @@ function App() {
   const requireLogin = (Component) =>
     auth.isAuthenticated ? <Component /> : <Navigate to="/" replace />;
 
-  // const requireAdmin = (Component) =>
-  //   auth.isAuthenticated && auth.rola === 'Admin'
-  //     ? <Component />
-  //     : <Navigate to="/" replace />;
 
   /*─────────────────────────────────────────────────────────
                      JSX

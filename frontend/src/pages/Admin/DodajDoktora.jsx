@@ -29,37 +29,49 @@ const DodajDoktora = () => {
   });
 
   const [errors, setErrors] = useState({});
-  // const [selectedUstanove, setSelectedUstanove] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [touched, setTouched] = useState(false);
 
-  // Mock data for ustanove
-  // const dostupneUstanove = [
-  //   'Klinički centar Podgorica',
-  //   'Dom zdravlja Cetinje', 
-  //   'Dom zdravlja Nikšić',
-  //   'Specijalna bolnica Brezovik',
-  //   'Institut za javno zdravlje'
-  // ];
 
   // Generate password (5 letters + 3 numbers = 8 characters)
-  const generatePassword = () => {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const numbers = '0123456789';
+  // const generatePassword = () => {
+  //   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  //   const numbers = '0123456789';
     
-    let password = '';
+  //   let password = '';
     
-    // Add 5 random letters
-    for (let i = 0; i < 5; i++) {
-      password += letters.charAt(Math.floor(Math.random() * letters.length));
-    }
+  //   // Add 5 random letters
+  //   for (let i = 0; i < 5; i++) {
+  //     password += letters.charAt(Math.floor(Math.random() * letters.length));
+  //   }
     
-    // Add 3 random numbers
-    for (let i = 0; i < 3; i++) {
-      password += numbers.charAt(Math.floor(Math.random() * numbers.length));
-    }
+  //   // Add 3 random numbers
+  //   for (let i = 0; i < 3; i++) {
+  //     password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+  //   }
     
-    // Shuffle the password
-    return password.split('').sort(() => Math.random() - 0.5).join('');
+  //   // Shuffle the password
+  //   return password.split('').sort(() => Math.random() - 0.5).join('');
+  // };
+
+   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[.+]).{8,}$/;
+
+  const isValid = passwordRegex.test(password);
+
+ const handleChange = (e) => {
+  const val = e.target.value;
+  setPassword(val);
+
+  // Čistimo grešku čim korisnik počne da kuca
+  if (errors.password) {
+    setErrors(prev => ({ ...prev, password: '' }));
+  }
+};
+
+
+  const handleBlur = () => {
+    setTouched(true);
   };
 
   // Update username when email changes
@@ -68,9 +80,9 @@ const DodajDoktora = () => {
   }, [formData.emailAdresa]);
 
   // Generate password on component mount
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, password: generatePassword() }));
-  }, []);
+  // useEffect(() => {
+  //   setFormData(prev => ({ ...prev, password: generatePassword() }));
+  // }, []);
 
    const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -106,7 +118,9 @@ const DodajDoktora = () => {
     if (!formData.brojTelefona.trim()) newErrors.brojTelefona = 'Broj telefona je obavezan';
     if (!formData.emailAdresa.trim()) newErrors.emailAdresa = 'Email adresa je obavezna';
     else if (!validateEmail(formData.emailAdresa)) newErrors.emailAdresa = 'Email adresa nije u ispravnom formatu';
-    if (!formData.adresa.trim()) newErrors.adresa = 'Adresa je obavezna';
+    // if (!formData.adresa.trim()) newErrors.adresa = 'Adresa je obavezna';
+     if (!password.trim())  newErrors.password = 'Lozinka je obavezna';
+  else if (!passwordRegex.test(password)) newErrors.password = 'Lozinka nije u ispravnom formatu';
     if (formData.listaUstanova.length === 0) newErrors.listaUstanova = 'Morate odabrati najmanje jednu ustanovu';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -123,12 +137,12 @@ const DodajDoktora = () => {
         tel: formData.brojTelefona,
         specijalizacija: formData.specijalizacija,
         username: formData.username,
-        password: formData.password,
+        password: password,
         listaUstanova: formData.listaUstanova
       };
        console.log('[DodajDoktora] Slanje payload za ljekara:', payload);
       await addLjekar(payload);
-      setSavedDoctor(formData);
+      setSavedDoctor({ ...formData, password });
       setShowSuccessModal(true);
     } catch (err) {
       console.error(err);
@@ -234,9 +248,14 @@ const DodajDoktora = () => {
                         <button
                           type="button"
                           className="btn dropdown-button"
-                          onClick={() => setDropdownOpen(!dropdownOpen)}
+                          onClick={() => {
+                            if (!dropdownOpen && errors.listaUstanova) {
+                               setErrors(prev => ({ ...prev, listaUstanova: '' }));
+                                }
+                             setDropdownOpen(!dropdownOpen);
+                              }}
                         >
-                          <span>{availableUstanove.length > 0 ? 'Izaberite ustanovu...' : 'Sve ustanove su dodane'}</span>
+                          <span>{availableUstanove.length > 0 ? 'Izaberite ustanovu...' : 'Sve ustanove su dodate'}</span>
                           <span className="dropdown-plus">+</span>
                         </button>
                         {dropdownOpen && availableUstanove.length > 0 && (
@@ -314,7 +333,7 @@ const DodajDoktora = () => {
                       </div>
                       
                       <div className="mb-3">
-                        <label className="form-label compact required">ADRESA</label>
+                        <label className="form-label compact">ADRESA</label>
                         <input
                           type="text"
                           className={`form-control compact ${errors.adresa ? 'is-invalid' : ''}`}
@@ -339,15 +358,51 @@ const DodajDoktora = () => {
                         <label className="form-label compact">KORISNIČKO IME</label>
                         <input type="text" className="form-control compact" value={formData.username} disabled />
                       </div>
-                      <div className="mb-3">
-                        <label className="form-label compact">LOZINKA</label>
-                        <input type="text" className="form-control compact" value={formData.password} disabled />
-                      </div>
+
+                       <div className="mb-3">
+      <label htmlFor="password" className="form-label compact required">
+        LOZINKA
+      </label>
+       <div className="input-wrapper">
+      <input
+        id="password"
+        type="text"
+        className={`form-control compact ${
+          touched ? (isValid ? 'is-valid' : 'is-invalid') : ''
+        }`}
+        value={password}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        aria-describedby="passwordHelp"
+         placeholder="Unesite lozinku"
+      />
+       {errors.password && (
+    <div className="text-danger small mt-1">
+      {errors.password}
+    </div>
+    )}
+    
+      {touched && !isValid && (
+        <div id="passwordHelp" className="invalid-feedback">
+          Lozinka mora sadržati:
+          <ul className="mb-0 ps-3">
+            <li>najmanje 8 karaktera</li>
+            <li>jedno malo slovo (a–z)</li>
+            <li>jedno veliko slovo (A–Z)</li>
+            <li>jedan specijalni znak <code>.</code> ili <code>+</code></li>
+          </ul>
+        </div>
+        
+      )}
+    </div>
+    </div>
+  
+
                     </div>
                   </div>
                   
                   {/* Napomena - Full width */}
-                  <div className="col-12">
+                  {/* <div className="col-12">
                     <div className="form-section compact napomena-section">
                       <label className="form-label compact">NAPOMENA</label>
                       <textarea
@@ -358,7 +413,7 @@ const DodajDoktora = () => {
                         onChange={(e) => handleInputChange('napomena', e.target.value)}
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               
@@ -390,7 +445,7 @@ const DodajDoktora = () => {
                   <div className="saved-info">
                     <p><strong>Doktor:</strong> {savedDoctor?.imeIPrezime}</p>
                     <p><strong>Username:</strong> {savedDoctor?.username}</p>
-                    <p><strong>Password:</strong> {savedDoctor?.password}</p>
+                    <p><strong>Password:</strong> {password}</p>
                   </div>
                 </div>
                 <div className="modal-footer justify-content-center">

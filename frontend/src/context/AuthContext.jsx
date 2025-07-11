@@ -111,13 +111,8 @@ export const AuthProvider = ({ children }) => {
    }
  }, [specialization]);
 
-  // Fetch public IP address
-  useEffect(() => {
-    fetch('https://api.ipify.org?format=json')
-      .then(res => res.json())
-      .then(data => setIpAddress(data.ip))
-      .catch(err => console.error('Unable to fetch IP address', err));
-  }, []);
+
+
 
 const logout = useCallback(() => {
     sessionStorage.clear();
@@ -178,10 +173,19 @@ const logout = useCallback(() => {
     };
   }, [resetTimers, clearSessionMessage]);
 
-
+   const getIpAddress = async () => {
+    try {
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      return data.ip;
+    } catch (err) {
+      console.error("Greška prilikom dobijanja IP adrese:", err);
+      return "127.0.0.1";
+    }
+  };
   // 1) Poziv prvog check_in servisa
   const login = async ({ username, password }) => {
-     const ip = ipAddress || '0.0.0.0';
+     const ip = await getIpAddress();
     const res = await fetch('http://62.4.59.86:3334/api/check_in', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -248,11 +252,11 @@ if (out.error_u === 'OK') {
    setPhoneInstitution(  inst.phone_institution);
   
    setRola(out2.rola_u); 
- if (out2.rola_u === 'Admin') {
-   navigate('/AdminPage');
- } else {
-   navigate('/requests');
- }
+//  if (out2.rola_u === 'Admin') {
+//    navigate('/AdminPage');
+//  } else {
+//    navigate('/requests');
+//  }
 };
 
    useEffect(() => {

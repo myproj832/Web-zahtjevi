@@ -1,40 +1,51 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import './InstitutionModal.css';
 
 /* Naziv (ili ID) ustanove koja otvara Admin panel */
-const ADMIN_UNIT_NAME = 'Administracija sistema';   // promijeni po potrebi
+// const ADMIN_UNIT_NAME = 'Administracija sistema';  
 // const ADMIN_UNIT_ID   = 999;                     // primjer ako radiš po ID-u
 
 export default function InstitutionModal({ show, onHide, container }) {
   const { institucije, korisnik, selectInstitution, logout, isAdmin} = useAuth();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
  
   /* Klik na dugme ustanove */
-  const handleChoose = (inst) => {
-    console.log('👉 Odabrana ustanova:', inst);
+  // const handleChoose = (inst) => {
+  //   console.log('👉 Odabrana ustanova:', inst);
 
     /* 1. Zapiši u kontekst (token, rola, itd.) */
-    selectInstitution(inst);
+    // selectInstitution(inst);
 
     /* 2. Zatvori modal */
-    onHide();
+    // onHide();
 
     /* 3. Ako je to Admin ustanova, preusmjeri na /AdminPage */
-    const isAdminUnit =
-      inst.name_unit?.toLowerCase() === ADMIN_UNIT_NAME.toLowerCase();
+    // const isAdminUnit =
+    //   inst.name_unit?.toLowerCase() === ADMIN_UNIT_NAME.toLowerCase();
       // ili npr. inst.id_unit === ADMIN_UNIT_ID;
 
-    if (isAdminUnit) {
+    // if (isAdminUnit) {
       /*  Mali timeout (≈ jedan “tick”) da stignu
           asinkrono da se upišu podaci u context  */
-      setTimeout(() => {
-        console.log('➡️ Navigacija na /AdminPage');
-        navigate('/AdminPage', { replace: true });
-      }, 50); // 50 ms je sasvim dovoljno
+  //     setTimeout(() => {
+  //       console.log('➡️ Navigacija na /AdminPage');
+  //       navigate('/AdminPage', { replace: true });
+  //     }, 50); // 50 ms je sasvim dovoljno
+  //   }
+  // };
+
+  const handleChoose = async inst => {
+    console.log('👉 Odabrana ustanova:', inst);
+    try {
+      await selectInstitution(inst);
+      onHide();
+    } catch (err) {
+      console.error('Greška pri odabiru ustanove:', err);
+      
     }
   };
 
