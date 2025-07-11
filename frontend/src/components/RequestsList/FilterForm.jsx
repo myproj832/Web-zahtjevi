@@ -45,7 +45,7 @@ function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova 
           onChange={handleFilterChange}
         />
       </div>
-      <div className="col-md-2 m-0">
+      <div className="col-md-2 m-0 text-nowrap">
         <label>Ustanova:</label>
         <Select
           classNamePrefix="react-select"

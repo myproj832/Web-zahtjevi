@@ -251,10 +251,8 @@ function DetailsPage() {
         <Modal.Body>
           {printModal.data && (
             <MedicalPrescriptionContent
+              request={requestData}
               recept={printModal.data.recept}
-              pacijent={printModal.data.pacijent}
-              lekar={printModal.data.lekar}
-              ustanova={printModal.data.ustanova}
             />
           )}
         </Modal.Body>

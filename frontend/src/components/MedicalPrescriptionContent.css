@@ -88,11 +88,14 @@
 }
 
 .medical-square {
-  width: 8px;
-  height: 8px;
-  border: 1px solid #000;
-  margin-right: 6px;
-  background-color: #fff;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  margin-right: 8px;
   flex-shrink: 0;
 }
 

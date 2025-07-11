@@ -5,7 +5,7 @@ function ActionButtons({ selectedRequest, handleDelete }) {
   const canDelete = selectedRequest && selectedRequest.status === "0";
 
   return (
-    <div className="d-none d-md-block">
+    <div className={`d-none d-md-block action-buttons`}>
       <div className="d-flex justify-content-end gap-1 p-2">
         <button
           className="btn btn-sm btn-outline-primary btn-light btn-30"

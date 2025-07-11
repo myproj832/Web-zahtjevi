@@ -18,7 +18,6 @@ function RequestList() {
   const { rola } = useAuth();
   const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
 
-
   const [showRequests, setShowRequests] = useState(
     () => sessionStorage.getItem("showRequests") === "true"
   );
@@ -123,89 +122,103 @@ function RequestList() {
     const from = sortedRequests.length === 0 ? 0 : indexOfFirstRequest + 1;
     const to = Math.min(indexOfLastRequest, sortedRequests.length);
     return (
-        <div className="d-flex justify-content-between align-items-center gap-2 px-2 rounded" style={{ border: "1px solid rgb(138, 176, 179)" }}>
-          <div className="d-none d-md-block">
-            <span style={{ minWidth: 60, textAlign: "right", borderRight: "1px solid rgb(138, 176, 179)" }} className="px-2">
-              {from}–{to} 
-            </span>
-          </div>
-          <div className="d-flex justify-content-center align-items-center gap-2">
-            <span><strong>1</strong></span>
-            <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => {
-                  setCurrentPage(1);
-                  scrollToPagination();
-                }}
-                style={{ paddingTop: 1, paddingBottom: 1 }}
-                className="mx-1 px-2"
-              >
-                <span style={{ color: "#007bff" }}>⇐</span>
-              </Button>
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => {
-                  setCurrentPage((p) => Math.max(1, p - 1));
-                  scrollToPagination();
-                }}
-                style={{
-                  paddingTop: 1,
-                  paddingBottom: 1
-                }}
-                className="px-2"
-              >
-                <span style={{ color: "#007bff" }}>⟵</span>
-              </Button>
-              <input
-                type="text"
-                value={currentPage}
-                onChange={handleInputChange}
-                style={{
-                  width: 60,
-                  textAlign: "center",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  margin: "0.5rem",
-                }}
-              />
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => {
-                  setCurrentPage((p) => Math.min(totalPages, p + 1));
-                  scrollToPagination();
-                }}
-                style={{
-                  paddingTop: 1,
-                  paddingBottom: 1
-                }}
-                className="px-2"
-              >
-                <span style={{ color: "#007bff" }}>⟶</span>
-              </Button>
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => {
-                  setCurrentPage(totalPages);
-                  scrollToPagination();
-                }}
-                style={{ paddingTop: 1, paddingBottom: 1 }}
-                className="mx-1 px-2"
-              >
-                <span style={{ color: "#007bff" }}>⇒</span>
-              </Button>
-            </div>
-            <span><strong>{totalPages}</strong></span>
-          </div>
+      <div
+        className="d-flex justify-content-between align-items-center gap-2 px-2 rounded"
+        style={{ border: "1px solid rgb(138, 176, 179)" }}
+      >
+        <div className="d-none d-md-block">
+          <span
+            style={{
+              minWidth: 60,
+              textAlign: "right",
+              borderRight: "1px solid rgb(138, 176, 179)",
+            }}
+            className="px-2"
+          >
+            {from}–{to}
+          </span>
         </div>
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <span>
+            <strong>1</strong>
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => {
+                setCurrentPage(1);
+                scrollToPagination();
+              }}
+              style={{ paddingTop: 1, paddingBottom: 1 }}
+              className="mx-1 px-2"
+            >
+              <span style={{ color: "#007bff" }}>⇐</span>
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => {
+                setCurrentPage((p) => Math.max(1, p - 1));
+                scrollToPagination();
+              }}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+              }}
+              className="px-2"
+            >
+              <span style={{ color: "#007bff" }}>⟵</span>
+            </Button>
+            <input
+              type="text"
+              value={currentPage}
+              onChange={handleInputChange}
+              style={{
+                width: 60,
+                textAlign: "center",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                margin: "0.5rem",
+              }}
+            />
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                setCurrentPage((p) => Math.min(totalPages, p + 1));
+                scrollToPagination();
+              }}
+              style={{
+                paddingTop: 1,
+                paddingBottom: 1,
+              }}
+              className="px-2"
+            >
+              <span style={{ color: "#007bff" }}>⟶</span>
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                setCurrentPage(totalPages);
+                scrollToPagination();
+              }}
+              style={{ paddingTop: 1, paddingBottom: 1 }}
+              className="mx-1 px-2"
+            >
+              <span style={{ color: "#007bff" }}>⇒</span>
+            </Button>
+          </div>
+          <span>
+            <strong>{totalPages}</strong>
+          </span>
+        </div>
+      </div>
     );
   };
 
@@ -290,7 +303,20 @@ function RequestList() {
                 handleDelete={handleDelete}
               />
             </div>
-            <div className="d-none d-md-block" tabIndex={0} onBlur={() => setSelectedRowId(null)}>
+            <div
+              className="d-none d-md-block"
+              tabIndex={0}
+              onBlur={(e) => {
+                if (
+                  e.relatedTarget &&
+                  e.relatedTarget.closest &&
+                  e.relatedTarget.closest(".action-buttons")
+                ) {
+                  return;
+                }
+                setSelectedRowId(null);
+              }}
+            >
               <RequestTable
                 listaZahtjeva={listaZahtjeva}
                 filteredRequests={currentRequests}
