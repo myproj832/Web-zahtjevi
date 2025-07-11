@@ -6,12 +6,14 @@ function RequestTable({
   setSelectedRowId,
   selectedRowId,
   rola,
+  indexOfFirstRequest = 0,
 }) {
   return (
     <div className="d-none d-md-block">
       <Table bordered hover responsive className="bg-white shadow-sm">
         <thead>
           <tr>
+            <th>R.br.</th>
             <th>ID zahtjeva / Datum recepta</th>
             {/* <th>Datum izdavanja</th> */}
             <th>Pacijent / Telefon</th>
@@ -34,7 +36,7 @@ function RequestTable({
         </thead>
 
         <tbody>
-          {filteredRequests.map((request) => (
+          {filteredRequests.map((request, idx) => (
             <tr
               key={request.id_zah}
               className={
@@ -43,6 +45,7 @@ function RequestTable({
               onClick={() => setSelectedRowId(request.id_zah)}
               style={{ cursor: "pointer" }}
             >
+              <td>{indexOfFirstRequest + idx + 1}</td>
               <td><strong>{request.id_zah}</strong> <br></br>{request.dat_prijema}</td>
               {/* <td>{request.rp?.[0]?.dat_izdavanja || "—"}</td> */}
               <td>

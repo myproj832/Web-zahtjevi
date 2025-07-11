@@ -1,3 +1,5 @@
+import Select from "react-select";
+
 function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova }) {
   return (
     <div className="row g-2 mb-4">
@@ -45,17 +47,25 @@ function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova 
       </div>
       <div className="col-md-2 m-0">
         <label>Ustanova:</label>
-        <select
-          className="form-control"
+        <Select
+          classNamePrefix="react-select"
+          options={
+            listaUstanova?.map((u) => ({ value: u, label: u })) || []
+          }
+          placeholder="Pretraga ustanove"
           name="ustanova"
-          value={filters.ustanova || ""}
-          onChange={handleFilterChange}
-        >
-          <option value="">Sve ustanove</option>
-          {listaUstanova && listaUstanova.map((u, idx) => (
-            <option key={idx} value={u}>{u}</option>
-          ))}
-        </select>
+          value={filters.ustanova ? { value: filters.ustanova, label: filters.ustanova } : null}
+          onChange={(selected) => {
+            handleFilterChange({
+              target: {
+                name: "ustanova",
+                value: selected ? selected.value : ""
+              }
+            });
+          }}
+          isClearable
+          isSearchable
+        />
       </div>
       <div className="col-md-2 m-0">
         <label>Status:</label>

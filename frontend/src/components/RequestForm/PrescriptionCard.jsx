@@ -195,7 +195,6 @@ function PrescriptionCard({
                   Magistralni lijek
                 </Form.Label>
                 <Select
-                  className="text-capitalize"
                   options={magistralniOptions}
                   value={magistralniOptions.find(opt => opt.value === recept.obrazac) || null}
                   onChange={(selected) => handleObrazacChange(selected || { target: { value: "" } }, getFiltriraniLijekovi())}

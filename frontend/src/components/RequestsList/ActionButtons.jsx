@@ -6,7 +6,7 @@ function ActionButtons({ selectedRequest, handleDelete }) {
 
   return (
     <div className="d-none d-md-block">
-      <div className="d-flex justify-content-end gap-4 p-2">
+      <div className="d-flex justify-content-end gap-1 p-2">
         <button
           className="btn btn-sm btn-outline-primary btn-light btn-30"
           onClick={() => navigate(`/details/${selectedRequest.id_zah}`, { state: { request: selectedRequest } })}

@@ -17,8 +17,26 @@ export const DataProvider = ({ children }) => {
   const [listaZahtjeva, setListaZahtjeva] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  function deepTrimStrings(obj) {
+    if (Array.isArray(obj)) {
+      return obj.map(deepTrimStrings);
+    } else if (obj && typeof obj === "object") {
+      return Object.fromEntries(
+        Object.entries(obj).map(([k, v]) => [k, deepTrimStrings(v)])
+      );
+    } else if (typeof obj === "string") {
+      return obj.trim();
+    }
+    return obj;
+  }
+
   // SLANJE PODATAKA BAZI
   const submitZahtjev = async ({ patientInfo, dijagnoza, recepti, files }) => {
+    
+    const cleanPatientInfo = deepTrimStrings(patientInfo);
+    const cleanDijagnoza = deepTrimStrings(dijagnoza);
+    const cleanRecepti = deepTrimStrings(recepti);
+
     const requestBody = {
       token_app: tokenApp,
       in_auten: JSON.stringify({
@@ -28,14 +46,14 @@ export const DataProvider = ({ children }) => {
       in_json: JSON.stringify({
         id_zah: "",
         status_zah: "1",
-        p_br_tel: patientInfo.phone.replace(/\D/g, ""),
-        p_ime: patientInfo.firstName,
-        p_prezime: patientInfo.lastName,
-        p_dat_rodj: patientInfo.birthDate,
-        p_grad: patientInfo.city,
-        p_dijagnoza: dijagnoza,
+        p_br_tel: cleanPatientInfo.phone.replace(/\D/g, ""),
+        p_ime: cleanPatientInfo.firstName,
+        p_prezime: cleanPatientInfo.lastName,
+        p_dat_rodj: cleanPatientInfo.birthDate,
+        p_grad: cleanPatientInfo.city,
+        p_dijagnoza: cleanDijagnoza,
         p_napomena: "",
-        p_rp: recepti.map((recept) => ({
+        p_rp: cleanRecepti.map((recept) => ({
           r_indikacija: recept.grupa || "",
           r_id_det: "",
           r_tip_rp: recept.tipRecepta === "obrazac" ? "OB" : "BL",
@@ -47,10 +65,6 @@ export const DataProvider = ({ children }) => {
             recept.tipRecepta === "obrazac"
               ? recept.odabraniObrazac?.id_normativ || ""
               : recept.odabrani?.id_normativ || "",
-          /* r_art_naziv:
-            recept.tipRecepta === "obrazac"
-              ? recept.odabraniObrazac?.lijek_name || ""
-              : recept.odabrani?.lijek_name || "", */
           r_lijek_name:
             recept.tipRecepta === "obrazac"
               ? recept.odabraniObrazac?.lijek_name || ""
