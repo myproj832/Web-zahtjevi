@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ValidationContext } from '../../context/ValidationContext';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './IzmijeniUstanovu.css';
 
+import { useDataContext } from '../../context/DataContext';
+import { useAdmin } from '../../context/AdminContext.jsx';
+
 const IzmijeniUstanovu = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+   const { gradovi } = useDataContext();
+  const {
+    komitenti,
+    ustanove,
+    fetchKomitenti,
+    fetchUstanove,
+    updateUstanova
+  } = useAdmin();
+  const allowedSigns = useContext(ValidationContext);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedUstanova, setSavedUstanova] = useState(null);
@@ -25,38 +38,39 @@ const IzmijeniUstanovu = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [selectedDoktori, setSelectedDoktori] = useState([]);
+  // const [selectedDoktori, setSelectedDoktori] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Mock data for doktori
-  const dostupniDoktori = [
-    'Dr. Marko Petrović',
-    'Dr. Ana Jovanović', 
-    'Dr. Petar Nikolić',
-    'Dr. Stefan Milanović',
-    'Dr. Milica Stanković'
-  ];
-
-  // Load existing institution data on component mount
+   // Učitaj liste samo jednom
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockInstitutionData = {
-      id: id,
-      nazivUstanove: 'Dom zdravlja Bijelo Polje',
-      nazivPoslovneJedinice: 'Opšta medicina',
-      adresaPoslovneJedinice: 'Miloja Pavićevića 1',
-      komitent: 'Fond zdravstvenog osiguranja',
-      brojTelefonaPoslovnice: '+382 50 234 567',
-      imeKontaktOsobe: 'Dragana',
-      prezimeKontaktOsobe: 'Vukčević',
-      telefonKontaktOsobe: '+382 69 890 123',
-      napomena: 'Glavna ustanova u Bijelom Polju',
-      doktori: ['Dr. Marko Petrović', 'Dr. Ana Jovanović']
-    };
-    
-    setFormData(mockInstitutionData);
-    setSelectedDoktori(mockInstitutionData.doktori);
-  }, [id]);
+    if (komitenti.length === 0) fetchKomitenti().catch(console.error);
+    if (ustanove.length === 0) fetchUstanove().catch(console.error);
+  }, []);
+
+  // Kada ustanove budu učitane, popuni formu sa podacima izabranog id
+  useEffect(() => {
+    if (!ustanove.length) return;
+    const ust = ustanove.find(u => u.id_ust.toString() === id);
+    if (!ust) return;
+
+    // Kontakt osobu razdvojimo na ime i prezime (prva razmak)
+    const raw = (ust.kontakt_osoba || '').trim();
+    const parts = raw.split(' ');
+    const ime = parts[0] || '';
+    const prezime = parts.slice(1).join(' ') || '';
+       setFormData({
+      nazivUstanove: ust.naziv_pravnog || '',
+      nazivPoslovneJedinice: ust.naziv_ustanove || '',
+      adresaPoslovneJedinice: ust.adresa_ustanove || '',
+      komitent: ust.id_kom?.toString() || '',
+      grad: ust.grad_ustanove || '',
+      brojTelefonaPoslovnice: ust.tel_ustanove || '',
+      imeKontaktOsobe: ime,
+      prezimeKontaktOsobe: prezime,
+      napomena: ust.napomena || ''
+    });
+  }, [ustanove, id]);
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -73,68 +87,96 @@ const IzmijeniUstanovu = () => {
     }
   };
 
-  const handleDoktorAdd = (doktor) => {
-    if (!selectedDoktori.includes(doktor)) {
-      setSelectedDoktori(prev => [...prev, doktor]);
-    }
-    setDropdownOpen(false);
-  };
+  // const handleDoktorAdd = (doktor) => {
+  //   if (!selectedDoktori.includes(doktor)) {
+  //     setSelectedDoktori(prev => [...prev, doktor]);
+  //   }
+  //   setDropdownOpen(false);
+  // };
 
-  const handleDoktorRemove = (doktor) => {
-    setSelectedDoktori(prev => prev.filter(d => d !== doktor));
-  };
+  // const handleDoktorRemove = (doktor) => {
+  //   setSelectedDoktori(prev => prev.filter(d => d !== doktor));
+  // };
 
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.nazivUstanove.trim()) {
-      newErrors.nazivUstanove = 'Naziv ustanove je obavezan';
+      newErrors.nazivUstanove = 'Naziv pravnog lica je obavezan';
     }
     
     if (!formData.nazivPoslovneJedinice.trim()) {
-      newErrors.nazivPoslovneJedinice = 'Naziv poslovne jedinice je obavezan';
+      newErrors.nazivPoslovneJedinice = 'Naziv poslovne jedinice (Ustanove) je obavezan';
     }
     
     if (!formData.adresaPoslovneJedinice.trim()) {
-      newErrors.adresaPoslovneJedinice = 'Adresa poslovne jedinice je obavezna';
+      newErrors.adresaPoslovneJedinice = 'Adresa poslovne jedinice (Ustanove) je obavezna';
     }
     
-    if (!formData.komitent.trim()) {
-      newErrors.komitent = 'Komitent je obavezan';
-    }
+    // if (!formData.komitent.trim()) {
+    //   newErrors.komitent = 'Komitent je obavezan';
+    // }
     
-    if (!formData.brojTelefonaPoslovnice.trim()) {
-      newErrors.brojTelefonaPoslovnice = 'Broj telefona poslovnice je obavezan';
-    }
+    // if (!formData.brojTelefonaPoslovnice.trim()) {
+    //   newErrors.brojTelefonaPoslovnice = 'Broj telefona poslovnice je obavezan';
+    // }
     
-    if (!formData.imeKontaktOsobe.trim()) {
-      newErrors.imeKontaktOsobe = 'Ime kontakt osobe je obavezno';
-    }
+    // if (!formData.imeKontaktOsobe.trim()) {
+    //   newErrors.imeKontaktOsobe = 'Ime kontakt osobe je obavezno';
+    // }
     
-    if (!formData.prezimeKontaktOsobe.trim()) {
-      newErrors.prezimeKontaktOsobe = 'Prezime kontakt osobe je obavezno';
-    }
+    // if (!formData.prezimeKontaktOsobe.trim()) {
+    //   newErrors.prezimeKontaktOsobe = 'Prezime kontakt osobe je obavezno';
+    // }
     
-    if (!formData.telefonKontaktOsobe.trim()) {
-      newErrors.telefonKontaktOsobe = 'Telefon kontakt osobe je obavezan';
-    }
+    // if (!formData.telefonKontaktOsobe.trim()) {
+    //   newErrors.telefonKontaktOsobe = 'Telefon kontakt osobe je obavezan';
+    // }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSacuvaj = () => {
-    if (validateForm()) {
-      const ustanovaData = {
-        ...formData,
-        doktori: selectedDoktori,
-        kontaktOsoba: `${formData.imeKontaktOsobe} ${formData.prezimeKontaktOsobe}`,
-        status: 'Aktivan',
-        datumKreiranja: new Date().toISOString().split('T')[0]
-      };
-      
-      setSavedUstanova(ustanovaData);
+   // 2. generički handler za validaciju dozvoljenih karaktera
+   const handleBeforeInput = (e) => {
+    const char = e.data;
+    const field = e.target.name;
+    if (!char || !allowedSigns) return;
+
+    if (!allowedSigns.includes(char)) {
+      e.preventDefault();
+      setErrors(prev => ({
+        ...prev,
+        [field]: `Znak "${char}" nije dozvoljen.`
+      }));
+      setTimeout(() => {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }, 3000);
+    }
+  };
+
+   const handleSacuvaj = async () => {
+    if (!validateForm()) return;
+
+    const payload = {
+      id: Number(id),
+      nazivPravnog: formData.nazivUstanove,
+      nazivUstanove: formData.nazivPoslovneJedinice,
+      adresaUstanove: formData.adresaPoslovneJedinice,
+      gradUstanove: formData.grad,
+      telUstanove: formData.brojTelefonaPoslovnice,
+      kontaktOsoba: `${formData.imeKontaktOsobe} ${formData.prezimeKontaktOsobe}`.trim(),
+      idKom: formData.komitent,
+      napomena: formData.napomena
+    };
+
+    try {
+      await updateUstanova(payload);
+      setSavedUstanova({ ...formData });
       setShowSuccessModal(true);
+    } catch (err) {
+      console.error('Greška pri izmjeni ustanove:', err);
+      // po potrebi možeš prikazati toast ili inline error
     }
   };
 
@@ -161,7 +203,7 @@ const IzmijeniUstanovu = () => {
     navigate('/AdminUstanove');
   };
 
-  const availableDoktori = dostupniDoktori.filter(doktor => !selectedDoktori.includes(doktor));
+  // const availableDoktori = dostupniDoktori.filter(doktor => !selectedDoktori.includes(doktor));
 
   return (
     <div className="izmijeni-ustanovu-page background">
@@ -194,63 +236,71 @@ const IzmijeniUstanovu = () => {
                       </div>
                       
                       <div className="mb-3">
-                        <label className="form-label compact required">NAZIV USTANOVE</label>
+                        <label className="form-label compact required">NAZIV PRAVNOG LICA</label>
                         <input
+                        name="nazivUstanove"
                           type="text"
                           className={`form-control compact ${errors.nazivUstanove ? 'is-invalid' : ''}`}
                           placeholder="Unesite naziv ustanove"
                           value={formData.nazivUstanove}
                           onChange={(e) => handleInputChange('nazivUstanove', e.target.value)}
+                          onBeforeInput={handleBeforeInput}
                         />
                         {errors.nazivUstanove && <div className="invalid-feedback">{errors.nazivUstanove}</div>}
                       </div>
                       
                       <div className="mb-3">
-                        <label className="form-label compact required">NAZIV POSLOVNE JEDINICE</label>
+                        <label className="form-label compact required">NAZIV POSLOVNE JEDINICE (USTANOVE)</label>
                         <input
+                          name="nazivPoslovneJedinice"
                           type="text"
                           className={`form-control compact ${errors.nazivPoslovneJedinice ? 'is-invalid' : ''}`}
                           placeholder="Unesite naziv poslovne jedinice"
                           value={formData.nazivPoslovneJedinice}
                           onChange={(e) => handleInputChange('nazivPoslovneJedinice', e.target.value)}
+                          onBeforeInput={handleBeforeInput}
                         />
                         {errors.nazivPoslovneJedinice && <div className="invalid-feedback">{errors.nazivPoslovneJedinice}</div>}
                       </div>
                       
                       <div className="mb-3">
-                        <label className="form-label compact required">ADRESA POSLOVNE JEDINICE</label>
+                        <label className="form-label compact required">ADRESA POSLOVNE JEDINICE (USTANOVE)</label>
                         <input
+                          name="adresaPoslovneJedinice"
                           type="text"
                           className={`form-control compact ${errors.adresaPoslovneJedinice ? 'is-invalid' : ''}`}
                           placeholder="Unesite adresu poslovne jedinice"
                           value={formData.adresaPoslovneJedinice}
                           onChange={(e) => handleInputChange('adresaPoslovneJedinice', e.target.value)}
+                          onBeforeInput={handleBeforeInput}
                         />
                         {errors.adresaPoslovneJedinice && <div className="invalid-feedback">{errors.adresaPoslovneJedinice}</div>}
                       </div>
-                      
+                               <div className="mb-3">
+                               <label className="form-label compact required">GRAD POSLOVNE JEDINICE (USTANOVE)</label>
+                               <select
+                               className={`form-select compact ${errors.grad ? 'is-invalid' : ''}`}
+                               value={formData.grad}
+                               onChange={e => handleInputChange('grad', e.target.value)}
+                                >
+                           <option value="">Izaberite grad...</option>
+                           {gradovi.map(grad => (
+                         <option key={grad.code} value={grad.code}>
+                           {grad.name}
+                           </option>
+                             ))}
+                             </select>
+                         {errors.grad && <div className="invalid-feedback">{errors.grad}</div>}
+                         </div>
+
                       <div className="mb-3">
-                        <label className="form-label compact required">KOMITENT</label>
-                        <select
-                          className={`form-select compact ${errors.komitent ? 'is-invalid' : ''}`}
-                          value={formData.komitent}
-                          onChange={(e) => handleInputChange('komitent', e.target.value)}
-                        >
-                          <option value="">Izaberite komitenta...</option>
-                          <option value="Fond zdravstvenog osiguranja">Fond zdravstvenog osiguranja</option>
-                          <option value="Ministarstvo zdravlja">Ministarstvo zdravlja</option>
-                          <option value="Privatni">Privatni</option>
-                        </select>
-                        {errors.komitent && <div className="invalid-feedback">{errors.komitent}</div>}
-                      </div>
-                      
-                      <div className="mb-3">
-                        <label className="form-label compact required">BROJ TELEFONA POSLOVNICE</label>
+                        <label className="form-label compact">BROJ TELEFONA POSLOVNE JEDINICE (USTANOVE)</label>
                         <div className="phone-input-wrapper">
                           <PhoneInput
                             country={'me'}
                             value={formData.brojTelefonaPoslovnice}
                             onChange={(value) => handleInputChange('brojTelefonaPoslovnice', value)}
+                              masks={{ me: '.. ... ...' }}
                             inputClass={`phone-input-field ${errors.brojTelefonaPoslovnice ? 'is-invalid' : ''}`}
                             buttonClass="phone-button"
                             containerClass="phone-container"
@@ -258,6 +308,23 @@ const IzmijeniUstanovu = () => {
                         </div>
                         {errors.brojTelefonaPoslovnice && <div className="text-danger small mt-1">{errors.brojTelefonaPoslovnice}</div>}
                       </div>
+                       <div className="mb-3">
+                        <label className="form-label compact">KOMITENT</label>
+                        <select
+                          className={`form-select compact ${errors.komitent ? 'is-invalid' : ''}`}
+                          value={formData.komitent}
+                          onChange={e => handleInputChange('komitent', e.target.value)}
+                        >
+                          <option value="">Izaberite komitenta...</option>
+                          {komitenti.map(k => (
+                            <option key={k.id_kom} value={k.id_kom}>
+                              {k.naziv_kom}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.komitent && <div className="invalid-feedback">{errors.komitent}</div>}
+                      </div>
+                      
                     </div>
                   </div>
                   
@@ -271,17 +338,18 @@ const IzmijeniUstanovu = () => {
                       
                       <label className="form-label compact">DODAJ DOKTORA</label>
                       
-                      <div className="dropdown-container">
+                      <div className="dropdown-container disabled w-100"  data-tooltip="Ova akcija trenutno nije dostupna">
                         <button
                           type="button"
                           className="btn dropdown-button"
                           onClick={() => setDropdownOpen(!dropdownOpen)}
+                           disabled
                         >
-                          <span>{availableDoktori.length > 0 ? 'Izaberite doktora...' : 'Svi doktori su dodani'}</span>
+                          {/* <span>{availableDoktori.length > 0 ? 'Izaberite doktora...' : 'Svi doktori su dodati'}</span> */}
                           <span className="dropdown-plus">+</span>
                         </button>
                         
-                        {dropdownOpen && availableDoktori.length > 0 && (
+                        {/* {dropdownOpen && availableDoktori.length > 0 && (
                           <div className="dropdown-menu-custom">
                             {availableDoktori.map((doktor, index) => (
                               <button
@@ -294,11 +362,11 @@ const IzmijeniUstanovu = () => {
                               </button>
                             ))}
                           </div>
-                        )}
+                        )} */}
                       </div>
                       
                       {/* Selected doktori */}
-                      {selectedDoktori.length > 0 && (
+                      {/* {selectedDoktori.length > 0 && (
                         <div className="selected-doktori">
                           {selectedDoktori.map((doktor, index) => (
                             <div key={index} className="selected-item">
@@ -313,7 +381,7 @@ const IzmijeniUstanovu = () => {
                             </div>
                           ))}
                         </div>
-                      )}
+                      )} */}
                       
                       <p className="form-text success-text compact">✓ Dodeljeni doktori iz liste</p>
                     </div>
@@ -328,31 +396,35 @@ const IzmijeniUstanovu = () => {
                       </div>
                       
                       <div className="row g-3">
-                        <div className="col-12 col-md-4">
-                          <label className="form-label compact required">IME</label>
+                        <div className="col-12 col-md-6">
+                          <label className="form-label compact">IME</label>
                           <input
+                            name="imeKontaktOsobe"
                             type="text"
                             className={`form-control compact ${errors.imeKontaktOsobe ? 'is-invalid' : ''}`}
                             placeholder="Ime kontakt osobe"
                             value={formData.imeKontaktOsobe}
                             onChange={(e) => handleInputChange('imeKontaktOsobe', e.target.value)}
+                            onBeforeInput={handleBeforeInput}
                           />
                           {errors.imeKontaktOsobe && <div className="invalid-feedback">{errors.imeKontaktOsobe}</div>}
                         </div>
                         
-                        <div className="col-12 col-md-4">
-                          <label className="form-label compact required">PREZIME</label>
+                        <div className="col-12 col-md-6">
+                          <label className="form-label compact">PREZIME</label>
                           <input
+                            name="prezimeKontaktOsobe"
                             type="text"
                             className={`form-control compact ${errors.prezimeKontaktOsobe ? 'is-invalid' : ''}`}
                             placeholder="Prezime kontakt osobe"
                             value={formData.prezimeKontaktOsobe}
                             onChange={(e) => handleInputChange('prezimeKontaktOsobe', e.target.value)}
+                            onBeforeInput={handleBeforeInput}
                           />
                           {errors.prezimeKontaktOsobe && <div className="invalid-feedback">{errors.prezimeKontaktOsobe}</div>}
                         </div>
                         
-                        <div className="col-12 col-md-4">
+                        {/* <div className="col-12 col-md-4">
                           <label className="form-label compact required">TELEFON</label>
                           <div className="phone-input-wrapper">
                             <PhoneInput
@@ -365,7 +437,7 @@ const IzmijeniUstanovu = () => {
                             />
                           </div>
                           {errors.telefonKontaktOsobe && <div className="text-danger small mt-1">{errors.telefonKontaktOsobe}</div>}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -381,12 +453,18 @@ const IzmijeniUstanovu = () => {
                       <div className="mb-3">
                         <label className="form-label compact">DODATNE INFORMACIJE</label>
                         <textarea
+                          name="napomena"
                           className="form-control compact"
                           rows="4"
                           placeholder="Unesite napomenu..."
                           value={formData.napomena}
                           onChange={(e) => handleInputChange('napomena', e.target.value)}
-                        />
+                          onBeforeInput={handleBeforeInput}
+                        />{errors.napomena && (
+                        <div className="invalid-feedback d-block mt-1">
+                        {errors.napomena}
+                        </div>
+                         )}
                       </div>
                     </div>
                   </div>

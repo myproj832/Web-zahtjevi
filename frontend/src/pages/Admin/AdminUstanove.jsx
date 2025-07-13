@@ -23,101 +23,6 @@ const AdminUstanove = () => {
     direction: 'desc'
   });
 
-  // Mock data based on the image - replace with actual API call
-  // const [ustanove, setUstanove] = useState([
-  //   {
-  //     id: 1,
-  //     datumKreiranja: '2024-06-20',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Dom zdravlja Bijelo Polje',
-  //     nazivPoslovneJedinice: 'Opšta medicina',
-  //     adresaPoslovneJedinice: 'Miloja Pavićevića 1',
-  //     komitent: 'Fond zdravstvenog osiguranja',
-  //     brojTelefonaPoslovnice: '+382 50 234 567',
-  //     kontaktOsoba: 'Dragana Vukčević',
-  //     napomena: 'Glavna ustanova u Bijelom Polju',
-  //     status: 'Aktivan'
-  //   },
-  //   {
-  //     id: 2,
-  //     datumKreiranja: '2024-06-15',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Dom zdravlja Bar',
-  //     nazivPoslovneJedinice: 'Ambulanta Bar',
-  //     adresaPoslovneJedinice: 'Jovana Tomaševića 1',
-  //     komitent: 'Fond zdravstvenog osiguranja',
-  //     brojTelefonaPoslovnice: '+382 30 345 678',
-  //     kontaktOsoba: 'Nikola Đurović',
-  //     napomena: 'Ambulanta za opštu medicinu',
-  //     status: 'Aktivan'
-  //   },
-  //   {
-  //     id: 3,
-  //     datumKreiranja: '2024-06-01',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Institut za javno zdravlje',
-  //     nazivPoslovneJedinice: 'Laboratorija',
-  //     adresaPoslovneJedinice: 'Džordža Vašingtona 24',
-  //     komitent: 'Ministarstvo zdravlja',
-  //     brojTelefonaPoslovnice: '+382 20 456 789',
-  //     kontaktOsoba: 'Jovana Popović',
-  //     napomena: 'Centralna laboratorija',
-  //     status: 'Aktivan'
-  //   },
-  //   {
-  //     id: 4,
-  //     datumKreiranja: '2024-05-12',
-  //     datumPasiviziranja: '2024-06-30',
-  //     nazivUstanove: 'Specijalna bolnica Brezovik',
-  //     nazivPoslovneJedinice: 'Rehabilitacija',
-  //     adresaPoslovneJedinice: 'Brezovik bb',
-  //     komitent: 'Fond zdravstvenog osiguranja',
-  //     brojTelefonaPoslovnice: '+382 40 678 901',
-  //     kontaktOsoba: 'Stefan Milanović',
-  //     napomena: 'Zatvorena zbog renoviranja',
-  //     status: 'Pasiviziran'
-  //   },
-  //   {
-  //     id: 5,
-  //     datumKreiranja: '2024-04-05',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Bolnica Cetinje',
-  //     nazivPoslovneJedinice: 'Interno odeljenje',
-  //     adresaPoslovneJedinice: 'Bajova 1',
-  //     komitent: 'Ministarstvo zdravlja',
-  //     brojTelefonaPoslovnice: '+382 41 234 567',
-  //     kontaktOsoba: 'Milica Stanković',
-  //     napomena: 'Interno odeljenje sa 50 kreveta',
-  //     status: 'Aktivan'
-  //   },
-  //   {
-  //     id: 6,
-  //     datumKreiranja: '2024-03-10',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Dom zdravlja Nikšić',
-  //     nazivPoslovneJedinice: 'Poliklinika',
-  //     adresaPoslovneJedinice: 'Sutjeska 2',
-  //     komitent: 'Fond zdravstvenog osiguranja',
-  //     brojTelefonaPoslovnice: '+382 40 213 456',
-  //     kontaktOsoba: 'Petar Jovanović',
-  //     napomena: 'Poliklinika sa više specijalnosti',
-  //     status: 'Aktivan'
-  //   },
-  //   {
-  //     id: 7,
-  //     datumKreiranja: '2024-02-20',
-  //     datumPasiviziranja: null,
-  //     nazivUstanove: 'Klinički centar Crne Gore',
-  //     nazivPoslovneJedinice: 'Urgentni centar',
-  //     adresaPoslovneJedinice: 'Ljubljanska bb',
-  //     komitent: 'Ministarstvo zdravlja',
-  //     brojTelefonaPoslovnice: '+382 20 412 111',
-  //     kontaktOsoba: 'Ana Nikolić',
-  //     napomena: 'Glavni urgentni centar',
-  //     status: 'Aktivan'
-  //   }
-  // ]);
-
    // formatiranje telefona: "38269123123" → "+382 69 123 123"
  const formatPhone = (phone) => {
   if (!phone) return '-';
@@ -170,12 +75,13 @@ const AdminUstanove = () => {
     }
   };
 
-  // Funkcija za filtriranje podataka - DODATO
+  // Funkcija za filtriranje podataka
   const getFilteredData = () => {
    
        return ustanove.filter(u => {
     const nazivUstanoveFilter = filters.nazivUstanove.trim().toLowerCase();
     const nazivPJFilter = filters.nazivPoslovneJedinice.trim().toLowerCase();
+    const statusFilter       = filters.status;
 
     const matchUstanova =
       !nazivUstanoveFilter ||
@@ -188,36 +94,13 @@ const AdminUstanove = () => {
       // const matchesKomitent = filters.komitent === '' || 
       //   ustanova.naziv_pravnog.toLowerCase().includes(filters.komitent.toLowerCase());
       
-      // const matchesStatus = filters.status === '' || 
-      //   ustanova.status && ustanova.status.toLowerCase() === filters.status.toLowerCase();
-      return matchUstanova && matchPJ;
+       const matchStatus = filters.status === '' || 
+        u.status && u.status.toLowerCase() === filters.status.toLowerCase();
+      return matchUstanova && matchPJ  && matchStatus;
     });
   };
 
-  // const getSortedData = () => {
-  //   const filteredData = getFilteredData(); // Dodano filtriranje
-  //   const sortableItems = [...filteredData];
-    
-  //   if (sortConfig.key) {
-  //     sortableItems.sort((a, b) => {
-  //       if (a[sortConfig.key] < b[sortConfig.key]) {
-  //         return sortConfig.direction === 'asc' ? -1 : 1;
-  //       }
-  //       if (a[sortConfig.key] > b[sortConfig.key]) {
-  //         return sortConfig.direction === 'asc' ? 1 : -1;
-  //       }
-  //       return 0;
-  //     });
-  //   }
-  //   return sortableItems;
-  // };
-
-  // const getSortIcon = (columnName) => {
-  //   if (sortConfig.key === columnName) {
-  //     return sortConfig.direction === 'asc' ? '▲' : '▼';
-  //   }
-  //   return '↕';
-  // };
+  // Funkcija za sortiranje podataka
    const getSortedData = () => {
     const items = [...getFilteredData()];
     if (sortConfig.key) {
@@ -260,19 +143,19 @@ const AdminUstanove = () => {
                 </div>
                 <div className="card-body">
                   <div className="row g-3">
-                    <div className="col-12 col-md-6 col-lg-3">
-                      <label htmlFor="nazivUstanove" className="form-label">Naziv Ustanove</label>
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <label htmlFor="nazivUstanove" className="form-label">Naziv Pravnog Lica</label>
                       <input
                         type="text"
                         className="form-control"
                         id="nazivUstanove"
                         value={filters.nazivUstanove}
                         onChange={(e) => handleFilterChange('nazivUstanove', e.target.value)}
-                        placeholder="Unesite naziv ustanove"
+                        placeholder="Unesite pravnog lica"
                       />
                     </div>
-                    <div className="col-12 col-md-6 col-lg-3">
-                      <label htmlFor="nazivPoslovneJedinice" className="form-label">Naziv Poslovne Jedinice</label>
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <label htmlFor="nazivPoslovneJedinice" className="form-label">Naziv Poslovne Jedinice (Ustanove)</label>
                       <input
                         type="text"
                         className="form-control"
@@ -284,19 +167,25 @@ const AdminUstanove = () => {
                     </div>
                     {/* <div className="col-12 col-md-6 col-lg-3">
                       <label htmlFor="komitent" className="form-label">Komitent</label>
+                        <div
+                         className="dropdown-container"
+                         data-tooltip="Ova akcija trenutno nije dostupna"
+                         >
                       <select
                         className="form-select"
                         id="komitent"
                         value={filters.komitent}
                         onChange={(e) => handleFilterChange('komitent', e.target.value)}
+                        disabled
                       >
                         <option value="">Odaberite komitenta</option>
                         <option value="Fond zdravstvenog osiguranja">Fond zdravstvenog osiguranja</option>
                         <option value="Ministarstvo zdravlja">Ministarstvo zdravlja</option>
                         <option value="Privatni">Privatni</option>
                       </select>
+                      </div>
                     </div> */}
-                    <div className="col-12 col-md-6 col-lg-3">
+                    <div className="col-12 col-md-6 col-lg-4">
                       <label htmlFor="status" className="form-label">Status</label>
                       <select
                         className="form-select"
@@ -305,19 +194,19 @@ const AdminUstanove = () => {
                         onChange={(e) => handleFilterChange('status', e.target.value)}
                       >
                         <option value="">Odaberite status</option>
-                        <option value="Aktivan">Aktivan</option>
-                        <option value="Pasiviziran">Pasiviziran</option>
+                        <option value="A">Aktivan</option>
+                        <option value="P">Pasiviziran</option>
                       </select>
                     </div>
                   </div>
-                  <div className="row mt-3">
+                  <div className="row mt-4">
                     <div className="col-12">
                       <div className="button-group">
                         <button
                           className="button"
                           onClick={handleShowTable}
                         >
-                          {showTable ? 'Sakrij' : 'Prikaži'}
+                          {showTable ? 'Sakrij listu ustanova' : 'Prikaži listu ustanova'}
                         </button>
                         <button
                           className="buttonx"
@@ -389,12 +278,12 @@ const AdminUstanove = () => {
                             >
                               Datum pasiviziranja {getSortIcon('datumPasiviziranja')}
                             </th> */}
-                            <th scope="col" className="header-col-3">Naziv Ustanove</th>
-                            <th scope="col" className="header-col-4">Naziv Poslovne Jedinice</th>
-                            <th scope="col" className="header-col-5">Adresa Poslovne Jedinice</th>
-                            <th scope="col" className="header-col-6">Grad Poslovne Jedinice</th>
-                            <th scope="col" className="header-col-7">Broj Telefona Poslovnice</th>
-                            <th scope="col" className="header-col-8">Kontakt Osoba</th>
+                            <th scope="col" className="header-col-3">Naziv Pravnog lica</th>
+                            <th scope="col" className="header-col-4">Naziv Poslovne Jedinice (Ustanove)</th>
+                            <th scope="col" className="header-col-5">Adresa Poslovne Jedinice (Ustanove)</th>
+                            <th scope="col" className="header-col-6">Grad Poslovne Jedinice (Ustanove)</th>
+                            <th scope="col" className="header-col-7">Broj Telefona Poslovnice (Ustanove)</th>
+                            {/* <th scope="col" className="header-col-8">Kontakt Osoba</th> */}
                             {/* <th scope="col" className="header-col-9">Napomena</th> */}
                             <th scope="col" className="header-col-10">Status</th>
                           </tr>
@@ -423,7 +312,7 @@ const AdminUstanove = () => {
                                 </span>
                               </td>
                               <td className="data-col-7">{formatPhone(u.tel_ustanove)}</td>
-                              <td className="data-col-8">{u.kontakt_osoba}</td>
+                              {/* <td className="data-col-8">{u.kontakt_osoba}</td> */}
                               {/* <td className="data-col-9">{u.napomena}</td> */}
                               <td className="data-col-10">
                               <span

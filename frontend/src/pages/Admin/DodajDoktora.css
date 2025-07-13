@@ -333,6 +333,14 @@ html {
   min-width: auto;
 }
 
+.remove-icon {
+  display: inline-block;
+  /* povećaj skaliranjem */
+  transform: scale(1.5);
+  /* opcionalno: da ostane centrirano */
+  transform-origin: center;
+}
+
 .remove-button:hover {
   background: #c82333;
 }

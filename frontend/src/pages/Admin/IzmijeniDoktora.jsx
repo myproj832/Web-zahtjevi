@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useAdmin } from '../../context/AdminContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ValidationContext } from '../../context/ValidationContext';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +10,8 @@ import './IzmijeniDoktora.css';
 const IzmijeniDoktora = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { fetchLjekari, updateLjekar, ustanove } = useAdmin(); 
+  const allowedSigns = useContext(ValidationContext);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedDoctor, setSavedDoctor] = useState(null);
@@ -29,37 +33,48 @@ const IzmijeniDoktora = () => {
   const [errors, setErrors] = useState({});
   const [selectedUstanove, setSelectedUstanove] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [touched, setTouched] = useState(false);
 
-  // Mock data for ustanove
-  const dostupneUstanove = [
-    'Klinički centar Podgorica',
-    'Dom zdravlja Cetinje', 
-    'Dom zdravlja Nikšić',
-    'Specijalna bolnica Brezovik',
-    'Institut za javno zdravlje'
-  ];
 
+  // Dostupne ustanove iz Contexta
+ const dostupneUstanove = ustanove; 
   // Load existing doctor data on component mount
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockDoctorData = {
-      id: id,
-      imeIPrezime: 'Marko Petrović',
-      brojLicence: 'DOK001',
-      specijalizacija: 'Kardiolog',
-      brojTelefona: '+382 67 123 456',
-      emailAdresa: 'marko.petrovic@email.com',
-      adresa: 'Ulica Slobode 15, Podgorica',
-      napomena: 'Iskusan doktor sa 15 godina...',
-      ustanove: ['Klinički centar Podgorica', 'Dom zdravlja Cetinje'],
-      username: 'marko.petrovic@email.com',
-      password: 'AbC123dE'
-    };
-    
-    setFormData(mockDoctorData);
-    setSelectedUstanove(mockDoctorData.ustanove);
-    setOriginalEmail(mockDoctorData.emailAdresa);
-  }, [id]);
+   fetchLjekari()
+   .then(list => {
+    const d = list.find(x => x.id_kor === id);
+    if (!d) return;
+     setFormData({
+          imeIPrezime: d.ime,
+          brojLicence: d.licenca,
+          specijalizacija: d.specijalizacija,
+         brojTelefona: d.telefon,
+          emailAdresa: d.email,
+          adresa: d.adresa || '',           // ako nema, ostaje prazno
+          napomena: '',
+          ustanove: d.ustanove.map(u => u.id_ust),
+          username: d.kor_ime,
+          password: ''           // korisnik sam unosi ili regeneriše
+        });
+        setSelectedUstanove(d.ustanove.map(u => u.id_ustanove));
+        setOriginalEmail(d.email);
+      })
+      .catch(console.error);
+   }, [id]);
+
+ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[.+]).{8,}$/;
+
+  const isValid = passwordRegex.test(password);
+
+  // 2) handleChange i handleBlur
+  const handleChange = (e) => {
+    setPassword(e.target.value);
+    // ... eventualno briši errors.password ako ga imaš ...
+  };
+  const handleBlur = () => {
+    setTouched(true);
+  };
 
   // Generate password (5 letters + 3 numbers = 8 characters)
   const generatePassword = () => {
@@ -156,9 +171,9 @@ const IzmijeniDoktora = () => {
       newErrors.emailAdresa = 'Email adresa nije u ispravnom formatu';
     }
     
-    if (!formData.adresa.trim()) {
-      newErrors.adresa = 'Adresa je obavezna';
-    }
+    // if (!formData.adresa.trim()) {
+    //   newErrors.adresa = 'Adresa je obavezna';
+    // }
     
     if (selectedUstanove.length === 0) {
       newErrors.ustanove = 'Morate odabrati najmanje jednu ustanovu';
@@ -168,21 +183,46 @@ const IzmijeniDoktora = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSacuvaj = () => {
-    if (validateForm()) {
-      const doctorData = {
-        ...formData,
-        ustanove: selectedUstanove,
-        kontakt: formData.brojTelefona + '\n' + formData.emailAdresa,
-        status: 'Aktivan',
-        datumKreiranja: new Date().toISOString().split('T')[0]
-      };
-      
-      setSavedDoctor(doctorData);
-      setShowSuccessModal(true);
+   // 2. generički handler za validaciju dozvoljenih karaktera
+   const handleBeforeInput = (e) => {
+    const char = e.data;
+    const field = e.target.name;
+    if (!char || !allowedSigns) return;
+
+    if (!allowedSigns.includes(char)) {
+      e.preventDefault();
+      setErrors(prev => ({
+        ...prev,
+        [field]: `Znak "${char}" nije dozvoljen.`
+      }));
+      setTimeout(() => {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }, 3000);
     }
   };
 
+    const handleSacuvaj = async () => {                                       // + sada zovemo updateLjekar
+    if (!validateForm()) return;
+    try {
+      await updateLjekar({
+        idKor: id,
+        imeIPrezime: formData.imeIPrezime,
+        licenca: formData.brojLicence,
+        specijalizacija: formData.specijalizacija,
+        tel: formData.brojTelefona,
+        email: formData.emailAdresa,
+        adresa: formData.adresa,
+        username: formData.username,
+        password: formData.password,
+        listaUstanova: selectedUstanove
+      });
+      setSavedDoctor({ ...formData });
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error(err);
+      alert('Greška pri ažuriranju: ' + err.message);
+    }
+  };
   const handleBackClick = () => {
     setShowCancelModal(true);
   };
@@ -206,7 +246,7 @@ const IzmijeniDoktora = () => {
     navigate('/AdminDoktori');
   };
 
-  const availableUstanove = dostupneUstanove.filter(ustanova => !selectedUstanove.includes(ustanova));
+  const availableUstanove = ustanove.filter(u => !selectedUstanove.includes(u.id_ust));
 
   return (
     <div className="izmijeni-doktora-page background">
@@ -241,10 +281,12 @@ const IzmijeniDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">IME I PREZIME</label>
                         <input
+                        name="imeIPrezime"
                           type="text"
                           className={`form-control compact ${errors.imeIPrezime ? 'is-invalid' : ''}`}
                           placeholder="Unesite ime i prezime"
                           value={formData.imeIPrezime}
+                          onBeforeInput={handleBeforeInput}
                           onChange={(e) => handleInputChange('imeIPrezime', e.target.value)}
                         />
                         {errors.imeIPrezime && <div className="invalid-feedback">{errors.imeIPrezime}</div>}
@@ -253,10 +295,12 @@ const IzmijeniDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">BROJ LICENCE</label>
                         <input
+                          name="brojLicence"
                           type="text"
                           className={`form-control compact ${errors.brojLicence ? 'is-invalid' : ''}`}
                           placeholder="Unesite broj licence"
                           value={formData.brojLicence}
+                          onBeforeInput={handleBeforeInput}
                           onChange={(e) => handleInputChange('brojLicence', e.target.value)}
                         />
                         {errors.brojLicence && <div className="invalid-feedback">{errors.brojLicence}</div>}
@@ -265,10 +309,12 @@ const IzmijeniDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">SPECIJALIZACIJA</label>
                         <input
+                          name="specijalizacija"
                           type="text"
                           className={`form-control compact ${errors.specijalizacija ? 'is-invalid' : ''}`}
                           placeholder="Unesite specijalizaciju"
                           value={formData.specijalizacija}
+                          onBeforeInput={handleBeforeInput}
                           onChange={(e) => handleInputChange('specijalizacija', e.target.value)}
                         />
                         {errors.specijalizacija && <div className="invalid-feedback">{errors.specijalizacija}</div>}
@@ -286,26 +332,26 @@ const IzmijeniDoktora = () => {
                       
                       <label className="form-label compact required">DODAJ USTANOVE</label>
                       
-                      <div className="dropdown-container">
+                      <div className="dropdown-container w-100">
                         <button
                           type="button"
-                          className="btn dropdown-button"
+                          className="btn dropdown-button w-100"
                           onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
-                          <span>{availableUstanove.length > 0 ? 'Izaberite ustanovu...' : 'Sve ustanove su dodane'}</span>
+                          <span>{availableUstanove.length > 0 ? 'Izaberite ustanovu...' : 'Sve ustanove su dodate'}</span>
                           <span className="dropdown-plus">+</span>
                         </button>
                         
-                        {dropdownOpen && availableUstanove.length > 0 && (
+                        {dropdownOpen &&  availableUstanove.length > 0 && (
                           <div className="dropdown-menu-custom">
-                            {availableUstanove.map((ustanova, index) => (
+                            {availableUstanove.map(u => (
                               <button
-                                key={index}
+                                key={u.id_ust}
                                 type="button"
                                 className="dropdown-item-custom"
-                                onClick={() => handleUstanovaAdd(ustanova)}
+                                 onClick={() => handleUstanovaAdd(u.id_ust)}
                               >
-                                {ustanova}
+                                 {u.naziv_ustanove}
                               </button>
                             ))}
                           </div>
@@ -314,20 +360,25 @@ const IzmijeniDoktora = () => {
                       
                       {/* Selected ustanove */}
                       {selectedUstanove.length > 0 && (
-                        <div className="selected-ustanove">
-                          {selectedUstanove.map((ustanova, index) => (
-                            <div key={index} className="selected-item">
-                              <span>{ustanova}</span>
+                         <div className="selected-ustanove">
+                    {selectedUstanove.map(id_ust => {
+                     // пронађи објекат установе
+                    const ust = ustanove.find(u => u.id_ust === id_ust);
+                    return (
+                   <div key={id_ust} className="selected-item">
+                  {/* Ако није пронађена, прикажи само #id */}
+                  <span>{ust?.naziv_ustanove || `#${id_ust}`}</span>
                               <button
                                 type="button"
                                 className="btn btn-sm remove-button"
-                                onClick={() => handleUstanovaRemove(ustanova)}
+                                onClick={() => handleUstanovaRemove(id_ust)}
                               >
-                                ×
+                               <span className="remove-icon">&times;</span> 
                               </button>
                             </div>
-                          ))}
-                        </div>
+                           );
+                          })}
+                      </div>
                       )}
                       
                       {errors.ustanove && <div className="text-danger small mt-1">{errors.ustanove}</div>}
@@ -349,6 +400,7 @@ const IzmijeniDoktora = () => {
                             country={'me'}
                             value={formData.brojTelefona}
                             onChange={(value) => handleInputChange('brojTelefona', value)}
+                            masks={{ me: '.. ... ...' }}
                             inputClass={`phone-input-field ${errors.brojTelefona ? 'is-invalid' : ''}`}
                             buttonClass="phone-button"
                             containerClass="phone-container"
@@ -360,22 +412,26 @@ const IzmijeniDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">EMAIL ADRESA</label>
                         <input
+                          name="emailAdresa"
                           type="email"
                           className={`form-control compact ${errors.emailAdresa ? 'is-invalid' : ''}`}
                           placeholder="Email adresa"
                           value={formData.emailAdresa}
+                          onBeforeInput={handleBeforeInput}
                           onChange={(e) => handleInputChange('emailAdresa', e.target.value)}
                         />
                         {errors.emailAdresa && <div className="invalid-feedback">{errors.emailAdresa}</div>}
                       </div>
                       
                       <div className="mb-3">
-                        <label className="form-label compact required">ADRESA</label>
+                        <label className="form-label compact">ADRESA</label>
                         <input
+                          name="adresa"
                           type="text"
                           className={`form-control compact ${errors.adresa ? 'is-invalid' : ''}`}
                           placeholder="Adresa"
                           value={formData.adresa}
+                          onBeforeInput={handleBeforeInput}
                           onChange={(e) => handleInputChange('adresa', e.target.value)}
                         />
                         {errors.adresa && <div className="invalid-feedback">{errors.adresa}</div>}
@@ -407,40 +463,53 @@ const IzmijeniDoktora = () => {
                           disabled
                         />
                       </div>
+                     
+                         <div className="form-text success-text compact">
+                         <p className="font-semibold mb-1">✓ Lozinka mora sadržati:</p>
+                         <ul className="list-disc list-inside space-y-1">
+                         <li>Najmanje 8 karaktera</li>
+                         <li>Jedno veliko slovo</li>
+                         <li>Jedno malo slovo</li>
+                         <li>Jedan broj</li>
+                         <li>Jedan specijalni znak ( . ili +)</li>
+                       </ul>
+                      </div>
                       
                       <div className="mb-3">
                         <label className="form-label compact">LOZINKA</label>
                         <div className="password-input-group">
                           <input
+                            name="password"
                             type="text"
-                            className="form-control compact"
-                            value={formData.password}
-                            disabled
+                             className={`form-control compact ${
+                              touched ? (isValid ? 'is-valid' : 'is-invalid') : ''
+                            }`}
+                            value={password}
+                            onBeforeInput={handleBeforeInput}
+                            onChange={handleChange}
+                             onBlur={handleBlur}
+                              placeholder="Unesite lozinku"
                           />
-                          <button 
+                           
+                          {/* <button 
                             type="button" 
                             className="btn btn-outline-primary btn-sm regenerate-btn compact"
                             onClick={handleRegeneratePassword}
                             title="Generiši novu lozinku"
                           >
                             🔄
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Napomena - Full width */}
-                  <div className="col-12">
-                    <div className="form-section compact napomena-section">
-                      <label className="form-label compact">NAPOMENA</label>
-                      <textarea
-                        className="form-control compact"
-                        rows="3"
-                        placeholder="Dodatne informacije..."
-                        value={formData.napomena}
-                        onChange={(e) => handleInputChange('napomena', e.target.value)}
-                      />
+                          </button> */}
+                          </div>
+</div>
+                          {errors.password && <div className="invalid-feedback d-block mt-1">{errors.password}</div>}
+
+                           {touched && !isValid && (
+        <div id="passwordHelp" className="invalid-feedback d-block mt-1">
+          Lozinka ne ispunjava sve tražene kriterijume.
+  </div>
+      )}
+                        
+                      
                     </div>
                   </div>
                 </div>

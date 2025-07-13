@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 
 export const ValidationContext = createContext("");
 
-const LETTERS_NUMBERS = "abcdefghijklmnopqrstuvwxyzčćžšđABCDEFGHIJKLMNOPQRSTUVWXYZČĆŽŠĐ 0123456789";
+const LETTERS_NUMBERS = "abcdefghijklmnopqrstuvwxyzčćžšđABCDEFGHIJKLMNOPQRSTUVWXYZČĆŽŠĐ@+! 0123456789";
 
 export const ValidationProvider = ({ children }) => {
   const [allowedSigns, setAllowedSigns] = useState("");

@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './DodajDoktora.css';
 import { useAdmin } from '../../context/AdminContext.jsx';
+import { ValidationContext } from '../../context/ValidationContext.jsx';
 
 const DodajDoktora = () => {
   const navigate = useNavigate();
-    const { ustanove, addLjekar } = useAdmin();
-
+  const { ustanove, addLjekar } = useAdmin();
+  const allowedSigns = useContext(ValidationContext);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [savedDoctor, setSavedDoctor] = useState(null);
@@ -33,27 +34,6 @@ const DodajDoktora = () => {
   const [password, setPassword] = useState('');
   const [touched, setTouched] = useState(false);
 
-
-  // Generate password (5 letters + 3 numbers = 8 characters)
-  // const generatePassword = () => {
-  //   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  //   const numbers = '0123456789';
-    
-  //   let password = '';
-    
-  //   // Add 5 random letters
-  //   for (let i = 0; i < 5; i++) {
-  //     password += letters.charAt(Math.floor(Math.random() * letters.length));
-  //   }
-    
-  //   // Add 3 random numbers
-  //   for (let i = 0; i < 3; i++) {
-  //     password += numbers.charAt(Math.floor(Math.random() * numbers.length));
-  //   }
-    
-  //   // Shuffle the password
-  //   return password.split('').sort(() => Math.random() - 0.5).join('');
-  // };
 
    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[.+]).{8,}$/;
 
@@ -79,10 +59,23 @@ const DodajDoktora = () => {
     setFormData(prev => ({ ...prev, username: prev.emailAdresa }));
   }, [formData.emailAdresa]);
 
-  // Generate password on component mount
-  // useEffect(() => {
-  //   setFormData(prev => ({ ...prev, password: generatePassword() }));
-  // }, []);
+    // 2. generički handler za dozvoljene karaktere
+   const handleBeforeInput = (e) => {
+    const char = e.data;
+    const field = e.target.name;
+    if (!char || !allowedSigns) return;
+
+    if (!allowedSigns.includes(char)) {
+      e.preventDefault();
+      setErrors(prev => ({
+        ...prev,
+        [field]: `Znak "${char}" nije dozvoljen.`
+      }));
+      setTimeout(() => {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }, 3000);
+    }
+  };
 
    const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -183,7 +176,7 @@ const DodajDoktora = () => {
             <div className="card main-card compact">
               <div className="card-header text-center">
                 <h3 className="card-title mb-1">Novi ljekar</h3>
-                <p className="card-subtitle">Unesite podatke o novom ljekaru u sistem</p>
+                <p className="card-subtitle">Unesite podatke o novom ljekaru</p>
               </div>
               
               <div className="card-body">
@@ -199,10 +192,12 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">IME I PREZIME</label>
                          <input
+                          name="imeIPrezime"
                           type="text"
                           className={`form-control compact ${errors.imeIPrezime ? 'is-invalid' : ''}`}
                           placeholder="Unesite ime i prezime"
                           value={formData.imeIPrezime}
+                           onBeforeInput={handleBeforeInput}
                           onChange={e => handleInputChange('imeIPrezime', e.target.value)}
                         />
                         {errors.imeIPrezime && <div className="invalid-feedback">{errors.imeIPrezime}</div>}
@@ -211,10 +206,12 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">BROJ LICENCE</label>
                         <input
+                        name="brojLicence"
                           type="text"
                           className={`form-control compact ${errors.brojLicence ? 'is-invalid' : ''}`}
                           placeholder="Unesite broj licence"
                           value={formData.brojLicence}
+                          onBeforeInput={handleBeforeInput}
                           onChange={e => handleInputChange('brojLicence', e.target.value)}
                         />
                         {errors.brojLicence && <div className="invalid-feedback">{errors.brojLicence}</div>}
@@ -223,10 +220,12 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">SPECIJALIZACIJA</label>
                         <input
+                          name="specijalizacija"
                           type="text"
                           className={`form-control compact ${errors.specijalizacija ? 'is-invalid' : ''}`}
                           placeholder="Unesite specijalizaciju"
                           value={formData.specijalizacija}
+                          onBeforeInput={handleBeforeInput}
                           onChange={e => handleInputChange('specijalizacija', e.target.value)}
                         />
                         {errors.specijalizacija && <div className="invalid-feedback">{errors.specijalizacija}</div>}
@@ -244,10 +243,10 @@ const DodajDoktora = () => {
                       
                       <label className="form-label compact required">DODAJ USTANOVE</label>
                       
-                       <div className="dropdown-container">
+                       <div className="dropdown-container w-100">
                         <button
                           type="button"
-                          className="btn dropdown-button"
+                          className="btn dropdown-button w-100"
                           onClick={() => {
                             if (!dropdownOpen && errors.listaUstanova) {
                                setErrors(prev => ({ ...prev, listaUstanova: '' }));
@@ -285,7 +284,7 @@ const DodajDoktora = () => {
                                   className="btn btn-sm remove-button"
                                   onClick={() => handleUstanovaRemove(id)}
                                 >
-                                    &times;      
+                                    <span className="remove-icon">&times;</span>     
                                 </button>
                               </div>
                             );
@@ -323,10 +322,12 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact required">EMAIL ADRESA</label>
                          <input
+                          name="emailAdresa"
                           type="email"
                           className={`form-control compact ${errors.emailAdresa ? 'is-invalid' : ''}`}
                           placeholder="Email adresa"
                           value={formData.emailAdresa}
+                          onBeforeInput={handleBeforeInput}
                           onChange={e => handleInputChange('emailAdresa', e.target.value)}
                         />
                         {errors.emailAdresa && <div className="invalid-feedback">{errors.emailAdresa}</div>}
@@ -335,10 +336,12 @@ const DodajDoktora = () => {
                       <div className="mb-3">
                         <label className="form-label compact">ADRESA</label>
                         <input
+                          name="adresa"
                           type="text"
                           className={`form-control compact ${errors.adresa ? 'is-invalid' : ''}`}
                           placeholder="Adresa"
                           value={formData.adresa}
+                          onBeforeInput={handleBeforeInput}
                           onChange={e => handleInputChange('adresa', e.target.value)}
                         />
                         {errors.adresa && <div className="invalid-feedback">{errors.adresa}</div>}
@@ -358,19 +361,30 @@ const DodajDoktora = () => {
                         <label className="form-label compact">KORISNIČKO IME</label>
                         <input type="text" className="form-control compact" value={formData.username} disabled />
                       </div>
-
+                    <div className="form-text success-text compact">
+                         <p className="font-semibold mb-1">✓ Lozinka mora sadržati:</p>
+                         <ul className="list-disc list-inside space-y-1">
+                         <li>Najmanje 8 karaktera</li>
+                         <li>Jedno veliko slovo</li>
+                         <li>Jedno malo slovo</li>
+                         <li>Jedan broj</li>
+                         <li>Jedan specijalni znak ( . ili +)</li>
+                       </ul>
+                      </div>
                        <div className="mb-3">
       <label htmlFor="password" className="form-label compact required">
         LOZINKA
       </label>
        <div className="input-wrapper">
       <input
+      name="password"
         id="password"
         type="text"
         className={`form-control compact ${
           touched ? (isValid ? 'is-valid' : 'is-invalid') : ''
         }`}
         value={password}
+        onBeforeInput={handleBeforeInput}
         onChange={handleChange}
         onBlur={handleBlur}
         aria-describedby="passwordHelp"
@@ -384,15 +398,8 @@ const DodajDoktora = () => {
     
       {touched && !isValid && (
         <div id="passwordHelp" className="invalid-feedback">
-          Lozinka mora sadržati:
-          <ul className="mb-0 ps-3">
-            <li>najmanje 8 karaktera</li>
-            <li>jedno malo slovo (a–z)</li>
-            <li>jedno veliko slovo (A–Z)</li>
-            <li>jedan specijalni znak <code>.</code> ili <code>+</code></li>
-          </ul>
-        </div>
-        
+             Lozinka ne ispunjava sve tražene kriterijume.
+  </div>
       )}
     </div>
     </div>
@@ -400,20 +407,6 @@ const DodajDoktora = () => {
 
                     </div>
                   </div>
-                  
-                  {/* Napomena - Full width */}
-                  {/* <div className="col-12">
-                    <div className="form-section compact napomena-section">
-                      <label className="form-label compact">NAPOMENA</label>
-                      <textarea
-                        className="form-control compact"
-                        rows="3"
-                        placeholder="Dodatne informacije..."
-                        value={formData.napomena}
-                        onChange={(e) => handleInputChange('napomena', e.target.value)}
-                      />
-                    </div>
-                  </div> */}
                 </div>
               </div>
               

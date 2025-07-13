@@ -208,7 +208,7 @@ html {
 
 /* Table Styles */
 .admin-table-container {
-  max-height: 400px;
+  max-height: 80vh !important;
   overflow-y: auto;
 }
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useAdmin } from '../../context/AdminContext';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -6,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './AdminDoktori.css';
 
 const AdminDoktori = () => {
+  const { ljekari, ustanove, fetchLjekari } = useAdmin();
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     imeIPrezime: '',
@@ -21,45 +23,9 @@ const AdminDoktori = () => {
     direction: 'desc'
   });
 
-  // Mock data based on the image - replace with actual API call
-  const [doktori, setDoktori] = useState([
-    {
-      id: 1,
-      datumKreiranja: '2024-01-15',
-      datumPasiviziranja: null,
-      imeIPrezime: 'Marko Petrović',
-      kontakt: '+382 67 123 456\nmarko.petrovic@email.com',
-      ustanova: 'Dom zdravlja Podgorica\nKlinički centar Crne Gore\nSpecijalna bolnica Brezovik',
-      specijalizacija: 'Kardiolog',
-      brojLicence: 'DOK001',
-      napomena: 'Iskusan doktor sa 15 godina...',
-      status: 'Aktivan'
-    },
-    {
-      id: 2,
-      datumKreiranja: '2024-02-20',
-      datumPasiviziranja: null,
-      imeIPrezime: 'Ana Jovanović',
-      kontakt: '+382 67 789 012\nana.jovanovic@email.com',
-      ustanova: 'Klinički centar Crne Gore\nDom zdravlja Podgorica',
-      specijalizacija: 'Neurolog',
-      brojLicence: 'DOK002',
-      napomena: 'Specijalizovana za dečiju...',
-      status: 'Aktivan'
-    },
-    {
-      id: 3,
-      datumKreiranja: '2024-03-10',
-      datumPasiviziranja: '2024-06-15',
-      imeIPrezime: 'Petar Nikolić',
-      kontakt: '+382 69 555 333\npetar.nikolic@email.com',
-      ustanova: 'Dom zdravlja Nikšić\nSpecijalna bolnica Brezovik\nKlinički centar Crne Gore',
-      specijalizacija: 'Ortoped',
-      brojLicence: 'DOK003',
-      napomena: '',
-      status: 'Pasiviziran'
-    }
-  ]);
+  useEffect(() => {
+  fetchLjekari().catch(console.error);
+}, []);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -102,15 +68,32 @@ const AdminDoktori = () => {
       navigate(`/IzmijeniDoktora/${selectedRow}`);
     }
   };
+    const doktorData = ljekari.map(d => ({
+  id: Number(d.id_kor),
+  datumKreiranja: d.dat_kreiranja,      // format ostavljamo kakav backend daje
+  datumPasiviziranja: null,            // izbacićemo jer nema u bazi
+  imeIPrezime: d.ime,
+  kontakt: `${d.telefon || '-'}\n${d.email}`,
+  ustanova: d.ustanove
+    .map(u => {
+      const ust = ustanove.find( item => String(item.id_ust) === String(u.id_ustanove));
+      return ust ? ust.naziv_ustanove : `#${u.id_ustanove}`;
+    })
+    .join('\n'),
+  specijalizacija: d.specijalizacija,
+  brojLicence: d.licenca,
+  napomena: '',                         // nema u bazi
+  status: d.status === 'A' ? 'Aktivan' : 'Pasiviziran'
+}));
 
   // Funkcija za filtriranje podataka
   const getFilteredData = () => {
-    return doktori.filter(doktor => {
-      const matchesIme = filters.imeIPrezime === '' || 
+    return doktorData.filter(doktor => {
+      const matchesIme = filters.imeIPrezime === '' ||
         doktor.imeIPrezime.toLowerCase().includes(filters.imeIPrezime.toLowerCase());
       
       const matchesBrojLicence = filters.brojLicence === '' || 
-        doktor.brojLicence.toLowerCase().includes(filters.brojLicence.toLowerCase());
+        (doktor.brojLicence || '').toLowerCase().includes(filters.brojLicence.toLowerCase());
       
       const matchesUstanova = filters.ustanova === '' || 
         doktor.ustanova.toLowerCase().includes(filters.ustanova.toLowerCase());
@@ -146,6 +129,18 @@ const AdminDoktori = () => {
     }
     return '↕';
   };
+
+const formatPhone = (raw) => {
+  const digits = (raw || '').replace(/\D/g, '');
+  if (digits.startsWith('382') && digits.length === 11) {
+    const rest = digits.slice(3);            // "69123123"
+    const part1 = rest.slice(0, 2);          // "69"
+    const part2 = rest.slice(2, 5);          // "123"
+    const part3 = rest.slice(5, 8);          // "123"
+    return `+382 ${part1} ${part2} ${part3}`;
+  }
+  return raw;  // fallback: vraća nepromijenjeni string
+};
 
   return (
     <div className="admin-doktori-page background">
@@ -221,7 +216,7 @@ const AdminDoktori = () => {
                           className="button"
                           onClick={handleShowTable}
                         >
-                          {showTable ? 'Sakrij' : 'Prikaži'}
+                          {showTable ? 'Sakrij listu ljekara' : 'Prikaži listu ljekara'}
                         </button>
                         <button
                           className="buttonx"
@@ -272,8 +267,8 @@ const AdminDoktori = () => {
                     <h5 className="card-title mb-0">Lista ljekara</h5>
                   </div>
                   <div className="card-body p-0">
-                    <div className="table-responsive admin-table-container">
-                      <table className="table table-hover mb-0">
+                    <div className="table-responsive-sm admin-table-container">
+                      <table className="table table-hover-sm mb-0">
                         <thead className="table-header">
                           <tr>
                             <th scope="col" className="header-col-0">
@@ -286,19 +281,19 @@ const AdminDoktori = () => {
                             >
                               Datum kreiranja {getSortIcon('datumKreiranja')}
                             </th>
-                            <th 
+                            {/* <th 
                               scope="col" 
                               className="sortable-header header-col-2"
                               onClick={() => handleSort('datumPasiviziranja')}
                             >
                               Datum pasiviziranja {getSortIcon('datumPasiviziranja')}
-                            </th>
+                            </th> */}
                             <th scope="col" className="header-col-3">Ime i Prezime</th>
                             <th scope="col" className="header-col-4">Kontakt</th>
                             <th scope="col" className="header-col-5">Ustanova</th>
                             <th scope="col" className="header-col-6">Specijalizacija</th>
                             <th scope="col" className="header-col-7">Broj licence</th>
-                            <th scope="col" className="header-col-8">Napomena</th>
+                            {/* <th scope="col" className="header-col-8">Napomena</th> */}
                             <th scope="col" className="header-col-9">Status</th>
                           </tr>
                         </thead>
@@ -318,19 +313,30 @@ const AdminDoktori = () => {
                                 />
                               </td>
                               <td className="data-col-1">{doktor.datumKreiranja}</td>
-                              <td className="data-col-2">{doktor.datumPasiviziranja || '-'}</td>
+                              {/* <td className="data-col-2">{doktor.datumPasiviziranja || '-'}</td> */}
                               <td className="fw-medium data-col-3">{doktor.imeIPrezime}</td>
                               <td className="data-col-4" style={{fontSize: '0.85rem'}}>
-                                {doktor.kontakt}
-                              </td>
+                                 {(() => {
+                                 const [phoneRaw, email] = doktor.kontakt.split('\n');
+                                 return (
+                                  <>
+                                 <div>Tel: {formatPhone(phoneRaw)}</div>
+                                 <div>Email: {email}</div>
+                                 </>
+                              );
+                               })()}
+                                </td>
                               <td className="data-col-5" style={{fontSize: '0.85rem'}}>
-                                {doktor.ustanova}
-                              </td>
+                                 {doktor.ustanova.split('\n').map((u, i) => (
+                                 <div key={i}>{u}</div>
+                                 ))}
+                                 </td>
+                              
                               <td className="data-col-6">{doktor.specijalizacija}</td>
                               <td className="data-col-7">
                                 <span className="badge bg-info">{doktor.brojLicence}</span>
                               </td>
-                              <td className="data-col-8">{doktor.napomena}</td>
+                              {/* <td className="data-col-8">{doktor.napomena}</td> */}
                               <td className="data-col-9">
                                 <span className={`badge ${doktor.status === 'Aktivan' ? 'badge-status-aktivan' : 'badge-status-pasiviziran'}`}>
                                   {doktor.status}
