@@ -36,20 +36,28 @@ function EditRequest() {
 
   useEffect(() => {
     let found = location.state?.request;
+    console.log('found:', found);
     if (!found && listaZahtjeva?.P_OUT_JSON) {
       found = listaZahtjeva.P_OUT_JSON.find(
         (z) => String(z.id_zah) === String(id)
       );
     }
     if (found) {
+      let cityCode = found.p_grad || found.city || "";
+      if (cityCode && gradovi) {
+        const gradMatch = gradovi.find(
+          (g) => g.name_delivery === cityCode || g.code === cityCode
+        );
+        if (gradMatch) cityCode = gradMatch.code;
+      }
       setPatientInfo({
         phone: found.br_tel || "",
         firstName: found.pacijent_ime || "",
         lastName: found.pacijent_prezime || "",
         birthDate: found.pacijent_dat_rodj || "",
-        city: found.grad || "",
+        city: cityCode,
       });
-      setDijagnoza(found.dijagnoza || "");
+      setDijagnoza(found.dijagnoza || found.p_dijagnoza || "");
       setRecepti(
         found.rp?.map((rp) => {
           const odabraniObj = lijekNormativ.find(
@@ -57,20 +65,33 @@ function EditRequest() {
           ) || null;
           return {
             tipRecepta: rp.tip_rp === "OB" ? "obrazac" : "blanko",
-            grupa: rp.grupa || rp.r_indikacija || "",
-            obrazac: rp.rp_obrazac || "",
+            grupa: rp.grupa || rp.r_indikacija || rp.indikacija || "",
+            obrazac: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
             odabraniObrazac: odabraniObj,
-            tekstRecepta: rp.rp_blanko || rp.rp_obrazac || "",
-            tekstObrasca: rp.rp_obrazac || "",
+            tekstRecepta: rp.rp_blanko !== "null" ? rp.rp_blanko : rp.rp_obrazac || "",
+            tekstObrasca: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
             vrstaRecepta: rp.vrsta_rp === "OB" ? "obn" : "neobn",
-            kolicina: rp.kolicina || rp.r_kol || "",
-            brojPonavljanja: rp.broj_ponavljanja || rp.r_br_ponavljanja || "",
-            vremenskiPeriod: rp.vremenski_period || rp.r_br_mjeseci || "",
+            kolicina: rp.kolicina || rp.r_kol || rp.kol || "",
+            brojPonavljanja: rp.broj_ponavljanja || rp.r_br_ponavljanja || rp.br_ponavljanja || "",
+            vremenskiPeriod: rp.vremenski_period || rp.r_br_mjeseci || rp.br_mjeseci || "",
             napomena: rp.napomena || rp.r_napomena || "",
             odabrani: rp.naziv || rp.r_art_naziv || "",
+            magistralni: rp.magistralni || rp.r_magistralni || "",
           };
         }) || []
       );
+      setFiles([]);
+      setLoading(false);
+    } else {
+      setPatientInfo({
+        phone: "",
+        firstName: "",
+        lastName: "",
+        birthDate: "",
+        city: "",
+      });
+      setDijagnoza("");
+      setRecepti([]);
       setFiles([]);
       setLoading(false);
     }
@@ -102,12 +123,31 @@ function EditRequest() {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const { submitZahtjev } = useDataContext();
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    // LOGIKA ZA IZMJENU - DODATI ažuriranje konteksta
-    alert("Izmjene su potvrđene!");
-    navigate("/requests");
+    try {
+      let found = location.state?.request;
+      if (!found && listaZahtjeva?.P_OUT_JSON) {
+        found = listaZahtjeva.P_OUT_JSON.find(
+          (z) => String(z.id_zah) === String(id)
+        );
+      }
+      const result = await submitZahtjev({
+        patientInfo,
+        dijagnoza,
+        recepti,
+        files,
+        id_zah: found?.id_zah || id,
+        status_zah: "2"
+      }, true); // true = edit mode
+      alert("Izmjene su potvrđene!");
+      navigate("/requests");
+    } catch (err) {
+      console.error("❌ Greška:", err);
+      alert("Greška pri snimanju izmjena zahtjeva.");
+    }
   };
 
   if (loading) return <div>Učitavanje...</div>;
@@ -118,7 +158,7 @@ function EditRequest() {
       <div>
         <div className="p-4 mx-auto" style={{ maxWidth: "800px" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h1 className="mb-1">Izmjena zahtjeva</h1>
+            <h1 className="mb-1">Izmijena zahtjeva</h1>
             <Button
               variant="outline-secondary"
               onClick={() => navigate("/requests")}
@@ -139,16 +179,18 @@ function EditRequest() {
               dijagnoza={dijagnoza}
             />
             {recepti.map((recept, index) => (
-              <PrescriptionCard
-                key={index}
-                recept={recept}
-                index={index}
-                recepti={recepti}
-                setRecepti={setRecepti}
-                indikLijek={indikLijek}
-                indikacije={indikacije}
-                lijekNormativ={lijekNormativ}
-              />
+              <>
+                <PrescriptionCard
+                  key={index}
+                  recept={recept}
+                  index={index}
+                  recepti={recepti}
+                  setRecepti={setRecepti}
+                  indikLijek={indikLijek}
+                  indikacije={indikacije}
+                  lijekNormativ={lijekNormativ}
+                />
+              </>
             ))}
             <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
             <FileUpload setFiles={setFiles} />

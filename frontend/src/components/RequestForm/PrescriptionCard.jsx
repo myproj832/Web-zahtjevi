@@ -179,14 +179,19 @@ function PrescriptionCard({
             <Form.Label style={{ textTransform: "none" }}>
               Grupa-indikacija
             </Form.Label>
-            <Select
-              className="text-capitalize"
-              options={grupaOptions}
-              value={grupaOptions.find(opt => opt.value === recept.grupa) || null}
-              onChange={(selected) => handleGrupaChange(selected || { target: { value: "" } })}
-              placeholder="-- Izaberite grupu --"
-              isClearable
-            />
+        <Select
+          className="text-capitalize"
+          options={grupaOptions}
+          value={
+            grupaOptions.find(opt => {
+              // Support both code and name for preselection
+              return opt.value === recept.grupa || opt.value === recept.r_indikacija || opt.value === recept.indikacija;
+            }) || null
+          }
+          onChange={(selected) => handleGrupaChange(selected || { target: { value: "" } })}
+          placeholder="-- Izaberite grupu --"
+          isClearable
+        />
           </Form.Group>
           <Card className="mt-3 mb-0 pt-0 pb-2">
             <Card.Body className="py-0">
@@ -196,7 +201,7 @@ function PrescriptionCard({
                 </Form.Label>
                 <Select
                   options={magistralniOptions}
-                  value={magistralniOptions.find(opt => opt.value === recept.obrazac) || null}
+                  value={magistralniOptions.find(opt => opt.value === recept.obrazac || opt.value === recept.odabrani) || null}
                   onChange={(selected) => handleObrazacChange(selected || { target: { value: "" } }, getFiltriraniLijekovi())}
                   placeholder="-- Izaberite obrazac --"
                   isClearable

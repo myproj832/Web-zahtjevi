@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
 import { ValidationContext } from "../../context/ValidationContext";
 
-function DiagnosisBlock({ onChangeDijagnoza }) {
+function DiagnosisBlock({ onChangeDijagnoza, dijagnoza }) {
   const allowedSigns = useContext(ValidationContext);
   const [error, setError] = useState("");
 
@@ -33,6 +33,7 @@ function DiagnosisBlock({ onChangeDijagnoza }) {
             <Form.Label className="m-0">Šifra i Naziv</Form.Label>
             <Form.Control
               className="p-1"
+              value={dijagnoza}
               onBeforeInput={handleBeforeInput}
               onChange={handleChange}
             />

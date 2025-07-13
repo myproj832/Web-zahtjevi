@@ -9,7 +9,11 @@ function ActionButtons({ selectedRequest, handleDelete }) {
       <div className="d-flex justify-content-end gap-1 p-2">
         <button
           className="btn btn-sm btn-outline-primary btn-light btn-30"
-          onClick={() => navigate(`/details/${selectedRequest.id_zah}`, { state: { request: selectedRequest } })}
+          onClick={() =>
+            navigate(`/details/${selectedRequest.id_zah}`, {
+              state: { request: selectedRequest },
+            })
+          }
           disabled={!selectedRequest}
         >
           Pregled&nbsp;🗎
@@ -17,8 +21,12 @@ function ActionButtons({ selectedRequest, handleDelete }) {
 
         <button
           className="btn btn-sm btn-outline-warning btn-light btn-30"
-          onClick={() => navigate(`/edit/${selectedRequest.id_zah}`)}
-          disabled={!selectedRequest}
+          onClick={() =>
+            navigate(`/edit/${selectedRequest.id_zah}`, {
+              state: { request: selectedRequest },
+            })
+          }
+          disabled={!selectedRequest || !canDelete}
         >
           Izmijeni&nbsp;🖉
         </button>

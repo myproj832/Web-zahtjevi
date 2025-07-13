@@ -58,7 +58,7 @@ function RequestTable({
                 {request.rp?.map((rp, idx) => (
                   <div key={idx} className="mb-2">
                     <strong>Tip:</strong> {rp.tip_rp === "OB" ? "Obrazac lijeka" : "Blanko obrazac"} <br />
-                    {rp.naziv !== "NORMATIV" && <div>{rp.naziv}</div>}
+                    {rp.naziv !== "null" && <div className="pt-1">{rp.naziv}</div>}
                     <div
                       className="p-1 rounded"
                       style={{
