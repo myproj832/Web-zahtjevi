@@ -166,9 +166,10 @@ function PrescriptionCard({
             as="textarea"
             rows={4}
             maxLength={4000}
-            value={recept.tekstRecepta}
+            value={recept.tekstRecepta === "null" ? "" : recept.tekstRecepta}
             onChange={(e) => handleFieldChange("tekstRecepta", e.target.value)}
             onBeforeInput={handleBeforeInput}
+            required
           />
         </Form.Group>
       )}
@@ -205,7 +206,7 @@ function PrescriptionCard({
                   onChange={(selected) => handleObrazacChange(selected || { target: { value: "" } }, getFiltriraniLijekovi())}
                   placeholder="-- Izaberite obrazac --"
                   isClearable
-                  isDisabled={!recept.grupa}
+                  isDisabled={false}
                 />
               </Form.Group>
               {recept.odabraniObrazac && (
@@ -369,7 +370,7 @@ ${recept.odabraniObrazac.lijek_m_f}\n${recept.odabraniObrazac.lijek_d_s}`
           as="textarea"
           rows={3}
           maxLength={4000}
-          value={recept.napomena}
+          value={recept.napomena === "null" ? "" : recept.napomena}
           onChange={(e) => handleFieldChange("napomena", e.target.value)}
           onBeforeInput={handleBeforeInput}
         />

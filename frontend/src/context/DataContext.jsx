@@ -31,8 +31,7 @@ export const DataProvider = ({ children }) => {
   }
 
   // SLANJE PODATAKA BAZI
-  const submitZahtjev = async ({ patientInfo, dijagnoza, recepti, files }) => {
-    
+  const submitZahtjev = async ({ patientInfo, dijagnoza, recepti, files, id_zah = "", status_zah = "" }) => {
     const cleanPatientInfo = deepTrimStrings(patientInfo);
     const cleanDijagnoza = deepTrimStrings(dijagnoza);
     const cleanRecepti = deepTrimStrings(recepti);
@@ -44,8 +43,8 @@ export const DataProvider = ({ children }) => {
         token_user: tokenUser,
       }),
       in_json: JSON.stringify({
-        id_zah: "",
-        status_zah: "1",
+        id_zah: id_zah,
+        status_zah: status_zah,
         p_br_tel: cleanPatientInfo.phone.replace(/\D/g, ""),
         p_ime: cleanPatientInfo.firstName,
         p_prezime: cleanPatientInfo.lastName,

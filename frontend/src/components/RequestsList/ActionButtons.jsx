@@ -33,7 +33,7 @@ function ActionButtons({ selectedRequest, handleDelete }) {
 
         <button
           className="btn btn-sm btn-outline-danger btn-light btn-30"
-          onClick={() => handleDelete(selectedRequest.id)}
+          onClick={() => handleDelete(selectedRequest?.id_zah)}
           disabled={!canDelete}
         >
           Obrisi&nbsp;🗑︎

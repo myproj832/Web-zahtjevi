@@ -33,7 +33,7 @@ function DiagnosisBlock({ onChangeDijagnoza, dijagnoza }) {
             <Form.Label className="m-0">Šifra i Naziv</Form.Label>
             <Form.Control
               className="p-1"
-              value={dijagnoza}
+              value={dijagnoza === "null" ? "" : dijagnoza}
               onBeforeInput={handleBeforeInput}
               onChange={handleChange}
             />

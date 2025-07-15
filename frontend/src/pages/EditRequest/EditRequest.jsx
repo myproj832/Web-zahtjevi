@@ -43,10 +43,11 @@ function EditRequest() {
       );
     }
     if (found) {
-      let cityCode = found.p_grad || found.city || "";
-      if (cityCode && gradovi) {
+      let cityRaw = found.p_grad || found.city || "";
+      let cityCode = cityRaw;
+      if (cityRaw && gradovi) {
         const gradMatch = gradovi.find(
-          (g) => g.name_delivery === cityCode || g.code === cityCode
+          (g) => g.code === cityRaw || g.name === cityRaw
         );
         if (gradMatch) cityCode = gradMatch.code;
       }
@@ -134,8 +135,20 @@ function EditRequest() {
           (z) => String(z.id_zah) === String(id)
         );
       }
+
+      let cityCode = patientInfo.city;
+      if (cityCode && gradovi) {
+        const gradMatch = gradovi.find(
+          (g) =>
+            g.code === cityCode ||
+            g.name === cityCode ||
+            (g.name_delivery && g.name_delivery === cityCode)
+        );
+        if (gradMatch) cityCode = gradMatch.code;
+      }
+      const patientInfoWithCode = { ...patientInfo, city: cityCode };
       const result = await submitZahtjev({
-        patientInfo,
+        patientInfo: patientInfoWithCode,
         dijagnoza,
         recepti,
         files,
@@ -195,7 +208,7 @@ function EditRequest() {
             <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
             <FileUpload setFiles={setFiles} />
             <Button className="mt-4" variant="primary" type="submit">
-              Potvrdi Izmjene
+              Potvrdi Izmijene
             </Button>
           </Form>
         </div>
