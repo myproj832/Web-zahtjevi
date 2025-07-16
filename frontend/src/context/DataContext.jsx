@@ -116,6 +116,38 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  
+  // SLANJE ZAHTJEVA ZA BRISANJE
+  const submitDelete = async ({ id_zah, status_zah }) => {
+    const requestBody = {
+      token_app: tokenApp,
+      in_auten: JSON.stringify({
+        username_u: korisnickoIme,
+        token_user: tokenUser,
+      }),
+      in_json: JSON.stringify({
+        id_zah,
+        status_zah
+      })
+    };
+    console.log("✅ Delete zahtjev:", requestBody);
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/upisi_zahtjev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if (!res.ok) throw new Error("Greška pri brisanju zahtjeva");
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      console.error("❌ Greška prilikom brisanja zahtjeva:", error);
+      throw error;
+    }
+  };
+
   const fetchGradovi = async () => {
     if (!tokenApp || !korisnickoIme || !tokenUser) return;
     try {
@@ -252,6 +284,7 @@ export const DataProvider = ({ children }) => {
         fetchNormativi,
         fetchListaZahtjeva,
         submitZahtjev,
+        submitDelete,
         loading,
         setListaZahtjeva,
         refreshListaZahtjeva,

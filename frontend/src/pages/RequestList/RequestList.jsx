@@ -232,11 +232,36 @@ function RequestList() {
     }, 0);
   }
 
-  // Handlers
-  const handleDelete = (id) => {
+const { submitDelete } = useDataContext();
+  const handleDelete = async (id) => {
+    console.log("handleDelete called with id:", id);
+    let req = filteredRequests.find(r => String(r.id_zah) === String(id));
+    console.log("Trying filteredRequests for delete:", req);
+    if (!req) {
+      req = requests.find(r => String(r.id_zah) === String(id));
+      console.log("Trying requests for delete:", req);
+    }
+    if (!req) {
+      console.error("❌ Greška pri brisanju zahtjeva: Zahtjev nije pronađen.");
+      alert("Greška pri brisanju zahtjeva: Zahtjev nije pronađen.");
+      return;
+    }
     if (window.confirm("Jeste li sigurni da želite da izbrišete zahtjev?")) {
-      const updated = existing.filter((req) => req.id !== id);
-      window.location.reload();
+      try {
+        await submitDelete({
+          id_zah: req.id_zah,
+          status_zah: "8"
+        });
+        console.log("submitDelete called for delete");
+        if (typeof refreshListaZahtjeva === "function") {
+          await refreshListaZahtjeva();
+          console.log("refreshListaZahtjeva called after delete");
+        }
+        alert("Zahtjev je uspješno izbrisan.");
+      } catch (err) {
+        console.error("❌ Greška pri brisanju zahtjeva:", err);
+        alert("Greška pri brisanju zahtjeva.");
+      }
     }
   };
 

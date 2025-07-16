@@ -39,7 +39,15 @@ function ActionButtons({ selectedRequest, handleDelete }) {
           Obrisi&nbsp;🗑︎
         </button>
 
-        <button className="btn btn-sm btn-outline-secondary btn-light btn-30">
+        <button
+          className="btn btn-sm btn-outline-secondary btn-light btn-30"
+          onClick={() => {
+            if (selectedRequest) {
+              window.open(`/details/${selectedRequest.id_zah}?print=1`, "_blank");
+            }
+          }}
+          disabled={!selectedRequest}
+        >
           Stampaj&nbsp;🖶
         </button>
       </div>

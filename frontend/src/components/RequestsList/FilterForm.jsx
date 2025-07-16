@@ -83,6 +83,8 @@ function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova 
           <option value="6">Izrađen</option>
           <option value="2">Spreman za isporuku</option>
           <option value="3">Isporučen</option>
+          <option value="7">Zaprimljen / Izmijenjen</option>
+          <option value="8">Storniran</option>
         </select>
       </div>
 

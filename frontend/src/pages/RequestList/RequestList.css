@@ -113,6 +113,16 @@
   color: #4527a0;
 }
 
+.badge-status-izmijenjen {
+  background-color: #fce4ec;
+  color: #f22f76;
+}
+
+.badge-status-storniran {
+  background-color: #d1cfcf;
+  color: #360d1c;
+}
+
 .badge.bg-info {
   background-color: #17a2b8;
   color: white;

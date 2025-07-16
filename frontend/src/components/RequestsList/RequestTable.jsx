@@ -112,6 +112,10 @@ function RequestTable({
                       ? "badge-status-spreman"
                       : request.status === "3"
                       ? "badge-status-isporucen"
+                      : request.status === "7"
+                      ? "badge-status-izmijenjen"
+                       : request.status === "8"
+                      ? "badge-status-storniran"
                       : ""
                   }`}
                 >
@@ -129,6 +133,10 @@ function RequestTable({
                     ? "Spreman za isporuku"
                     : request.status === "3"
                     ? "Isporučen"
+                    : request.status === "7"
+                    ? "Izmijenjen"
+                    : request.status === "8"
+                    ? "Storniran"
                     : "Nepoznat"}
                 </span>
               </td>

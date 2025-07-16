@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import Header from "../../components/Header";
@@ -153,7 +153,7 @@ function EditRequest() {
         recepti,
         files,
         id_zah: found?.id_zah || id,
-        status_zah: "2"
+        status_zah: "7"
       }, true); // true = edit mode
       alert("Izmjene su potvrđene!");
       navigate("/requests");
@@ -192,9 +192,8 @@ function EditRequest() {
               dijagnoza={dijagnoza}
             />
             {recepti.map((recept, index) => (
-              <>
+              <React.Fragment key={index}>
                 <PrescriptionCard
-                  key={index}
                   recept={recept}
                   index={index}
                   recepti={recepti}
@@ -203,7 +202,7 @@ function EditRequest() {
                   indikacije={indikacije}
                   lijekNormativ={lijekNormativ}
                 />
-              </>
+              </React.Fragment>
             ))}
             <AddPrescriptionButton setRecepti={setRecepti} recepti={recepti} />
             <FileUpload setFiles={setFiles} />

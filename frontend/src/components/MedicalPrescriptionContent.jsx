@@ -77,7 +77,7 @@ export default function MedicalPrescriptionContent({ request, recept }) {
             Naziv ili šifra dijagnoze
           </div>
           <div className="medical-input-line" style={{ borderTop: "none" }}>
-            <p className="px-1 pt-1">{request?.dijagnoza || "/"}</p>
+            <p className="px-1 pt-1">{request?.p_dijagnoza || "/"}</p>
           </div>
         </div>
         {/* Vrsta recepta header */}
@@ -100,19 +100,32 @@ export default function MedicalPrescriptionContent({ request, recept }) {
         </div>
         {/* Neobnavljiv */}
         <div className={`medical-checkbox-row`}>
-          <div className={`medical-square${recept?.vrsta_rp === "NO" ? " checked" : ""}`}>
+          <div
+            className={`medical-square${
+              recept?.vrsta_rp === "NO" ? " checked" : ""
+            }`}
+          >
             <p style={{ position: "relative", top: 8 }}>
               {recept?.vrsta_rp === "NO" ? "X" : ""}
             </p>
           </div>
           <span style={{ fontWeight: "bold" }}>Neobnavljiv</span>
           <span className="medical-small-text" style={{ marginLeft: "4px" }}>
-            - Non repetatur <span className="fs-6"></span>
+            - Non repetatur{" "}
+            <span className="px-2" style={{ fontSize: "0.85rem" }}>
+              {recept?.vrsta_rp === "OB"
+                ? ''
+                :  `kol: ${recept?.kolicina || recept?.kol}` || ''}
+            </span>
           </span>
         </div>
         {/* Obnavljiv */}
         <div className={`medical-checkbox-row`} style={{ borderTop: "none" }}>
-          <div className={`medical-square${recept?.vrsta_rp === "OB" ? " checked" : ""}`}>
+          <div
+            className={`medical-square${
+              recept?.vrsta_rp === "OB" ? " checked" : ""
+            }`}
+          >
             <p style={{ position: "relative", top: 8 }}>
               {recept?.vrsta_rp === "OB" ? "X" : ""}
             </p>
@@ -120,6 +133,11 @@ export default function MedicalPrescriptionContent({ request, recept }) {
           <span style={{ fontWeight: "bold" }}>Obnavljiv</span>
           <span className="medical-small-text" style={{ marginLeft: "4px" }}>
             - Repetatur (upisati broj ponavljanja)
+            <span className="px-2" style={{ fontSize: "0.75rem", fontWeight: "bold" }}>
+              {recept?.vrsta_rp === "NO" ? '-' : `kol: ${recept?.kolicina || recept?.kol},` || ''}{" "}
+              {`ponoviti: ${recept?.broj_ponavljanja || recept?.br_ponavljanja},` || "-"}{" "}
+              {`mj: ${recept?.broj_mjeseci || recept?.br_mjeseci}` || "-"}
+            </span>
           </span>
         </div>
         {/* Poseban */}
@@ -181,8 +199,7 @@ export default function MedicalPrescriptionContent({ request, recept }) {
             Rp./
           </div>
           <br />
-          <p className="py-0 my-0">{recept?.grupa || "-"}</p>
-          <p>{recept?.obrazac || recept?.naziv || "-"}</p>
+          <p>{recept?.naziv === "NORMATIV" ? "" : recept?.obrazac || recept?.naziv || "-"}</p>
           <pre
             style={{
               all: "unset",
@@ -193,11 +210,10 @@ export default function MedicalPrescriptionContent({ request, recept }) {
             {recept?.rp_obrazac || "-"}
           </pre>
           <br></br>
-          <p>excipiens ad {recept?.kolicina || recept?.kol || "-"}</p>
         </div>
         {/* Napomene */}
         <div className="medical-bottom-section">
-          Napomene: {recept?.napomena || "-"}
+          Napomene: {recept?.r_napomena || "-"}
         </div>
         {/* Br. potvrde */}
         <div className="medical-final-section">
@@ -232,7 +248,7 @@ export default function MedicalPrescriptionContent({ request, recept }) {
                 marginBottom: "4px",
               }}
             >
-              <p className="mx-5 px-3">{recept?.datum_prijema || ""}</p>
+              <p className="mx-3 px-3">{request?.dat_prijema || ""}</p>
             </div>
             <div
               className="medical-small-text"
