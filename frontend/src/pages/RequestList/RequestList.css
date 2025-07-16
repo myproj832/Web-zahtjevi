@@ -123,9 +123,14 @@
   color: #360d1c;
 }
 
+.badge-status-izm-far {
+  background-color: #d1cfcf;
+  color: #360d1c;
+}
+
 .badge.bg-info {
-  background-color: #17a2b8;
-  color: white;
+  background-color: #f4dff7;
+  color: rgb(87, 60, 102);
 }
 
 .btn-30 {

@@ -116,15 +116,17 @@ function RequestTable({
                       ? "badge-status-izmijenjen"
                        : request.status === "8"
                       ? "badge-status-storniran"
+                      : request.status === "9"
+                      ? "badge-status-izm-far"
                       : ""
                   }`}
                 >
                   {request.status === "0"
                     ? "Kreiran"
                     : request.status === "1"
-                    ? "Zaprimljen"
+                    ? "Zaprimljen / Prihvaćen"
                     : request.status === "4"
-                    ? "Odbijen"
+                    ? "Poništen / Odbijen"
                     : request.status === "5"
                     ? "U izradi"
                     : request.status === "6"
@@ -137,6 +139,8 @@ function RequestTable({
                     ? "Izmijenjen"
                     : request.status === "8"
                     ? "Storniran"
+                    : request.status === "9"
+                    ? "Zaprimljen / Izmijenjen"
                     : "Nepoznat"}
                 </span>
               </td>
