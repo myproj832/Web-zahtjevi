@@ -1,0 +1,78 @@
+/* === Skeleton overlay === */
+.skeleton-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: transparent;
+  pointer-events: none;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20rem;
+}
+.skeleton-line {
+  width: 90%;
+  height: 4em;
+  background-color: rgba(0,0,0,0.05);
+  margin: 0.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+@keyframes wave {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.skeleton-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: wave 1.6s ease-in-out infinite;
+}
+
+/* === Roller spinner === */
+@keyframes roller {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.loader-roller {
+  display: inline-block;
+  position: relative;
+  width: 80px; height: 80px;
+}
+.loader-roller--small {
+  width: 40px; height: 40px;
+}
+.loader-roller div {
+  transform-origin: 50% 50%;
+  animation: roller 1.2s cubic-bezier(0.5,0,0.5,1) infinite;
+}
+.loader-roller div:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 3px; left: calc(50% - 3px);
+  width: 6px; height: 18px;
+  border-radius: 20%;
+  background-color: var(--bs-primary);
+}
+.loader-roller--small div:after {
+  top: 2px; left: calc(50% - 2px);
+  width: 4px; height: 12px;
+}
+.loader-roller div:nth-child(1) { transform: rotate(0deg);   animation-delay: -1.1s; }
+.loader-roller div:nth-child(2) { transform: rotate(45deg);  animation-delay: -1s;   }
+.loader-roller div:nth-child(3) { transform: rotate(90deg);  animation-delay: -0.9s; }
+.loader-roller div:nth-child(4) { transform: rotate(135deg); animation-delay: -0.8s; }
+.loader-roller div:nth-child(5) { transform: rotate(180deg); animation-delay: -0.7s; }
+.loader-roller div:nth-child(6) { transform: rotate(225deg); animation-delay: -0.6s; }
+.loader-roller div:nth-child(7) { transform: rotate(270deg); animation-delay: -0.5s; }
+.loader-roller div:nth-child(8) { transform: rotate(315deg); animation-delay: -0.4s; }
