@@ -7,6 +7,7 @@ import FilterForm from "../../components/RequestsList/FilterForm";
 import RequestTable from "../../components/RequestsList/RequestTable";
 import RequestCard from "../../components/RequestsList/RequestCard";
 import ActionButtons from "../../components/RequestsList/ActionButtons";
+import Modal from "../../components/Modal";
 
 import { useAuth } from "../../context/AuthContext";
 import { useDataContext } from "../../context/DataContext";
@@ -23,6 +24,9 @@ function RequestList() {
   );
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
 
   // Memoized initial dates
   const getInitialDates = () => {
@@ -121,6 +125,20 @@ function RequestList() {
     };
     const from = sortedRequests.length === 0 ? 0 : indexOfFirstRequest + 1;
     const to = Math.min(indexOfLastRequest, sortedRequests.length);
+
+    const handleCancelClick = () => {
+      setShowCancelModal(true);
+    };
+
+    const handleCancelConfirm = () => {
+      setShowCancelModal(false);
+      navigate("/requests");
+    };
+
+    const handleCancelCancel = () => {
+      setShowCancelModal(false);
+    };
+
     return (
       <div
         className="d-flex justify-content-between align-items-center gap-2 px-2 rounded"
@@ -232,13 +250,13 @@ function RequestList() {
     }, 0);
   }
 
-const { submitDelete } = useDataContext();
+  const { submitDelete } = useDataContext();
   const handleDelete = async (id) => {
     console.log("handleDelete called with id:", id);
-    let req = filteredRequests.find(r => String(r.id_zah) === String(id));
+    let req = filteredRequests.find((r) => String(r.id_zah) === String(id));
     console.log("Trying filteredRequests for delete:", req);
     if (!req) {
-      req = requests.find(r => String(r.id_zah) === String(id));
+      req = requests.find((r) => String(r.id_zah) === String(id));
       console.log("Trying requests for delete:", req);
     }
     if (!req) {
@@ -250,7 +268,7 @@ const { submitDelete } = useDataContext();
       try {
         await submitDelete({
           id_zah: req.id_zah,
-          status_zah: "8"
+          status_zah: "8",
         });
         console.log("submitDelete called for delete");
         if (typeof refreshListaZahtjeva === "function") {

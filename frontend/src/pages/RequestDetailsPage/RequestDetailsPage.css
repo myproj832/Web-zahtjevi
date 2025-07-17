@@ -35,6 +35,13 @@
     color: #000 !important;
     margin: 0 auto !important;
   }
+  .details-main-card, .details-section-card, .details-rp-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .details-list, .details-rp-title, .details-section-card, .details-rp-card-text, .details-rp-obrazac {
+    text-align: center;
+  }
 }
 
 html,
