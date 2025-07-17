@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import Loader from "../../components/Loader";
 
 import Header from "../../components/Header";
 import FilterForm from "../../components/RequestsList/FilterForm";
@@ -18,6 +19,15 @@ function RequestList() {
   const navigate = useNavigate();
   const { rola } = useAuth();
   const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
+  const [loading, setLoading] = useState(true);
+
+     useEffect(() => {
+    const fetchData = async () => {
+      await refreshListaZahtjeva();
+      setLoading(false);
+    };
+    fetchData();
+  }, [refreshListaZahtjeva]);
 
   const [showRequests, setShowRequests] = useState(
     () => sessionStorage.getItem("showRequests") === "true"
@@ -116,6 +126,14 @@ function RequestList() {
 
   // Pagination rendering
   const renderPagination = () => {
+    if (loading) {
+      return (
+        <div className="d-flex justify-content-between align-items-center gap-2 px-2 rounded">
+          <span className="placeholder col-2 placeholder-glow"></span>
+          <span className="placeholder col-4 placeholder-glow"></span>
+        </div>
+      );
+    }
     if (totalPages <= 1) return null;
     const handleInputChange = (e) => {
       let value = e.target.value.replace(/\D/g, "");
@@ -299,6 +317,7 @@ function RequestList() {
   // Render
   return (
     <div className="background">
+       {loading && <div className="global-blocker" />}
       <Header />
       <div className="p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -337,13 +356,14 @@ function RequestList() {
         {showRequests && (
           <>
             {" "}
-            <div
-              className="d-flex align-items-center mb-3"
-              style={{ justifyContent: "flex-end" }}
-            >
+            <div className="d-flex align-items-center mb-3 justify-content-between">
+              <Loader className="ms-5"  variant="roller" size="small" isLoading={loading}>
+             
+          
               {renderPagination() && (
                 <div style={{ marginRight: "auto" }}>{renderPagination()}</div>
               )}
+              </Loader>
               <ActionButtons
                 selectedRequest={filteredRequests.find(
                   (r) => r.id_zah === selectedRowId
@@ -365,6 +385,8 @@ function RequestList() {
                 setSelectedRowId(null);
               }}
             >
+              <Loader variant="skeleton" isLoading={loading}>
+              <div className="position-relative" tabIndex={0} onBlur={e => {/* unchanged blur logic */}}>
               <RequestTable
                 listaZahtjeva={listaZahtjeva}
                 filteredRequests={currentRequests}
@@ -384,6 +406,8 @@ function RequestList() {
                 />
               ))}
               {renderPagination()}
+            </div>
+              </Loader>
             </div>
           </>
         )}

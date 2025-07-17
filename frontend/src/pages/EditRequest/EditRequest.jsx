@@ -241,7 +241,7 @@ function EditRequest() {
                 >
                   Potvrdi Izmijene
                 </Button>
-                <Button variant="secondary" onClick={handleCancelClick}>
+                <Button className="mt-4" variant="secondary" onClick={handleCancelClick}>
                   Odustani
                 </Button>
               </div>
@@ -272,7 +272,7 @@ function EditRequest() {
         confirmText="OK"
         onConfirm={() => navigate("/requests")}
       >
-        <p className="mb-3">Zahtjev je uspješno kreiran.</p>
+        <p className="mb-3">Zahtjev je uspješno izmijenjen.</p>
       </Modal>
 
       {/* Error Modal */}
@@ -283,7 +283,7 @@ function EditRequest() {
         confirmText="OK"
         onConfirm={() => setShowErrorModal(false)}
       >
-        <p className="mb-3">Greška pri kreiranju zahtjeva. Pokušajte ponovo.</p>
+        <p className="mb-3">Greška pri izmjeni zahtjeva. Pokušajte ponovo.</p>
       </Modal>
     </>
   );

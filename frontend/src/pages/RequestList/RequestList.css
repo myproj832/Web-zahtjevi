@@ -41,6 +41,18 @@
   color: rgb(66, 66, 66);
 }
 
+.global-blocker {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;   /* ili rgba(0,0,0,0.1) ako želiš dim efekt */
+  z-index: 2000;             /* mora biti iznad Header-a i svega ostalog */
+  pointer-events: all;       /* blokira sve klikove ispod */
+  cursor: wait;           /* mijenja kursor u "wait" */
+}
+
+
 @media (max-width: 600px) {
   .button,
   .buttonx,

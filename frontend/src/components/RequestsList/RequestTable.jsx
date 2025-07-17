@@ -11,7 +11,14 @@ function highlightDiff(original = "", changed = "") {
   for (let i = 0; i < maxLines; i++) {
     const origLine = origLines[i] || "";
     const changedLine = changedLines[i] || "";
-    if (origLine === changedLine) {
+    if (!changedLine && origLine) {
+      // Obrisani red iz originala
+      result.push(
+        <div key={i} style={{ background: "#ffe6e6", color: "#cc0000" }}>
+          <i>. . .</i>
+        </div>
+      );
+    } else if (origLine === changedLine) {
       result.push(<div key={i}>{changedLine}</div>);
     } else {
      
