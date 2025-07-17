@@ -1,0 +1,52 @@
+.modal-content {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header.bg-success {
+  background: linear-gradient(90deg, #198754 0%, #20c997 100%);
+  color: white;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.modal-header.bg-warning {
+  background: var(--gradient-primary-button);
+  color: #333;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.modal-header.bg-danger {
+  background: #dc3545;
+  color: white;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.modal-footer .btn.compact {
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  margin: 0 0.25rem;
+}
+
+/* Ensure backdrop covers full screen */
+.modal-backdrop.show {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}

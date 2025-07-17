@@ -8,6 +8,7 @@ import PrescriptionCard from "../../components/RequestForm/PrescriptionCard";
 import FileUpload from "../../components/RequestForm/FileUpload";
 import AddPrescriptionButton from "../../components/RequestForm/AddPrescriptionButton";
 import Header from "../../components/Header";
+import Modal from "../../components/Modal";
 import "./RequestForm.css";
 import { flushSync } from "react-dom";
 
@@ -46,6 +47,9 @@ function RequestForm() {
     birthDate: "",
     city: "",
   });
+   const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const isValidPhone = (phone) => {
     if (!phone) return false;
@@ -93,11 +97,24 @@ function RequestForm() {
         // možeš setovati state ovdje ako treba, npr. clear form
       });
 
-      navigate("/requests");
+      setShowSuccessModal(true);
     } catch (err) {
       console.error("❌ Greška:", err);
-      alert("Greška pri snimanju zahtjeva.");
+      setShowErrorModal(true);
     }
+  };
+
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
+  const handleCancelConfirm = () => {
+    setShowCancelModal(false);
+    navigate("/requests");
+  };
+
+  const handleCancelCancel = () => {
+    setShowCancelModal(false);
   };
 
   return (
@@ -110,7 +127,7 @@ function RequestForm() {
               <h1 className="mb-1">Unos zahtjeva</h1>
               <Button
                 variant="outline-secondary"
-                onClick={() => navigate("/requests")}
+                onClick={handleCancelClick}
               >
                 Lista zahtjeva
               </Button>
@@ -148,14 +165,53 @@ function RequestForm() {
                 <Button variant="primary" onClick={handleSubmit}>
                   Snimi zahtjev
                 </Button>
-                <Button variant="secondary" onClick={() => navigate("/requests")}>
+                <Button variant="secondary" onClick={handleCancelClick}>
                   Odustani
                 </Button>
               </div>
             </Form>
           </div>
         </div>
+
       </div>
+       {/* Cancel Confirmation Modal */}
+      <Modal
+        show={showCancelModal}
+        type="warning"
+        title="⚠️ Potvrda otkazivanja"
+        confirmText="Da"
+        cancelText="Ne"
+        onConfirm={handleCancelConfirm}
+        onCancel={handleCancelCancel}
+      >
+        <p className="mb-3">Da li ste sigurni da želite da odustanete?</p>
+        <p className="text-muted small">Svi uneseni podaci će biti izgubljeni.</p>
+      </Modal>
+       {/* Success Modal */}
+      <Modal
+        show={showSuccessModal}
+        type="success"
+        title="✔️ Uspješno"
+        confirmText="OK"
+       
+        onConfirm={() => navigate("/requests")}
+        
+      >
+        <p className="mb-3">Zahtjev je uspješno kreiran.</p>
+      </Modal>
+
+      {/* Error Modal */}
+      <Modal
+        show={showErrorModal}
+        type="danger"
+        title="❌ Greška"
+        confirmText="OK"
+        
+        onConfirm={() => setShowErrorModal(false)}
+        
+      >
+        <p className="mb-3">Greška pri kreiranju zahtjeva. Pokušajte ponovo.</p>
+      </Modal>
     </>
   );
 }
