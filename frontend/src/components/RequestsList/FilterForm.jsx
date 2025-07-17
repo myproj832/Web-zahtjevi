@@ -69,24 +69,59 @@ function FilterForm({ filters, handleFilterChange, isAdmin, rola, listaUstanova 
       </div>
       <div className="col-md-2 m-0">
         <label>Status:</label>
-        <select
-          className="form-control"
+        <Select
+          classNamePrefix="react-select"
+          options={[
+            { value: '', label: 'Svi statusi' },
+            { value: '0', label: 'Kreiran', className: 'badge-status-kreiran' },
+            { value: '7', label: 'Izmijenjen', className: 'badge-status-izmijenjen' },
+            { value: '1', label: 'Zaprimljen / Prihvaćen', className: 'badge-status-zaprimljen' },
+            { value: '9', label: 'Zaprimljen / Izmijenjen', className: 'badge-status-izm-far' },
+            { value: '5', label: 'U izradi', className: 'badge-status-u-izradi' },
+            { value: '6', label: 'Izrađen', className: 'badge-status-izradjen' },
+            { value: '2', label: 'Spreman za isporuku', className: 'badge-status-spreman' },
+            { value: '3', label: 'Isporučen', className: 'badge-status-isporucen' },
+            { value: '4', label: 'Poništen / Odbijen', className: 'badge-status-odbijen' },
+            { value: '8', label: 'Storniran', className: 'badge-status-storniran' },
+          ]}
           name="status"
-          value={filters.status}
-          onChange={handleFilterChange}
-        >
-          <option value="">Svi statusi</option>
-          <option value="0">Kreiran</option>
-          <option value="7">Izmijenjen</option>
-          <option value="1">Zaprimljen / Prihvaćen</option>
-          <option value="9">Zaprimljen / Izmijenjen</option>
-          <option value="5">U izradi</option>
-          <option value="6">Izrađen</option>
-          <option value="2">Spreman za isporuku</option>
-          <option value="3">Isporučen</option>
-          <option value="4">Poništen / Odbijen</option>
-          <option value="8">Storniran</option>
-        </select>
+          value={(() => {
+            const opts = [
+              { value: '', label: 'Svi statusi' },
+              { value: '0', label: 'Kreiran', className: 'badge-status-kreiran' },
+              { value: '7', label: 'Izmijenjen', className: 'badge-status-izmijenjen' },
+              { value: '1', label: 'Zaprimljen / Prihvaćen', className: 'badge-status-zaprimljen' },
+              { value: '9', label: 'Zaprimljen / Izmijenjen', className: 'badge-status-izm-far' },
+              { value: '5', label: 'U izradi', className: 'badge-status-u-izradi' },
+              { value: '6', label: 'Izrađen', className: 'badge-status-izradjen' },
+              { value: '2', label: 'Spreman za isporuku', className: 'badge-status-spreman' },
+              { value: '3', label: 'Isporučen', className: 'badge-status-isporucen' },
+              { value: '4', label: 'Poništen / Odbijen', className: 'badge-status-odbijen' },
+              { value: '8', label: 'Storniran', className: 'badge-status-storniran' },
+            ];
+            return opts.find(o => o.value === filters.status) || opts[0];
+          })()}
+          onChange={selected => {
+            handleFilterChange({
+              target: {
+                name: 'status',
+                value: selected ? selected.value : ''
+              }
+            });
+          }}
+          isClearable={false}
+          isSearchable={false}
+          getOptionLabel={option =>
+            option.value === ''
+              ? option.label
+              : (<span className={`badge legend ${option.className || ''}`}>{option.label}</span>)
+          }
+          formatOptionLabel={option =>
+            option.value === ''
+              ? option.label
+              : (<span className={`badge legend ${option.className || ''}`}>{option.label}</span>)
+          }
+        />
       </div>
 
       {isAdmin ? (

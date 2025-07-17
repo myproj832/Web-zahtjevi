@@ -78,54 +78,61 @@
   text-align: center;
 }
 
+.legend {
+  padding: 0.25rem 0.50rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
 .badge-status-kreiran {
-  background-color: #e0f7fa;
-  color: #00796b;
+  background-color: #e0f9fa;
+  color: #09baa6;
+  border-radius: 10px;
 }
 
 .badge-status-zaprimljen {
-  background-color: #e8f5e9;
+  background-color: #c6f8ca;
   color: #2e7d32;
 }
 
 .badge-status-odbijen {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #f7d5da;
+  color: #d72121;
 }
 
 .badge-status-u-izradi {
-  background-color: #f3e5f5;
-  color: #6a1b9a;
+  background-color: #fbe5f6;
+  color: #e42ed2;
 }
 
 .badge-status-izradjen {
   background-color: #e3f2fd;
-  color: #1565c0;
+  color: #034da2;
 }
 
 .badge-status-spreman {
-  background-color: #fff8e1;
-  color: #ff8f00;
+  background-color: #f6dcab;
+  color: #cb7300;
 }
 
 .badge-status-isporucen {
-  background-color: #ede7f6;
-  color: #4527a0;
+  background-color: #b8d2b9;
+  color: #0b5816;
 }
 
 .badge-status-izmijenjen {
-  background-color: #fce4ec;
-  color: #f22f76;
+  background-color: #fffeb6;
+  color: #9c9704;
 }
 
 .badge-status-storniran {
-  background-color: #d1cfcf;
+  background-color: #dedede;
   color: #360d1c;
 }
 
 .badge-status-izm-far {
-  background-color: #d1cfcf;
-  color: #360d1c;
+  background-color: #d9b0e7;
+  color: #832c96;
 }
 
 .badge.bg-info {
@@ -140,4 +147,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.icon-diff {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fc9191ff;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  margin-right: 4px;
+  cursor: pointer;
+  border: 1.5px solid #fff;
 }
