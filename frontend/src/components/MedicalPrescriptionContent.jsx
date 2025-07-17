@@ -228,18 +228,24 @@ export default function MedicalPrescriptionContent({ request, recept }) {
           Napomene: {recept?.r_napomena || "-"}
         </div>
         {/* Br. potvrde */}
-        <div className="medical-final-section flex-row justify-content-between p-0 m-0">
-          <div className="py-0 px-1 m-0">Br. potvrde: {request?.id_zah || "-"}</div>
-          <div className="p-0 m-0">
+        <div
+          className="medical-final-section flex-row justify-content-between"
+          style={{ padding: "1rem", margin: 0, minHeight: 0, height: "40px" }}
+        >
+          <div>
+            <div className="p-2">Br. potvrde: {request?.id_zah || "-"}</div>
+            <div></div>
+          </div>
+          <div>
             Barkod:{" "}
             {request?.barcode ? (
               <Barcode
-              className="p-0 m-0"
                 value={request?.barcode}
-                width={1}
-                height={32}
-                fontSize={10}
+                width={1.4}
+                height={25}
+                fontSize={9}
                 background="transparent"
+                style={{ margin: 0, padding: 0, display: "block" }}
               />
             ) : (
               "—"

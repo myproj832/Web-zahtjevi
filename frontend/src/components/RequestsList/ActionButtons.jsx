@@ -2,7 +2,9 @@ import { useNavigate } from "react-router-dom";
 
 function ActionButtons({ selectedRequest, handleDelete }) {
   const navigate = useNavigate();
-  const canDelete = selectedRequest && (selectedRequest.status === "0" || selectedRequest.status === "7");
+  const canDelete =
+    selectedRequest &&
+    (selectedRequest.status === "0" || selectedRequest.status === "7");
 
   return (
     <div className={`d-none d-md-block action-buttons`}>
@@ -43,7 +45,14 @@ function ActionButtons({ selectedRequest, handleDelete }) {
           className="btn btn-sm btn-outline-secondary btn-light btn-30"
           onClick={() => {
             if (selectedRequest) {
-              window.open(`/details/${selectedRequest.id_zah}?print=1`, "_blank");
+              sessionStorage.setItem(
+                "printRequest",
+                JSON.stringify(selectedRequest)
+              );
+              window.open(
+                `/details/${selectedRequest.id_zah}?print=1`,
+                "_blank"
+              );
             }
           }}
           disabled={!selectedRequest}

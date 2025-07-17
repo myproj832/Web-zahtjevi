@@ -1,5 +1,4 @@
-// ...existing code...
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Modal } from "react-bootstrap";
 import Barcode from "react-barcode";
@@ -8,37 +7,44 @@ import MedicalPrescriptionContent from "../../components/MedicalPrescriptionCont
 import "./RequestDetailsPage.css";
 
 function DetailsPage() {
-  const { id } = useParams();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1') {
+      setTimeout(() => {
+        window.print();
+      }, 500); // Wait for render
+    }
+  }, []);
+
+  // Add/remove class to body when print modal is open
+  const [printModal, setPrintModal] = useState({ show: false, data: null });
+  useEffect(() => {
+    if (printModal.show) {
+      document.body.classList.add('print-modal-open');
+    } else {
+      document.body.classList.remove('print-modal-open');
+    }
+    // Clean up on unmount
+    return () => {
+      document.body.classList.remove('print-modal-open');
+    };
+  }, [printModal.show]);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const initialData = location.state?.request;
-  const [requestData, setRequestData] = useState(initialData || null);
-  const [loading, setLoading] = useState(!initialData);
-  const [error, setError] = useState(null);
-  const [printModal, setPrintModal] = useState({ show: false, data: null });
+  let initialData = location.state?.request;
+  if (!initialData) {
+    try {
+      const stored = sessionStorage.getItem('printRequest');
+      if (stored) {
+        initialData = JSON.parse(stored);
+      }
+    } catch (e) {}
+  }
+  // ...existing code...
 
-  useEffect(() => {
-    if (!requestData) {
-      fetch(`/api/request/${id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Zahtjev nije pronađen.");
-          return res.json();
-        })
-        .then((data) => {
-          setRequestData(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
-    }
-  }, [id, requestData]);
-
-  if (loading) return <p>Učitavanje podataka...</p>;
-  if (error) return <p>{error}</p>;
-  if (!requestData) return <p>Zahtjev nije pronađen.</p>;
+  if (!initialData) return <p>Zahtjev nije pronađen.</p>;
+  const requestData = initialData;
 
   const {
     barcode,
@@ -55,7 +61,7 @@ function DetailsPage() {
     pacijent_ime,
     pacijent_prezime,
     rp,
-    p_grad, // <-- dodato
+    p_grad,
   } = requestData;
 
   return (
@@ -106,7 +112,7 @@ function DetailsPage() {
                   </ul>
                 </Card.Body>
               </Card>
-              <Card className="details-section-card mb-2 mt-2 pt-1 align-items-center">
+              <Card className="details-section-card mb-2 mt-2 pt-1 align-items-center mx-auto">
                 {barcode ? (
                   <Barcode
                     value={barcode}

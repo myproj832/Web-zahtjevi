@@ -1,3 +1,42 @@
+@media print {
+  /* Hide navigation, header, buttons, modals */
+  .background .Header,
+  .background header,
+  .details-topbar,
+  .btn,
+  .action-buttons,
+  .modal-backdrop {
+    display: none !important;
+  }
+
+  /* When print modal is open, hide main content and show only modal */
+  body.print-modal-open .background > :not(.print-modal),
+  body.print-modal-open .background > .details-main-card,
+  body.print-modal-open .background > .details-topbar {
+    display: none !important;
+  }
+  body.print-modal-open .print-modal {
+    display: block !important;
+    position: static !important;
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* If not printing modal, show main content as before */
+  .background, .details-main-card, .details-section-card, .details-list, .details-title, .details-rp-title, .details-rp-card {
+    display: block !important;
+    position: static !important;
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 auto !important;
+  }
+}
+
 html,
 body {
   height: 100%;
@@ -127,33 +166,9 @@ body {
   margin-top: 0.5rem;
 }
 
+
 .print-modal .modal-content {
   background: none;
   border: none;
   box-shadow: none;
-}
-
-@media print {
-  body * {
-    visibility: hidden !important;
-  }
-  .print-modal .modal-content,
-  .print-modal .modal-content * {
-    visibility: visible !important;
-  }
-  .print-modal .modal-content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    min-height: 100vh;
-    background: #fff;
-    box-shadow: none;
-    border: none;
-    margin: 0;
-    padding: 0;
-  }
-  .print-modal .modal-footer {
-    display: none !important;
-  }
 }
