@@ -21,13 +21,13 @@ function RequestList() {
   const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
   const [loading, setLoading] = useState(true);
 
-     useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       await refreshListaZahtjeva();
       setLoading(false);
     };
     fetchData();
-  }, [refreshListaZahtjeva]);
+  }, []); // Poziv samo jednom pri mountanju
 
   const [showRequests, setShowRequests] = useState(
     () => sessionStorage.getItem("showRequests") === "true"

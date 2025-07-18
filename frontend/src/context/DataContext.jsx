@@ -230,7 +230,7 @@ export const DataProvider = ({ children }) => {
           await Promise.all([
             fetchPacijenti(),
             fetchNormativi(),
-            fetchListaZahtjeva(),
+            // fetchListaZahtjeva(), // Uklonjeno automatsko refreshanje liste zahtjeva
           ]);
         }
       } catch (err) {
