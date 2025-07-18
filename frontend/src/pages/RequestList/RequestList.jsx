@@ -134,7 +134,6 @@ function RequestList() {
         </div>
       );
     }
-    if (totalPages <= 1) return null;
     const handleInputChange = (e) => {
       let value = e.target.value.replace(/\D/g, "");
       if (!value) return;

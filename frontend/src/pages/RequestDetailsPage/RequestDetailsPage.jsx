@@ -1,50 +1,78 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Modal } from "react-bootstrap";
 import Barcode from "react-barcode";
 import Header from "../../components/Header";
 import MedicalPrescriptionContent from "../../components/MedicalPrescriptionContent";
+import { useDataContext } from "../../context/DataContext";
 import "./RequestDetailsPage.css";
 
 function DetailsPage() {
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('print') === '1') {
-      setTimeout(() => {
-        window.print();
-      }, 500); // Wait for render
-    }
-  }, []);
-
-  // Add/remove class to body when print modal is open
-  const [printModal, setPrintModal] = useState({ show: false, data: null });
-  useEffect(() => {
-    if (printModal.show) {
-      document.body.classList.add('print-modal-open');
-    } else {
-      document.body.classList.remove('print-modal-open');
-    }
-    // Clean up on unmount
-    return () => {
-      document.body.classList.remove('print-modal-open');
-    };
-  }, [printModal.show]);
   const location = useLocation();
   const navigate = useNavigate();
+  const { id_zah: param_id_zah } = useParams();
+  const { fetchJedanZahtjev } = useDataContext();
+  const [requestData, setRequestData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [printModal, setPrintModal] = useState({ show: false, data: null });
 
-  let initialData = location.state?.request;
-  if (!initialData) {
-    try {
-      const stored = sessionStorage.getItem('printRequest');
-      if (stored) {
-        initialData = JSON.parse(stored);
+  useEffect(() => {
+    console.log("[RequestDetailsPage] useParams id_zah:", param_id_zah);
+    if (!param_id_zah) {
+      console.warn("[RequestDetailsPage] id_zah nije pronađen u URL-u (params).");
+    }
+
+    async function fetchData() {
+      if (param_id_zah) {
+        try {
+          console.log("[RequestDetailsPage] Pozivam fetchJedanZahtjev sa id_zah:", param_id_zah);
+          const data = await fetchJedanZahtjev({ id_zah: param_id_zah });
+          console.log("[RequestDetailsPage] Odgovor fetchJedanZahtjev:", data);
+          const req = data?.P_OUT_JSON?.[0] || null;
+          if (req) {
+            console.log(
+              "[RequestDetailsPage] Podaci dobijeni iz fetchJedanZahtjev (context API):",
+              req
+            );
+          } else {
+            console.warn("[RequestDetailsPage] Nema podataka u P_OUT_JSON za id_zah:", param_id_zah);
+          }
+          setRequestData(req);
+        } catch (e) {
+          console.error("[RequestDetailsPage] Greška u fetchJedanZahtjev:", e);
+          setRequestData(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setRequestData(null);
+        setLoading(false);
       }
-    } catch (e) {}
-  }
-  // ...existing code...
+    }
+    fetchData();
+    // Print trigger (ostaje za query parametar print)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("print") === "1") {
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+  }, [param_id_zah, location.search]);
 
-  if (!initialData) return <p>Zahtjev nije pronađen.</p>;
-  const requestData = initialData;
+  // Add/remove class to body when print modal is open
+  useEffect(() => {
+    if (printModal.show) {
+      document.body.classList.add("print-modal-open");
+    } else {
+      document.body.classList.remove("print-modal-open");
+    }
+    return () => {
+      document.body.classList.remove("print-modal-open");
+    };
+  }, [printModal.show]);
+
+  if (loading) return <p>Učitavanje...</p>;
+  if (!requestData) return <p>Zahtjev nije pronađen.</p>;
 
   const {
     barcode,

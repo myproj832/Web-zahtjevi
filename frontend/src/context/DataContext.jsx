@@ -6,7 +6,7 @@ const DataContext = createContext();
 export const useDataContext = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-  const { tokenApp, korisnickoIme, tokenUser, rola } = useAuth();
+  const { tokenApp, korisnickoIme, tokenUser, rola, izabranaInstitucija } = useAuth();
 
   const [gradovi, setGradovi] = useState([]);
   const [pacijenti, setPacijenti] = useState([]);
@@ -269,6 +269,39 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+    // Dohvati jedan zahtjev po id-ju
+  const fetchJedanZahtjev = async ({ id_zah, id_institution, id_unit } = {}) => {
+    // Fallback na izabranu instituciju ako nije proslijeđeno
+    const inst = izabranaInstitucija || {};
+    const final_id_institution = id_institution || inst.id_institution;
+    const final_id_unit = id_unit || inst.id_unit;
+    if (!id_zah || !final_id_institution || !final_id_unit) {
+      throw new Error("Nedostaju id_zah, id_institution ili id_unit za fetchJedanZahtjev");
+    }
+    try {
+      const res = await fetch("http://62.4.59.86:3334/api/lista_zahtjeva_jedan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token_app: tokenApp,
+          in_auten: {
+            KORISNIK: korisnickoIme,
+            LOZINKA: tokenUser,
+            id_institution: final_id_institution,
+            id_unit: final_id_unit
+          },
+          id_zah
+        })
+      });
+      if (!res.ok) throw new Error("Greška pri dohvatu zahtjeva");
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error("❌ Greška pri fetchJedanZahtjev:", error);
+      throw error;
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -283,6 +316,7 @@ export const DataProvider = ({ children }) => {
         fetchPacijenti,
         fetchNormativi,
         fetchListaZahtjeva,
+        fetchJedanZahtjev,
         submitZahtjev,
         submitDelete,
         loading,

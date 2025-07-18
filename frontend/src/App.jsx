@@ -100,7 +100,7 @@ function App() {
         />
 
         <Route path="/form"     element={requireLogin(RequestForm)} />
-        <Route path="/details/:id" element={requireLogin(RequestDetailsPage)} />
+        <Route path="/details/:id_zah" element={requireLogin(RequestDetailsPage)} />
         <Route path="/edit/:id" element={requireLogin(EditRequest)} />
         {/* Ako je admin, preusmjeri /requests na admin verziju liste */}
         <Route
