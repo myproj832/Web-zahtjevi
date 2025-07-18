@@ -18,12 +18,12 @@ import "./RequestList.css";
 function RequestList() {
   const navigate = useNavigate();
   const { rola } = useAuth();
-  const { listaZahtjeva, refreshListaZahtjeva } = useDataContext();
+  const { listaZahtjeva, fetchListaZahtjeva } = useDataContext();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      await refreshListaZahtjeva();
+      await fetchListaZahtjeva();
       setLoading(false);
     };
     fetchData();
@@ -288,9 +288,9 @@ function RequestList() {
           status_zah: "8",
         });
         console.log("submitDelete called for delete");
-        if (typeof refreshListaZahtjeva === "function") {
-          await refreshListaZahtjeva();
-          console.log("refreshListaZahtjeva called after delete");
+        if (typeof fetchListaZahtjeva === "function") {
+          await fetchListaZahtjeva();
+          console.log("fetchListaZahtjeva called after delete");
         }
         alert("Zahtjev je uspješno izbrisan.");
       } catch (err) {
@@ -306,14 +306,6 @@ function RequestList() {
     setCurrentPage(1);
   };
 
-  // Data refresh
-  useEffect(() => {
-    if (typeof refreshListaZahtjeva === "function") {
-      refreshListaZahtjeva();
-    }
-  }, []);
-
-  // Render
   return (
     <div className="background">
        {loading && <div className="global-blocker" />}

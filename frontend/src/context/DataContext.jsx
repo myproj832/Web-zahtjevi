@@ -243,31 +243,7 @@ export const DataProvider = ({ children }) => {
     fetchByRole();
   }, [tokenApp, korisnickoIme, tokenUser, rola]);
 
-  const refreshListaZahtjeva = async () => {
-    try {
-      const resLista = await fetch(
-        "http://62.4.59.86:3334/api/lista_zahtjeva",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token_app: tokenApp,
-            in_auten: {
-              KORISNIK: korisnickoIme,
-              LOZINKA: tokenUser,
-            },
-          }),
-        }
-      );
-      const listaJson = await resLista.json();
-      setListaZahtjeva(listaJson);
-      console.log("✅ Lista zahtjeva refreshovana:", listaJson);
-    } catch (error) {
-      console.error("❌ Greška pri refreshu liste zahtjeva:", error);
-    }
-  };
+  // refreshListaZahtjeva removed; use fetchListaZahtjeva instead
 
     // Dohvati jedan zahtjev po id-ju
   const fetchJedanZahtjev = async ({ id_zah, id_institution, id_unit } = {}) => {
@@ -321,7 +297,7 @@ export const DataProvider = ({ children }) => {
         submitDelete,
         loading,
         setListaZahtjeva,
-        refreshListaZahtjeva,
+        // refreshListaZahtjeva removed
       }}
     >
       {children}
