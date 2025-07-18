@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const DataContext = createContext();
@@ -17,25 +17,34 @@ export const DataProvider = ({ children }) => {
   const [listaZahtjeva, setListaZahtjeva] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  function deepTrimStrings(obj) {
-    if (Array.isArray(obj)) {
-      return obj.map(deepTrimStrings);
-    } else if (obj && typeof obj === "object") {
-      return Object.fromEntries(
-        Object.entries(obj).map(([k, v]) => [k, deepTrimStrings(v)])
-      );
-    } else if (typeof obj === "string") {
-      return obj.trim();
-    }
-    return obj;
+function deepTrimStrings(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(deepTrimStrings);
+  } else if (obj && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [k, deepTrimStrings(v)])
+    );
+  } else if (typeof obj === "string") {
+    return obj.trim();
   }
+  return obj;
+}
+
+async function postFetch(url, body, headers = { "Content-Type": "application/json" }) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Greška pri fetchu: ${url}`);
+  return await res.json();
+}
 
   // SLANJE PODATAKA BAZI
-  const submitZahtjev = async ({ patientInfo, dijagnoza, recepti, files, id_zah = "", status_zah = "" }) => {
+  const submitZahtjev = useCallback(async ({ patientInfo, dijagnoza, recepti, files, id_zah = "", status_zah = "" }) => {
     const cleanPatientInfo = deepTrimStrings(patientInfo);
     const cleanDijagnoza = deepTrimStrings(dijagnoza);
     const cleanRecepti = deepTrimStrings(recepti);
-
     const requestBody = {
       token_app: tokenApp,
       in_auten: JSON.stringify({
@@ -94,31 +103,18 @@ export const DataProvider = ({ children }) => {
           ? files[0].substring(0, files[0].indexOf(";")).replace("data:", "")
           : "",
     };
-
     console.log("✅ Zahtjev:", requestBody);
-
     try {
-      const res = await fetch("http://62.4.59.86:3334/api/upisi_zahtjev", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!res.ok) throw new Error("Greška pri slanju zahtjeva");
-
-      const result = await res.json();
-      return result;
+      return await postFetch("http://62.4.59.86:3334/api/upisi_zahtjev", requestBody);
     } catch (error) {
       console.error("❌ Greška prilikom slanja zahtjeva:", error);
       throw error;
     }
-  };
+  }, [tokenApp, korisnickoIme, tokenUser]);
 
   
   // SLANJE ZAHTJEVA ZA BRISANJE
-  const submitDelete = async ({ id_zah, status_zah }) => {
+  const submitDelete = useCallback(async ({ id_zah, status_zah }) => {
     const requestBody = {
       token_app: tokenApp,
       in_auten: JSON.stringify({
@@ -132,46 +128,32 @@ export const DataProvider = ({ children }) => {
     };
     console.log("✅ Delete zahtjev:", requestBody);
     try {
-      const res = await fetch("http://62.4.59.86:3334/api/upisi_zahtjev", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-      if (!res.ok) throw new Error("Greška pri brisanju zahtjeva");
-      const result = await res.json();
-      return result;
+      return await postFetch("http://62.4.59.86:3334/api/upisi_zahtjev", requestBody);
     } catch (error) {
       console.error("❌ Greška prilikom brisanja zahtjeva:", error);
       throw error;
     }
-  };
+  }, [tokenApp, korisnickoIme, tokenUser]);
 
-  const fetchGradovi = async () => {
+  const fetchGradovi = useCallback(async () => {
     if (!tokenApp || !korisnickoIme || !tokenUser) return;
     try {
-      const res = await fetch("http://62.4.59.86:3334/api/gradovi", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token_app: tokenApp,
-          in_auten: JSON.stringify({
-            username_u: korisnickoIme,
-            token_user: tokenUser,
-          }),
+      const data = await postFetch("http://62.4.59.86:3334/api/gradovi", {
+        token_app: tokenApp,
+        in_auten: JSON.stringify({
+          username_u: korisnickoIme,
+          token_user: tokenUser,
         }),
       });
-      const data = await res.json();
       const lista = data?.P_OUT_JSON || [];
       setGradovi(lista);
       console.log("✅ Gradovi:", lista);
     } catch (error) {
       console.error("❌ Greška pri fetchGradovi:", error);
     }
-  };
+  }, [tokenApp, korisnickoIme, tokenUser]);
 
-  const fetchPacijenti = async () => {
+  const fetchPacijenti = useCallback(async () => {
     try {
       const res = await fetch("http://62.4.59.86:3334/api/pacijenti");
       const data = await res.json();
@@ -181,9 +163,9 @@ export const DataProvider = ({ children }) => {
     } catch (error) {
       console.error("❌ Greška pri fetchPacijenti:", error);
     }
-  };
+  }, []);
 
-  const fetchNormativi = async () => {
+  const fetchNormativi = useCallback(async () => {
     try {
       const res = await fetch("http://62.4.59.86:3334/api/normativi");
       const data = await res.json();
@@ -195,28 +177,23 @@ export const DataProvider = ({ children }) => {
     } catch (error) {
       console.error("❌ Greška pri fetchNormativi:", error);
     }
-  };
+  }, []);
 
-  const fetchListaZahtjeva = async () => {
+  const fetchListaZahtjeva = useCallback(async () => {
     try {
-      const res = await fetch("http://62.4.59.86:3334/api/lista_zahtjeva", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token_app: tokenApp,
-          in_auten: {
-            KORISNIK: korisnickoIme,
-            LOZINKA: tokenUser,
-          },
-        }),
+      const data = await postFetch("http://62.4.59.86:3334/api/lista_zahtjeva", {
+        token_app: tokenApp,
+        in_auten: {
+          KORISNIK: korisnickoIme,
+          LOZINKA: tokenUser,
+        },
       });
-      const data = await res.json();
       setListaZahtjeva(data);
       console.log("✅ Lista zahtjeva:", data);
     } catch (error) {
       console.error("❌ Greška pri fetchListaZahtjeva:", error);
     }
-  };
+  }, [tokenApp, korisnickoIme, tokenUser]);
 
   useEffect(() => {
     if (!tokenApp || !korisnickoIme || !tokenUser || !rola) return;
@@ -243,11 +220,8 @@ export const DataProvider = ({ children }) => {
     fetchByRole();
   }, [tokenApp, korisnickoIme, tokenUser, rola]);
 
-  // refreshListaZahtjeva removed; use fetchListaZahtjeva instead
-
     // Dohvati jedan zahtjev po id-ju
-  const fetchJedanZahtjev = async ({ id_zah, id_institution, id_unit } = {}) => {
-    // Fallback na izabranu instituciju ako nije proslijeđeno
+  const fetchJedanZahtjev = useCallback(async ({ id_zah, id_institution, id_unit } = {}) => {
     const inst = izabranaInstitucija || {};
     const final_id_institution = id_institution || inst.id_institution;
     const final_id_unit = id_unit || inst.id_unit;
@@ -255,51 +229,59 @@ export const DataProvider = ({ children }) => {
       throw new Error("Nedostaju id_zah, id_institution ili id_unit za fetchJedanZahtjev");
     }
     try {
-      const res = await fetch("http://62.4.59.86:3334/api/lista_zahtjeva_jedan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token_app: tokenApp,
-          in_auten: {
-            KORISNIK: korisnickoIme,
-            LOZINKA: tokenUser,
-            id_institution: final_id_institution,
-            id_unit: final_id_unit
-          },
-          id_zah
-        })
+      return await postFetch("http://62.4.59.86:3334/api/lista_zahtjeva_jedan", {
+        token_app: tokenApp,
+        in_auten: {
+          KORISNIK: korisnickoIme,
+          LOZINKA: tokenUser,
+          id_institution: final_id_institution,
+          id_unit: final_id_unit
+        },
+        id_zah
       });
-      if (!res.ok) throw new Error("Greška pri dohvatu zahtjeva");
-      const data = await res.json();
-      return data;
     } catch (error) {
       console.error("❌ Greška pri fetchJedanZahtjev:", error);
       throw error;
     }
-  };
+  }, [tokenApp, korisnickoIme, tokenUser, izabranaInstitucija]);
 
+  const contextValue = useMemo(() => ({
+    gradovi,
+    pacijenti,
+    dijagnoze,
+    indikacije,
+    indikLijek,
+    lijekNormativ,
+    listaZahtjeva,
+    fetchGradovi,
+    fetchPacijenti,
+    fetchNormativi,
+    fetchListaZahtjeva,
+    fetchJedanZahtjev,
+    submitZahtjev,
+    submitDelete,
+    loading,
+    setListaZahtjeva,
+  }), [
+    gradovi,
+    pacijenti,
+    dijagnoze,
+    indikacije,
+    indikLijek,
+    lijekNormativ,
+    listaZahtjeva,
+    fetchGradovi,
+    fetchPacijenti,
+    fetchNormativi,
+    fetchListaZahtjeva,
+    fetchJedanZahtjev,
+    submitZahtjev,
+    submitDelete,
+    loading,
+    setListaZahtjeva,
+  ]);
   return (
-    <DataContext.Provider
-      value={{
-        gradovi,
-        pacijenti,
-        dijagnoze,
-        indikacije,
-        indikLijek,
-        lijekNormativ,
-        listaZahtjeva,
-        fetchGradovi,
-        fetchPacijenti,
-        fetchNormativi,
-        fetchListaZahtjeva,
-        fetchJedanZahtjev,
-        submitZahtjev,
-        submitDelete,
-        loading,
-        setListaZahtjeva,
-        // refreshListaZahtjeva removed
-      }}
-    >
+    <DataContext.Provider value={contextValue}>
       {children}
     </DataContext.Provider>
   );

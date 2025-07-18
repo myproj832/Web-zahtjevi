@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import Header from "../../components/Header";
 import PatientInfo from "../../components/RequestForm/PatientInfo";
@@ -14,9 +14,8 @@ import "../RequestForm/RequestForm.css";
 function EditRequest() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const {
-    listaZahtjeva,
+    fetchJedanZahtjev,
     indikacije,
     indikLijek,
     lijekNormativ,
@@ -39,75 +38,88 @@ function EditRequest() {
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   useEffect(() => {
-    let found = location.state?.request;
-    console.log("found:", found);
-    if (!found && listaZahtjeva?.P_OUT_JSON) {
-      found = listaZahtjeva.P_OUT_JSON.find(
-        (z) => String(z.id_zah) === String(id)
-      );
-    }
-    if (found) {
-      let cityRaw = found.p_grad || found.city || "";
-      let cityCode = cityRaw;
-      if (cityRaw && gradovi) {
-        const gradMatch = gradovi.find(
-          (g) => g.code === cityRaw || g.name === cityRaw
-        );
-        if (gradMatch) cityCode = gradMatch.code;
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchJedanZahtjev({ id_zah: id });
+        const found = data?.P_OUT_JSON?.[0] || data;
+        if (found) {
+          let cityRaw = found.p_grad || found.city || "";
+          let cityCode = cityRaw;
+          if (cityRaw && gradovi) {
+            const gradMatch = gradovi.find(
+              (g) => g.code === cityRaw || g.name === cityRaw
+            );
+            if (gradMatch) cityCode = gradMatch.code;
+          }
+          setPatientInfo({
+            phone: found.br_tel || "",
+            firstName: found.pacijent_ime || "",
+            lastName: found.pacijent_prezime || "",
+            birthDate: found.pacijent_dat_rodj || "",
+            city: cityCode,
+          });
+          setDijagnoza(found.dijagnoza || found.p_dijagnoza || "");
+          setRecepti(
+            found.rp?.map((rp) => {
+              const odabraniObj =
+                lijekNormativ.find(
+                  (l) => l.lijek_name === (rp.naziv || rp.r_art_naziv)
+                ) || null;
+              return {
+                tipRecepta: rp.tip_rp === "OB" ? "obrazac" : "blanko",
+                grupa: rp.grupa || rp.r_indikacija || rp.indikacija || "",
+                obrazac: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
+                odabraniObrazac: odabraniObj,
+                tekstRecepta:
+                  rp.rp_blanko !== "null" ? rp.rp_blanko : rp.rp_obrazac || "",
+                tekstObrasca: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
+                vrstaRecepta: rp.vrsta_rp === "OB" ? "obn" : "neobn",
+                kolicina: rp.kolicina || rp.r_kol || rp.kol || "",
+                brojPonavljanja:
+                  rp.broj_ponavljanja ||
+                  rp.r_br_ponavljanja ||
+                  rp.br_ponavljanja ||
+                  "",
+                vremenskiPeriod:
+                  rp.vremenski_period || rp.r_br_mjeseci || rp.br_mjeseci || "",
+                napomena: rp.napomena || rp.r_napomena || "",
+                odabrani: rp.naziv || rp.r_art_naziv || "",
+                magistralni: rp.magistralni || rp.r_magistralni || "",
+              };
+            }) || []
+          );
+          setFiles([]);
+        } else {
+          setPatientInfo({
+            phone: "",
+            firstName: "",
+            lastName: "",
+            birthDate: "",
+            city: "",
+          });
+          setDijagnoza("");
+          setRecepti([]);
+          setFiles([]);
+        }
+      } catch (err) {
+        setPatientInfo({
+          phone: "",
+          firstName: "",
+          lastName: "",
+          birthDate: "",
+          city: "",
+        });
+        setDijagnoza("");
+        setRecepti([]);
+        setFiles([]);
+      } finally {
+        setLoading(false);
       }
-      setPatientInfo({
-        phone: found.br_tel || "",
-        firstName: found.pacijent_ime || "",
-        lastName: found.pacijent_prezime || "",
-        birthDate: found.pacijent_dat_rodj || "",
-        city: cityCode,
-      });
-      setDijagnoza(found.dijagnoza || found.p_dijagnoza || "");
-      setRecepti(
-        found.rp?.map((rp) => {
-          const odabraniObj =
-            lijekNormativ.find(
-              (l) => l.lijek_name === (rp.naziv || rp.r_art_naziv)
-            ) || null;
-          return {
-            tipRecepta: rp.tip_rp === "OB" ? "obrazac" : "blanko",
-            grupa: rp.grupa || rp.r_indikacija || rp.indikacija || "",
-            obrazac: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
-            odabraniObrazac: odabraniObj,
-            tekstRecepta:
-              rp.rp_blanko !== "null" ? rp.rp_blanko : rp.rp_obrazac || "",
-            tekstObrasca: rp.rp_obrazac !== "null" ? rp.rp_obrazac : "",
-            vrstaRecepta: rp.vrsta_rp === "OB" ? "obn" : "neobn",
-            kolicina: rp.kolicina || rp.r_kol || rp.kol || "",
-            brojPonavljanja:
-              rp.broj_ponavljanja ||
-              rp.r_br_ponavljanja ||
-              rp.br_ponavljanja ||
-              "",
-            vremenskiPeriod:
-              rp.vremenski_period || rp.r_br_mjeseci || rp.br_mjeseci || "",
-            napomena: rp.napomena || rp.r_napomena || "",
-            odabrani: rp.naziv || rp.r_art_naziv || "",
-            magistralni: rp.magistralni || rp.r_magistralni || "",
-          };
-        }) || []
-      );
-      setFiles([]);
-      setLoading(false);
-    } else {
-      setPatientInfo({
-        phone: "",
-        firstName: "",
-        lastName: "",
-        birthDate: "",
-        city: "",
-      });
-      setDijagnoza("");
-      setRecepti([]);
-      setFiles([]);
-      setLoading(false);
-    }
-  }, [listaZahtjeva, id, location.state]);
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, gradovi, lijekNormativ]);
 
   const isValidPhone = (phone) => {
     if (!phone) return false;
@@ -140,13 +152,6 @@ function EditRequest() {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      let found = location.state?.request;
-      if (!found && listaZahtjeva?.P_OUT_JSON) {
-        found = listaZahtjeva.P_OUT_JSON.find(
-          (z) => String(z.id_zah) === String(id)
-        );
-      }
-
       let cityCode = patientInfo.city;
       if (cityCode && gradovi) {
         const gradMatch = gradovi.find(
@@ -164,7 +169,7 @@ function EditRequest() {
           dijagnoza,
           recepti,
           files,
-          id_zah: found?.id_zah || id,
+          id_zah: id,
           status_zah: "7",
         },
         true

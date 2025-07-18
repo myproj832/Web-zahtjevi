@@ -36,7 +36,7 @@ const Modal = ({
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className={headerClass}>
-              <h5 className="modal-title">{title}</h5>
+              <h5 className="modal-title text-white">{title}</h5>
             </div>
             <div className="modal-body text-center">
               {children}

@@ -34,9 +34,10 @@ function RequestList() {
   );
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // Memoized initial dates
   const getInitialDates = () => {
@@ -142,19 +143,6 @@ function RequestList() {
     };
     const from = sortedRequests.length === 0 ? 0 : indexOfFirstRequest + 1;
     const to = Math.min(indexOfLastRequest, sortedRequests.length);
-
-    const handleCancelClick = () => {
-      setShowCancelModal(true);
-    };
-
-    const handleCancelConfirm = () => {
-      setShowCancelModal(false);
-      navigate("/requests");
-    };
-
-    const handleCancelCancel = () => {
-      setShowCancelModal(false);
-    };
 
     return (
       <div
@@ -268,35 +256,38 @@ function RequestList() {
   }
 
   const { submitDelete } = useDataContext();
-  const handleDelete = async (id) => {
-    console.log("handleDelete called with id:", id);
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = deleteId;
     let req = filteredRequests.find((r) => String(r.id_zah) === String(id));
-    console.log("Trying filteredRequests for delete:", req);
     if (!req) {
       req = requests.find((r) => String(r.id_zah) === String(id));
-      console.log("Trying requests for delete:", req);
     }
     if (!req) {
-      console.error("❌ Greška pri brisanju zahtjeva: Zahtjev nije pronađen.");
-      alert("Greška pri brisanju zahtjeva: Zahtjev nije pronađen.");
+      setShowDeleteConfirmModal(false);
+      setShowDeleteErrorModal(true);
       return;
     }
-    if (window.confirm("Jeste li sigurni da želite da izbrišete zahtjev?")) {
-      try {
-        await submitDelete({
-          id_zah: req.id_zah,
-          status_zah: "8",
-        });
-        console.log("submitDelete called for delete");
-        if (typeof fetchListaZahtjeva === "function") {
-          await fetchListaZahtjeva();
-          console.log("fetchListaZahtjeva called after delete");
-        }
-        alert("Zahtjev je uspješno izbrisan.");
-      } catch (err) {
-        console.error("❌ Greška pri brisanju zahtjeva:", err);
-        alert("Greška pri brisanju zahtjeva.");
+    try {
+      await submitDelete({
+        id_zah: req.id_zah,
+        status_zah: "8",
+      });
+      setLoading(true);
+      if (typeof fetchListaZahtjeva === "function") {
+        await fetchListaZahtjeva();
       }
+      setLoading(false);
+      setShowDeleteConfirmModal(false);
+      setShowDeleteSuccessModal(true);
+    } catch (err) {
+      setLoading(false);
+      setShowDeleteConfirmModal(false);
+      setShowDeleteErrorModal(true);
     }
   };
 
@@ -346,14 +337,11 @@ function RequestList() {
         />
         {showRequests && (
           <>
-            {" "}
             <div className="d-flex align-items-center mb-3 justify-content-between">
-              <Loader className="ms-5"  variant="roller" size="small" isLoading={loading}>
-             
-          
-              {renderPagination() && (
-                <div style={{ marginRight: "auto" }}>{renderPagination()}</div>
-              )}
+              <Loader className="ms-5" variant="roller" size="small" isLoading={loading}>
+                {renderPagination() && (
+                  <div style={{ marginRight: "auto" }}>{renderPagination()}</div>
+                )}
               </Loader>
               <ActionButtons
                 selectedRequest={filteredRequests.find(
@@ -377,29 +365,61 @@ function RequestList() {
               }}
             >
               <Loader variant="skeleton" isLoading={loading}>
-              <div className="position-relative" tabIndex={0} onBlur={e => {/* unchanged blur logic */}}>
-              <RequestTable
-                listaZahtjeva={listaZahtjeva}
-                filteredRequests={currentRequests}
-                setSelectedRowId={setSelectedRowId}
-                selectedRowId={selectedRowId}
-                rola={rola}
-                indexOfFirstRequest={indexOfFirstRequest}
-              />
-            </div>
-            <div className="d-md-none">
-              {currentRequests.map((req) => (
-                <RequestCard
-                  key={req.id_zah}
-                  request={req}
-                  rola={rola}
-                  onSelect={setSelectedRowId}
-                />
-              ))}
-              {renderPagination()}
-            </div>
+                <div className="position-relative" tabIndex={0} onBlur={e => {/* unchanged blur logic */}}>
+                  <RequestTable
+                    listaZahtjeva={listaZahtjeva}
+                    filteredRequests={currentRequests}
+                    setSelectedRowId={setSelectedRowId}
+                    selectedRowId={selectedRowId}
+                    rola={rola}
+                    indexOfFirstRequest={indexOfFirstRequest}
+                  />
+                </div>
+                <div className="d-md-none">
+                  {currentRequests.map((req) => (
+                    <RequestCard
+                      key={req.id_zah}
+                      request={req}
+                      rola={rola}
+                      onSelect={setSelectedRowId}
+                    />
+                  ))}
+                  {renderPagination()}
+                </div>
               </Loader>
             </div>
+            {/* Delete Confirm Modal */}
+            <Modal
+              show={showDeleteConfirmModal}
+              type="warning"
+              title="Potvrda brisanja"
+              confirmText="Da, obriši"
+              cancelText="Ne"
+              onConfirm={handleConfirmDelete}
+              onCancel={() => setShowDeleteConfirmModal(false)}
+            >
+              <p>Da li ste sigurni da želite da obrišete zahtjev?</p>
+            </Modal>
+            {/* Delete Success Modal */}
+            <Modal
+              show={showDeleteSuccessModal}
+              type="success"
+              title="Uspješno obrisano"
+              confirmText="OK"
+              onConfirm={() => setShowDeleteSuccessModal(false)}
+            >
+              <p>Zahtjev je uspješno obrisan.</p>
+            </Modal>
+            {/* Delete Error Modal */}
+            <Modal
+              show={showDeleteErrorModal}
+              type="danger"
+              title="Greška pri brisanju"
+              confirmText="OK"
+              onConfirm={() => setShowDeleteErrorModal(false)}
+            >
+              <p>Greška pri brisanju zahtjeva. Pokušajte ponovo.</p>
+            </Modal>
           </>
         )}
       </div>

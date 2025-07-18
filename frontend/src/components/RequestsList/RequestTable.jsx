@@ -3,7 +3,14 @@ import Barcode from "react-barcode";
 import { useState } from "react";
 
 function highlightDiff(original = "", changed = "") {
-  if (!original || !changed) return changed;
+  if (!original && !changed) return null;
+  if (!original) return changed;
+  if (!changed) {
+    // All lines deleted
+    return original.split(/\r?\n/).map((line, i) => (
+      <div key={i} style={{ background: "#ffe6e6", color: "#cc0000", textDecoration: "line-through" }}>{line}</div>
+    ));
+  }
   const origLines = original.split(/\r?\n/);
   const changedLines = changed.split(/\r?\n/);
   const maxLines = Math.max(origLines.length, changedLines.length);
@@ -12,16 +19,13 @@ function highlightDiff(original = "", changed = "") {
     const origLine = origLines[i] || "";
     const changedLine = changedLines[i] || "";
     if (!changedLine && origLine) {
-      // Obrisani red iz originala
+      // Entire line deleted
       result.push(
-        <div key={i} style={{ background: "#ffe6e6", color: "#cc0000" }}>
-          <i>. . .</i>
-        </div>
+        <div key={i} style={{ background: "#ffe6e6", color: "#cc0000", textDecoration: "line-through" }}>{origLine}</div>
       );
     } else if (origLine === changedLine) {
       result.push(<div key={i}>{changedLine}</div>);
     } else {
-     
       const origWords = origLine.split(/(\s+)/);
       const changedWords = changedLine.split(/(\s+)/);
       const maxWords = Math.max(origWords.length, changedWords.length);
@@ -29,14 +33,21 @@ function highlightDiff(original = "", changed = "") {
       for (let j = 0; j < maxWords; j++) {
         const ow = origWords[j] || "";
         const cw = changedWords[j] || "";
-        if (ow === cw) {
+        if (ow === cw && cw !== "") {
           line.push(cw);
-        } else if (cw) {
-          line.push(
-            <mark key={j} style={{ background: "#ffe066", color: "#b30000" }}>
-              {cw}
-            </mark>
-          );
+        } else {
+          if (cw) {
+            // Added or changed word
+            line.push(
+              <mark key={"c"+j} style={{ background: "#ffe066", color: "#b30000" }}>{cw}</mark>
+            );
+          }
+          if (ow && (!cw || ow !== cw)) {
+            // Deleted word
+            line.push(
+              <span key={"d"+j} style={{ background: "#ffe6e6", color: "#cc0000", textDecoration: "line-through" }}>{ow}</span>
+            );
+          }
         }
       }
       result.push(<div key={i}>{line}</div>);
